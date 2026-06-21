@@ -16,12 +16,7 @@ st.write(
     "For now, it uses sample SFO annual temperature data so we can verify that Streamlit runs correctly."
 )
 
-# Temporary sample data. Later this will come from data/processed/sfo_annual_temperature.csv
-data = {
-    "year": [2019, 2020, 2021, 2022, 2023, 2024],
-    "avg_tmax_f": [65.1, 66.0, 65.8, 66.2, 65.7, 66.4],
-    "avg_tmin_f": [51.2, 51.5, 51.7, 52.0, 51.8, 52.2],
-}
+data = pd.read_csv("data/processed/USW00023234_daily_temperature.csv")
 
 annual = pd.DataFrame(data)
 
