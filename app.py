@@ -84,21 +84,21 @@ else:
 
 year_range = st.slider(
     "Select year range",
-    min_value=int(annual["year"].min()),
-    max_value=int(annual["year"].max()),
-    value=(int(annual["year"].min()), int(annual["year"].max())),
+    min_value=int(grouped["year"].min()),
+    max_value=int(grouped["year"].max()),
+    value=(int(grouped["year"].min()), int(grouped["year"].max())),
 )
 
-filtered = annual[
-    (annual["year"] >= year_range[0]) &
-    (annual["year"] <= year_range[1])
+filtered = grouped[
+    (grouped["year"] >= year_range[0]) &
+    (grouped["year"] <= year_range[1])
 ]
 
 fig = go.Figure()
 
 fig.add_trace(
     go.Scatter(
-        x=filtered["year"],
+        x=filtered[x_col],
         y=filtered["avg_tmax_f"],
         mode="lines+markers",
         name="Average annual max temperature",
@@ -107,7 +107,7 @@ fig.add_trace(
 
 fig.add_trace(
     go.Scatter(
-        x=filtered["year"],
+        x=filtered[x_col],
         y=filtered["avg_tmin_f"],
         mode="lines+markers",
         name="Average annual min temperature",
@@ -116,7 +116,7 @@ fig.add_trace(
 
 fig.update_layout(
     title="Average Annual Max and Min Temperatures at SFO",
-    xaxis_title="Year",
+    xaxis_title=x_title,
     yaxis_title="Temperature (°F)",
     hovermode="x unified",
 )
