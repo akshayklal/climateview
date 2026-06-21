@@ -4,26 +4,28 @@ import plotly.graph_objects as go
 import streamlit as st
 
 def add_trendline(fig, df, x_col, y_col, name):
-    trend_data = df[[x_col, y_col]].dropna()
+    trend_data = df[[x_col, "trend_year", y_col]].dropna()
 
     if len(trend_data) < 2:
-        return
+        return None
 
-    x = np.arange(len(trend_data))
+    x = trend_data["trend_year"].values
     y = trend_data[y_col].values
 
-    slope, intercept = np.polyfit(x, y, 1)
-    trend_y = slope * x + intercept
+    slope_per_year, intercept = np.polyfit(x, y, 1)
+    trend_y = slope_per_year * x + intercept
 
     fig.add_trace(
         go.Scatter(
             x=trend_data[x_col],
             y=trend_y,
             mode="lines",
-            name=name,
+            name=f"{name} ({slope_per_year:+.3f}°F/year)",
             line=dict(dash="dash"),
         )
     )
+
+    return slope_per_year
 
 st.set_page_config(
     page_title="ClimateView",
@@ -66,6 +68,9 @@ if aggregation == "Month":
     )
 
     grouped["year"] = pd.to_datetime(grouped["month"]).dt.year
+    grouped["trend_year"] = pd.to_datetime(grouped["month"]).dt.year + (
+            pd.to_datetime(grouped["month"]).dt.month - 1
+    ) / 12
     x_col = "month"
     x_title = "Month"
 
@@ -86,6 +91,8 @@ elif aggregation == "Year":
         (grouped["days_with_tmin"] >= 300)
     ]
 
+    grouped["trend_year"] = grouped["year"]
+
     x_col = "year"
     x_title = "Year"
 
@@ -102,6 +109,7 @@ else:
     )
 
     grouped["year"] = grouped["decade"]
+    grouped["trend_year"] = grouped["decade"]
     x_col = "decade"
     x_title = "Decade"
 
@@ -137,7 +145,7 @@ fig.add_trace(
     )
 )
 
-add_trendline(
+max_slope_per_year = add_trendline(
     fig,
     filtered,
     x_col,
@@ -145,7 +153,7 @@ add_trendline(
     "Max temperature trend",
 )
 
-add_trendline(
+min_slope_per_year = add_trendline(
     fig,
     filtered,
     x_col,
@@ -161,6 +169,18 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+st.markdown("### Trend Summary")
+
+if max_slope_per_year is not None and min_slope_per_year is not None:
+    st.write(
+        f"Maximum temperature linear trend: {max_slope_per_year:+.3f}°F per year"
+    )
+    st.write(
+        f"Minimum temperature linear trend: {min_slope_per_year:+.3f}°F per year"
+    )
+else:
+    st.write("Not enough data points to calculate a linear trend.")
 
 st.markdown("### Data")
 st.dataframe(filtered, use_container_width=True)
