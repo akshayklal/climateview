@@ -1,6 +1,29 @@
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+
+def add_trendline(fig, df, x_col, y_col, name):
+    trend_data = df[[x_col, y_col]].dropna()
+
+    if len(trend_data) < 2:
+        return
+
+    x = np.arange(len(trend_data))
+    y = trend_data[y_col].values
+
+    slope, intercept = np.polyfit(x, y, 1)
+    trend_y = slope * x + intercept
+
+    fig.add_trace(
+        go.Scatter(
+            x=trend_data[x_col],
+            y=trend_y,
+            mode="lines",
+            name=name,
+            line=dict(dash="dash"),
+        )
+    )
 
 st.set_page_config(
     page_title="ClimateView",
@@ -112,6 +135,22 @@ fig.add_trace(
         mode="lines+markers",
         name="Average annual min temperature",
     )
+)
+
+add_trendline(
+    fig,
+    filtered,
+    x_col,
+    "avg_tmax_f",
+    "Max temperature trend",
+)
+
+add_trendline(
+    fig,
+    filtered,
+    x_col,
+    "avg_tmin_f",
+    "Min temperature trend",
 )
 
 fig.update_layout(
