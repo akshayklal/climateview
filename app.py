@@ -20,22 +20,67 @@ data = pd.read_csv("data/processed/USW00023234_daily_temperature.csv")
 
 data["date"] = pd.to_datetime(data["date"])
 data["year"] = data["date"].dt.year
+data["month"] = data["date"].dt.to_period("M").astype(str)
+data["decade"] = (data["year"] // 10) * 10
 
-annual = (
-    data.groupby("year")
-    .agg(
-        avg_tmax_f=("tmax_f", "mean"),
-        avg_tmin_f=("tmin_f", "mean"),
-        days_with_tmax=("tmax_f", "count"),
-        days_with_tmin=("tmin_f", "count"),
-    )
-    .reset_index()
+aggregation = st.radio(
+    "Aggregation level",
+    ["Month", "Year", "Decade"],
+    index=1,
+    horizontal=True,
 )
 
-annual = annual[
-    (annual["days_with_tmax"] >= 300) &
-    (annual["days_with_tmin"] >= 300)
-]
+if aggregation == "Month":
+    grouped = (
+        data.groupby("month")
+        .agg(
+            avg_tmax_f=("tmax_f", "mean"),
+            avg_tmin_f=("tmin_f", "mean"),
+            days_with_tmax=("tmax_f", "count"),
+            days_with_tmin=("tmin_f", "count"),
+        )
+        .reset_index()
+    )
+
+    grouped["year"] = pd.to_datetime(grouped["month"]).dt.year
+    x_col = "month"
+    x_title = "Month"
+
+elif aggregation == "Year":
+    grouped = (
+        data.groupby("year")
+        .agg(
+            avg_tmax_f=("tmax_f", "mean"),
+            avg_tmin_f=("tmin_f", "mean"),
+            days_with_tmax=("tmax_f", "count"),
+            days_with_tmin=("tmin_f", "count"),
+        )
+        .reset_index()
+    )
+
+    grouped = grouped[
+        (grouped["days_with_tmax"] >= 300) &
+        (grouped["days_with_tmin"] >= 300)
+    ]
+
+    x_col = "year"
+    x_title = "Year"
+
+else:
+    grouped = (
+        data.groupby("decade")
+        .agg(
+            avg_tmax_f=("tmax_f", "mean"),
+            avg_tmin_f=("tmin_f", "mean"),
+            days_with_tmax=("tmax_f", "count"),
+            days_with_tmin=("tmin_f", "count"),
+        )
+        .reset_index()
+    )
+
+    grouped["year"] = grouped["decade"]
+    x_col = "decade"
+    x_title = "Decade"
 
 year_range = st.slider(
     "Select year range",
