@@ -12,13 +12,30 @@ st.title("ClimateView")
 st.subheader("Local climate trends using NOAA data")
 
 st.write(
-    "This is the first local version of the ClimateView app. "
-    "For now, it uses sample SFO annual temperature data so we can verify that Streamlit runs correctly."
+    "This app visualizes historical average annual maximum and minimum "
+    "temperatures at San Francisco International Airport using NOAA data."
 )
 
 data = pd.read_csv("data/processed/USW00023234_daily_temperature.csv")
 
-annual = pd.DataFrame(data)
+data["date"] = pd.to_datetime(data["date"])
+data["year"] = data["date"].dt.year
+
+annual = (
+    data.groupby("year")
+    .agg(
+        avg_tmax_f=("tmax_f", "mean"),
+        avg_tmin_f=("tmin_f", "mean"),
+        days_with_tmax=("tmax_f", "count"),
+        days_with_tmin=("tmin_f", "count"),
+    )
+    .reset_index()
+)
+
+annual = annual[
+    (annual["days_with_tmax"] >= 300) &
+    (annual["days_with_tmin"] >= 300)
+]
 
 year_range = st.slider(
     "Select year range",
