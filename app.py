@@ -55,8 +55,8 @@ if st.session_state.selected_station:
 
     # Load data dynamically based on selected station
     # (Note: Pass your station_id to these loaders if you update them next)
-    temperature_data = load_temperature_data()
-    precipitation_data = load_precipitation_data()
+    temperature_data = load_temperature_data(station_id=station_id)
+    precipitation_data = load_precipitation_data(station_id=station_id)
 
     # Render original tabs layout
     temperature_tab, precipitation_tab = st.tabs(["Temperature", "Precipitation"])
