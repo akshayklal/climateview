@@ -44,7 +44,7 @@ if st.session_state.selected_station:
     station_name = STATIONS[station_id]["name"]
 
     # Navigation header
-    col1, col2 = st.columns()
+    col1, col2 = st.columns(2)
     with col1:
         if st.button("⬅ Back to Map"):
             st.session_state.selected_station = None
