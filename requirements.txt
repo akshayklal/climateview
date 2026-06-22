@@ -1,3 +1,4 @@
+pydeck
 streamlit
 pandas
 plotly
