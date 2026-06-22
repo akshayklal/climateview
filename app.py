@@ -26,7 +26,7 @@ STATIONS = {
     # "USW00012960": {"name": "Houston Intercontinental, TX", "lat": 29.980, "lon": -95.340, "active": False}
 }
 
-# Convert station dictionary into a Pandas DataFrame for Pydeck layer rendering
+# Convert station dictionary into a Pandas DataFrame
 df_stations = pd.DataFrame([
     {"station_id": k, "name": v["name"], "lat": v["lat"], "lon": v["lon"]}
     for k, v in STATIONS.items() if v["active"]
@@ -44,7 +44,7 @@ if st.session_state.selected_station:
     station_name = STATIONS[station_id]["name"]
 
     # Navigation header
-    col1, col2 = st.columns([1, 5])
+    col1, col2 = st.columns()
     with col1:
         if st.button("⬅ Back to Map"):
             st.session_state.selected_station = None
@@ -53,8 +53,7 @@ if st.session_state.selected_station:
         st.title("ClimateView")
         st.subheader(f"Historical Trends for {station_name}")
 
-    # Load data dynamically based on selected station
-    # (Note: Pass your station_id to these loaders if you update them next)
+    # Pass the selected station ID down cleanly
     temperature_data = load_temperature_data(station_id=station_id)
     precipitation_data = load_precipitation_data(station_id=station_id)
 
@@ -74,7 +73,7 @@ else:
     st.subheader("Local climate trends using NOAA data")
     st.write(
         "This app visualizes historical temperature and precipitation trends "
-        "using NOAA weather-station data. Click a highlighted station marker on the map below to begin."
+        "using NOAA weather-station data. **Click the highlighted station marker on the map below** to begin."
     )
 
     # Configure Pydeck Visual Scatter Marker Layer
@@ -82,20 +81,22 @@ else:
         "ScatterplotLayer",
         data=df_stations,
         get_position="[lon, lat]",
-        get_color="[255, 75, 75, 200]",  # Crimson-orange marker
-        get_radius=75000,  # Marker radius bounds in meters
-        pickable=True,
+        get_color="[230, 65, 0, 200]",  # Bright Orange-Red with transparency
+        get_radius=90000,  # Radius bounds in meters (makes it easily clickable)
+        pickable=True,  # Allows click interaction
+        auto_highlight=True,  # Changes color on hover
+        id="weather-stations"  # Unique identifier matching selection routing
     )
 
     # Center perspective view focused broadly over North America
     view_state = pdk.ViewState(
         latitude=39.8283,
         longitude=-98.5795,
-        zoom=3.5,
+        zoom=3.8,
         pitch=0
     )
 
-    # Render interactive map component tracking interactive selection triggers
+    # Render interactive map component capturing selection triggers
     map_deck = st.pydeck_chart(
         pdk.Deck(
             layers=[layer],
@@ -107,10 +108,14 @@ else:
     )
 
     # Evaluate Selection State Shifts
-    if map_deck and "selection" in map_deck:
-        selected_indices = map_deck["selection"]["objects"].get("scatterplot", [])
-        if selected_indices:
-            clicked_row = df_stations.iloc[selected_indices[0]]
+    if map_deck and "selection" in map_deck and map_deck["selection"]:
+        # Extract indices returned natively by Streamlit selection events
+        indices = map_deck["selection"].get("indices", {}).get("weather-stations", [])
+
+        if indices:
+            # Map the clicked index position back to the row in df_stations
+            clicked_index = indices[0]
+            clicked_row = df_stations.iloc[clicked_index]
             st.session_state.selected_station = clicked_row["station_id"]
             st.rerun()
 
