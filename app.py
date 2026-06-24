@@ -17,7 +17,7 @@ st.set_page_config(
 # Keeping only SFO active to fulfill Step 1. Uncomment others for Step 2.
 STATIONS = {
     "USW00023234": {"name": "San Francisco / SFO, CA", "lat": 37.619, "lon": -122.375, "active": True},
-    # "USW00094728": {"name": "New York Central Park, NY", "lat": 40.782, "lon": -73.965, "active": False},
+    "USW00094728": {"name": "New York Central Park, NY", "lat": 40.782, "lon": -73.965, "active": True},
     # "USW00094846": {"name": "Chicago O'Hare, IL", "lat": 41.974, "lon": -87.903, "active": False},
     # "USW00024233": {"name": "Seattle-Tacoma, WA", "lat": 47.444, "lon": -122.314, "active": False},
     # "USW00023174": {"name": "Los Angeles Downtown / USC, CA", "lat": 34.023, "lon": -118.285, "active": False},
