@@ -2,16 +2,69 @@ import argparse
 import json
 import os
 import time
+from datetime import date
 from pathlib import Path
+import sys
 from typing import Dict, List, Tuple
 
 import requests
 
 
 NOAA_API_URL = "https://www.ncdc.noaa.gov/cdo-web/api/v2/data"
-RAW_DATA_DIR = Path("data/raw")
+RAW_DATA_DIR = Path("data/raw/noaa-temperature")
 
 DATATYPES = ["TMAX", "TMIN"]
+
+
+def load_stations() -> Dict[str, Dict]:
+    project_root = Path(__file__).resolve().parent.parent
+
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+
+    from climateview.stations import STATIONS
+
+    return STATIONS
+
+
+def resolve_station(
+    stations: Dict[str, Dict],
+    station_value: str,
+) -> Tuple[str, Dict]:
+    if station_value in stations:
+        return station_value, stations[station_value]
+
+    normalized_value = station_value.replace("GHCND:", "")
+
+    for station_key, station in stations.items():
+        noaa_station_id = str(station.get("noaa_station_id", "")).replace(
+            "GHCND:",
+            "",
+        )
+
+        if noaa_station_id == normalized_value:
+            return station_key, station
+
+    valid_keys = ", ".join(sorted(stations.keys()))
+    raise ValueError(
+        "Unknown station '{}'. Valid station keys: {}".format(
+            station_value,
+            valid_keys,
+        )
+    )
+
+
+def get_noaa_token() -> str:
+    token = os.environ.get("NOAA_TOKEN")
+
+    if not token:
+        raise RuntimeError(
+            "NOAA_TOKEN environment variable is not set. "
+            "Run: export NOAA_TOKEN='your_actual_token_here'"
+        )
+
+    return token
+
 
 
 def normalize_station_id(station_code: str) -> Tuple[str, str]:
@@ -123,6 +176,11 @@ def download_year(
     )
 
     records = first_half + second_half
+    if not records:
+        print(
+            f"No {datatype} data available for {station_id}, year {year}; skipping."
+        )
+        return
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -134,27 +192,31 @@ def download_year(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Download raw NOAA GHCN daily TMAX/TMIN data by station and year."
+        description="Download raw NOAA GHCN daily TMAX/TMIN data."
     )
 
     parser.add_argument(
         "--station",
-        required=True,
-        help="NOAA station code, e.g. USW00023234 or GHCND:USW00023234",
+        help=(
+            "ClimateView station key or NOAA station ID. "
+            "If omitted, all active stations are downloaded."
+        ),
     )
 
     parser.add_argument(
         "--start-year",
         type=int,
-        required=True,
-        help="Start year, e.g. 1946",
+        help=(
+            "First year to download. If omitted, each station uses "
+            "noaa_start_year + 1 from stations.py."
+        ),
     )
 
     parser.add_argument(
         "--end-year",
         type=int,
-        required=True,
-        help="End year, e.g. 2024",
+        default=date.today().year - 1,
+        help="Last year to download. Defaults to the last completed calendar year.",
     )
 
     parser.add_argument(
@@ -172,36 +234,85 @@ def parse_args() -> argparse.Namespace:
 
     return parser.parse_args()
 
-
 def main() -> None:
     args = parse_args()
 
-    if args.end_year < args.start_year:
-        raise ValueError("end-year must be greater than or equal to start-year")
+    stations = load_stations()
 
-    token = os.environ.get("NOAA_TOKEN")
+    if args.station:
+        station_key, station = resolve_station(stations, args.station)
+        selected_stations = [(station_key, station)]
+    else:
+        selected_stations = [
+            (station_key, station)
+            for station_key, station in stations.items()
+            if station.get("active", False)
+        ]
 
-    if not token:
-        raise RuntimeError(
-            "NOAA_TOKEN environment variable is not set. "
-            "Run: export NOAA_TOKEN='your_actual_token_here'"
+    if not selected_stations:
+        raise ValueError("No active stations found in stations.py")
+
+    token = get_noaa_token()
+
+    for station_key, station in selected_stations:
+        noaa_station_id = station.get("noaa_station_id")
+
+        if not noaa_station_id:
+            print(
+                "Skipping station '{}': no noaa_station_id in stations.py".format(
+                    station_key
+                )
+            )
+            continue
+
+        if args.start_year is not None:
+            start_year = args.start_year
+        else:
+            noaa_start_year = station.get("noaa_start_year")
+
+            if noaa_start_year is None:
+                print(
+                    "Skipping station '{}': no noaa_start_year in stations.py "
+                    "and --start-year was not specified.".format(station_key)
+                )
+                continue
+
+            start_year = int(noaa_start_year) + 1
+
+        if args.end_year < start_year:
+            print(
+                "Skipping station '{}': end year {} is earlier than start year {}.".format(
+                    station_key,
+                    args.end_year,
+                    start_year,
+                )
+            )
+            continue
+
+        print(
+            "Using {} ({}) with start year {} and end year {}".format(
+                station.get("name", station_key),
+                noaa_station_id,
+                start_year,
+                args.end_year,
+            )
         )
 
-    api_station_id, file_station_id = normalize_station_id(args.station)
+        api_station_id, file_station_id = normalize_station_id(noaa_station_id)
 
-    for year in range(args.start_year, args.end_year + 1):
-        for datatype in DATATYPES:
-            download_year(
-                token=token,
-                station_id=api_station_id,
-                file_station_id=file_station_id,
-                year=year,
-                datatype=datatype,
-                units=args.units,
-                overwrite=args.overwrite,
-            )
+        for year in range(start_year, args.end_year + 1):
+            for datatype in DATATYPES:
+                download_year(
+                    token=token,
+                    station_id=api_station_id,
+                    file_station_id=file_station_id,
+                    year=year,
+                    datatype=datatype,
+                    units=args.units,
+                    overwrite=args.overwrite,
+                )
 
-            time.sleep(0.2)
+                time.sleep(0.2)
 
 
 if __name__ == "__main__":
