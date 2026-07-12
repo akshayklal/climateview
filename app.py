@@ -15,6 +15,26 @@ st.set_page_config(
     layout="wide",
 )
 
+st.markdown(
+    """
+    <style>
+        .block-container {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+        }
+
+        [data-testid="stCaptionContainer"] {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Weather stations
 STATIONS = {
@@ -101,17 +121,23 @@ if st.session_state.selected_station in STATIONS:
     station = STATIONS[station_id]
     station_name = station["name"]
 
-    # Navigation
-    if st.button("← All stations"):
-        st.session_state.selected_station = None
-        st.rerun()
-
-    # Station header
-    st.title(station_name)
-    st.caption(
-        f"NOAA station {station_id} · "
-        f"{station['lat']:.3f}, {station['lon']:.3f}"
+    # Compact navigation and station header
+    back_col, title_col = st.columns(
+        [1, 8],
+        vertical_alignment="center",
     )
+
+    with back_col:
+        if st.button("← All stations"):
+            st.session_state.selected_station = None
+            st.rerun()
+
+    with title_col:
+        st.markdown(f"## {station_name}")
+        st.caption(
+            f"NOAA station {station_id} · "
+            f"{station['lat']:.3f}, {station['lon']:.3f}"
+        )
 
     # Load station-specific data
     temperature_data = load_temperature_data(
