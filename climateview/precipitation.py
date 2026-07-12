@@ -441,7 +441,7 @@ def render_precipitation_tab(data, station_name):
         max_year = int(complete_years.max())
 
     view_col, rain_year_col, range_col = st.columns(
-        [1.4, 1.2, 3],
+        [2.4, 1.4, 3.2],
         vertical_alignment="bottom",
     )
 

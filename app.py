@@ -6,6 +6,7 @@ from climateview.data_loader import load_precipitation_data
 from climateview.data_loader import load_temperature_data
 from climateview.precipitation import render_precipitation_tab
 from climateview.temperature import render_temperature_tab
+from climateview.stations import STATIONS
 
 
 # Page configuration
@@ -36,73 +37,19 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Weather stations
-STATIONS = {
-    "USW00023234": {
-        "name": "San Francisco / SFO, CA",
-        "lat": 37.619,
-        "lon": -122.375,
-        "active": True,
-    },
-    "USW00094728": {
-        "name": "New York Central Park, NY",
-        "lat": 40.782,
-        "lon": -73.965,
-        "active": True,
-    },
-    "USW00094846": {
-        "name": "Chicago O'Hare, IL",
-        "lat": 41.974,
-        "lon": -87.903,
-        "active": True,
-    },
-    "USW00024233": {
-        "name": "Seattle-Tacoma, WA",
-        "lat": 47.444,
-        "lon": -122.314,
-        "active": True,
-    },
-    "USW00023174": {
-        "name": "Los Angeles Downtown / USC, CA",
-        "lat": 34.023,
-        "lon": -118.285,
-        "active": True,
-    },
-    "USW00023183": {
-        "name": "Phoenix Sky Harbor, AZ",
-        "lat": 33.428,
-        "lon": -111.998,
-        "active": True,
-    },
-    "USW00023062": {
-        "name": "Denver, CO",
-        "lat": 39.833,
-        "lon": -104.658,
-        "active": True,
-    },
-    "USW00012960": {
-        "name": "Houston Intercontinental, TX",
-        "lat": 29.980,
-        "lon": -95.340,
-        "active": True,
-    },
-}
-
-
 # Build station dataframe for the map
 df_stations = pd.DataFrame(
     [
         {
-            "station_id": station_id,
+            "station_key": station_key,
             "name": station["name"],
-            "lat": station["lat"],
-            "lon": station["lon"],
+            "lat": station["latitude"],
+            "lon": station["longitude"],
         }
-        for station_id, station in STATIONS.items()
+        for station_key, station in STATIONS.items()
         if station["active"]
     ]
 )
-
 
 # Track selected station across Streamlit reruns
 if "selected_station" not in st.session_state:
@@ -117,9 +64,11 @@ if (
 
 # SCREEN 2: Selected station detail page
 if st.session_state.selected_station in STATIONS:
-    station_id = st.session_state.selected_station
-    station = STATIONS[station_id]
+    station_key = st.session_state.selected_station
+    station = STATIONS[station_key]
+
     station_name = station["name"]
+    noaa_station_id = station["noaa_station_id"]
 
     # Compact navigation and station header
     back_col, title_col = st.columns(
@@ -135,17 +84,16 @@ if st.session_state.selected_station in STATIONS:
     with title_col:
         st.markdown(f"## {station_name}")
         st.caption(
-            f"NOAA station {station_id} · "
-            f"{station['lat']:.3f}, {station['lon']:.3f}"
+            f"NOAA station {noaa_station_id} · "
+            f"{station['latitude']:.3f}, {station['longitude']:.3f}"
         )
 
-    # Load station-specific data
     temperature_data = load_temperature_data(
-        station_id=station_id
+        station_id=noaa_station_id
     )
 
     precipitation_data = load_precipitation_data(
-        station_id=station_id
+        station_id=noaa_station_id
     )
 
     # Detail tabs
@@ -277,7 +225,7 @@ else:
             clicked_row = df_stations.iloc[clicked_index]
 
             st.session_state.selected_station = (
-                clicked_row["station_id"]
+                clicked_row["station_key"]
             )
 
             st.rerun()
