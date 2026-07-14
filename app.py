@@ -180,10 +180,20 @@ else:
     # Esri World Topographic basemap
     basemap_layer = pdk.Layer(
         "TileLayer",
-        data=ESRI_TOPO_TILE_URL,
+        id="esri-world-topographic",
+        data=(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/"
+            "World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+        ),
         min_zoom=0,
         max_zoom=19,
         tile_size=256,
+        render_sub_layers={
+            "@@type": "BitmapLayer",
+            "data": None,
+            "image": "@@=data",
+            "bounds": "@@=tile.boundingBox",
+        },
     )
 
     # Initial map position
@@ -201,9 +211,7 @@ else:
                 station_layer,
             ],
             initial_view_state=view_state,
-            map_provider=None,
             map_style=None,
-            height=1000,
             tooltip={
                 "html": (
                     "<b>{name}</b><br/>"
