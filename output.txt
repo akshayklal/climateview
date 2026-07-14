@@ -1,0 +1,1612 @@
+========================================================================================
+San Francisco / SFO, CA (san_francisco_sfo)
+ClimateView coordinates: 37.6190, -122.3750
+Search radius: 40.0 km; monitor history searched from 1980
+
+Found 22 physical AQS site(s). Showing the best 8:
+
+  1. San Francisco
+     AQS site ID: 06-075-0005
+     Distance: 16.5 km
+     Coordinates: 37.76595, -122.39904
+     Location: San Francisco, San Francisco, California
+     Address: 10 ARKANSAS ST.
+     Monitoring agency: Bay Area Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2009-09-30   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    1999-02-01   1999-12-31   Andersen RAAS2.5-300 PM2.5 SEQ w/WINS - GRAVIMETRIC
+         3    2009-10-01   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           1999-01-01 to 1999-01-31: POC 1
+           1999-02-01 to 1999-12-31: POC 2
+           2000-01-01 to 2009-09-30: POC 1
+           2009-10-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1986-01-01   present      INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           1986-01-01 to present: POC 1
+
+  2. Redwood City
+     AQS site ID: 06-081-1001
+     Distance: 21.4 km
+     Coordinates: 37.48293, -122.20337
+     Location: Redwood City, San Mateo, California
+     Address: 897 BARRON AVE.
+     Monitoring agency: Bay Area Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2009-09-30   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    2000-01-01   2012-09-30   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2009-10-01   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           1999-01-01 to 1999-12-31: POC 1
+           2000-01-01 to 2009-09-30: POC 2
+           2009-10-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1976-01-01   present      INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           1976-01-01 to present: POC 1
+
+  3. Oakland
+     AQS site ID: 06-001-0009
+     Distance: 22.7 km
+     Coordinates: 37.74307, -122.16993
+     Location: Oakland, Alameda, California
+     Address: 9925 International Blvd
+     Monitoring agency: Bay Area Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2007-11-01   2009-09-30   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2009-10-01   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           2007-11-01 to 2009-09-30: POC 1
+           2009-10-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2007-11-01   present      INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           2007-11-01 to present: POC 1
+
+  4. Oakland West
+     AQS site ID: 06-001-0011
+     Distance: 23.2 km
+     Coordinates: 37.81478, -122.28235
+     Location: Oakland, Alameda, California
+     Address: 1100 21st Street
+     Monitoring agency: Bay Area Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2012-12-18   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           2012-12-18 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2010-12-13   present      INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           2010-12-13 to present: POC 1
+
+  5. San Pablo
+     AQS site ID: 06-013-1004
+     Distance: 38.0 km
+     Coordinates: 37.96040, -122.35681
+     Location: San Pablo, Contra Costa, California
+     Address: 1865 D RUMRILL BLVD, San Pablo
+     Monitoring agency: Bay Area Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2012-12-10   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           2012-12-10 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2002-09-13   present      INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           2002-09-13 to present: POC 1
+
+  6. Berkeley- Aquatic Park
+     AQS site ID: 06-001-0013
+     Distance: 28.1 km
+     Coordinates: 37.86477, -122.30274
+     Location: Not in a City, Alameda, California
+     Address: 1 Bolivar Dr
+     Monitoring agency: Bay Area Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2016-07-01   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           2016-07-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2016-07-01   present      INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           2016-07-01 to present: POC 1
+
+  7. Fremont - Chapel Way
+     AQS site ID: 06-001-1001
+     Distance: 37.6 km
+     Coordinates: 37.53583, -121.96182
+     Location: Fremont, Alameda, California
+     Address: 40733 CHAPEL WAY., FREMONT
+     Monitoring agency: Bay Area Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2009-09-30   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    2002-11-01   2003-04-15   Andersen RAAS2.5-300 PM2.5 SEQ w/WINS - GRAVIMETRIC
+         3    2009-10-01   2010-10-31   Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           1999-01-01 to 2002-10-31: POC 1
+           2002-11-01 to 2003-04-15: POC 2
+           2003-04-16 to 2009-09-30: POC 1
+           2009-10-01 to 2010-10-31: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1976-07-01   2010-10-31   INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           1976-07-01 to 2010-10-31: POC 1
+
+  8. Hayward
+     AQS site ID: 06-001-2001
+     Distance: 30.5 km
+     Coordinates: 37.65446, -122.03155
+     Location: Hayward, Alameda, California
+     Address: 3466 LA MESA DR.
+     Monitoring agency: Bay Area Air Quality Management District
+     Available pollutants: Ozone
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1977-06-01   present      INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           1977-06-01 to present: POC 1
+
+========================================================================================
+New York Central Park, NY (new_york_central_park)
+ClimateView coordinates: 40.7820, -73.9650
+Search radius: 40.0 km; monitor history searched from 1980
+
+Found 71 physical AQS site(s). Showing the best 8:
+
+  1. IS 52
+     AQS site ID: 36-005-0110
+     Distance: 6.5 km
+     Coordinates: 40.81600, -73.90200
+     Location: New York, Bronx, New York
+     Address: IS 52    681 KELLY ST
+     Monitoring agency: New York State Department Of Environmental Conservation
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-09-15   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    1999-09-15   2010-06-17   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         4    2014-03-06   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         24   2018-11-14   2023-07-16   Teledyne T640 at 5.0 LPM (Corrected) - Broadband spectroscopy
+         3    2025-07-06   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         Suggested chronological stitching:
+           1999-09-15 to 2014-03-05: POC 1
+           2014-03-06 to 2018-11-13: POC 4
+           2018-11-14 to 2023-07-16: POC 24
+           2023-07-17 to 2025-07-05: POC 4
+           2025-07-06 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-08-24   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1999-08-24 to present: POC 1
+
+  2. QUEENS COLLEGE 2
+     AQS site ID: 36-081-0124
+     Distance: 13.1 km
+     Coordinates: 40.73614, -73.82153
+     Location: New York, Queens, New York
+     Address: Queens College   65-30 Kissena Blvd  Parking Lot#6
+     Monitoring agency: New York State Department Of Environmental Conservation
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2001-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         4    2014-01-17   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         24   2014-01-17   2023-07-13   Teledyne T640 at 5.0 LPM (Corrected) - Broadband spectroscopy
+         Suggested chronological stitching:
+           2001-01-01 to 2014-01-16: POC 1
+           2014-01-17 to present: POC 4
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2001-07-14   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2001-07-14 to present: POC 1
+
+  3. PFIZER LAB SITE
+     AQS site ID: 36-005-0133
+     Distance: 12.0 km
+     Coordinates: 40.86790, -73.87809
+     Location: New York, Bronx, New York
+     Address: 200TH STREET AND SOUTHERN BOULDVARD Pfizer Lab
+     Monitoring agency: New York State Department Of Environmental Conservation
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2008-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         Suggested chronological stitching:
+           2008-01-01 to present: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2007-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2007-01-01 to present: POC 1
+
+  4. CCNY
+     AQS site ID: 36-061-0135
+     Distance: 4.4 km
+     Coordinates: 40.81976, -73.94825
+     Location: New York, New York, New York
+     Address: 160 CONVENT AVENUE
+     Monitoring agency: New York State Department Of Environmental Conservation
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         4    2025-01-01   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         Suggested chronological stitching:
+           2025-01-01 to present: POC 4
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2007-06-13   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2007-06-13 to present: POC 1
+
+  5. Unnamed AQS site
+     AQS site ID: 36-061-0010
+     Distance: 5.0 km
+     Coordinates: 40.73955, -73.98569
+     Location: New York, New York, New York
+     Address: MABEL DEAN HIGH SCH.ANNEX, 240 2ND AVE.
+     Monitoring agency: New York State Department Of Environmental Conservation
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2001-06-24   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         Suggested chronological stitching:
+           1999-01-01 to 2001-06-24: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1977-01-01   2001-06-15   INSTRUMENTAL - ULTRA VIOLET
+         2    1986-01-01   1986-01-02    - 
+         Suggested chronological stitching:
+           1977-01-01 to 1985-12-31: POC 1
+           1986-01-01 to 1986-01-02: POC 2
+           1986-01-03 to 2001-06-15: POC 1
+
+  6. MORRISANIA
+     AQS site ID: 36-005-0080
+     Distance: 7.1 km
+     Coordinates: 40.83606, -73.92009
+     Location: New York, Bronx, New York
+     Address: MORRISANIA CENTER, 1225-57 GERARD AVE.
+     Monitoring agency: New York State Department Of Environmental Conservation
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2012-06-26   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         Suggested chronological stitching:
+           1999-01-01 to 2012-06-26: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1990-05-02   2000-05-02   INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           1990-05-02 to 2000-05-02: POC 1
+
+  7. Elizabeth Lab
+     AQS site ID: 34-039-0004
+     Distance: 25.8 km
+     Coordinates: 40.64144, -74.20837
+     Location: Elizabeth, Union, New Jersey
+     Address: NJ Turnpike Interchange 13 Toll Plaza
+     Monitoring agency: New Jersey State Department Of Environmental Protection
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2024-12-31   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    1999-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2010-01-01   present      Met One BAM-1022 Mass Monitor w/ VSCC or TE-PM2.5C - Beta Attenuation
+         Suggested chronological stitching:
+           1999-01-01 to 2009-12-31: POC 2
+           2010-01-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1974-01-01   1982-01-01   INSTRUMENTAL - CHEMILUMINESCENCE
+         Suggested chronological stitching:
+           1974-01-01 to 1982-01-01: POC 1
+
+  8. SUSAN WAGNER HS
+     AQS site ID: 36-085-0067
+     Distance: 24.6 km
+     Coordinates: 40.59664, -74.12525
+     Location: New York, Richmond, New York
+     Address: SUSAN WAGNER HS,   1200 MANOR RD, near Brielle Ave
+     Monitoring agency: New York State Department Of Environmental Conservation
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2011-12-29   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         Suggested chronological stitching:
+           1999-01-01 to 2011-12-29: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1978-01-01   2017-11-17   INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         2    1986-01-01   1986-01-02    - 
+         Suggested chronological stitching:
+           1978-01-01 to 1985-12-31: POC 1
+           1986-01-01 to 1986-01-02: POC 2
+           1986-01-03 to 2017-11-17: POC 1
+
+========================================================================================
+Chicago O'Hare, IL (chicago_ohare)
+ClimateView coordinates: 41.9740, -87.9030
+Search radius: 40.0 km; monitor history searched from 1980
+
+Found 59 physical AQS site(s). Showing the best 8:
+
+  1. NORTHBROOK WATER PLANT
+     AQS site ID: 17-031-4201
+     Distance: 20.3 km
+     Coordinates: 42.14000, -87.79923
+     Location: Northbrook, Cook, Illinois
+     Address: 750 DUNDEE ROAD
+     Monitoring agency: Illinois Environmental Protection Agency
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1998-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         9    2013-01-01   2013-03-31   Andersen RAAS2.5-300 PM2.5 SEQ w/WINS - GRAVIMETRIC
+         3    2016-12-01   present      Teledyne T640X at 16.67 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         23   2021-06-03   2023-10-31   Teledyne T640X at 16.67 LPM (Corrected) - Broadband spectroscopy
+         Suggested chronological stitching:
+           1998-01-01 to 2012-12-31: POC 1
+           2013-01-01 to 2013-03-31: POC 9
+           2013-04-01 to 2016-11-30: POC 1
+           2016-12-01 to 2021-06-02: POC 3
+           2021-06-03 to 2023-10-31: POC 23
+           2023-11-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1997-03-20   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         2    2000-06-01   2009-08-09   INSTRUMENTAL - OPEN PATH O3 ANALYZER
+         Suggested chronological stitching:
+           1997-03-20 to 2000-05-31: POC 1
+           2000-06-01 to 2009-08-09: POC 2
+           2009-08-10 to present: POC 1
+
+  2. IEPA TRAILER
+     AQS site ID: 17-031-3103
+     Distance: 2.4 km
+     Coordinates: 41.96519, -87.87627
+     Location: Schiller Park, Cook, Illinois
+     Address: 4743 MANNHEIM RD.
+     Monitoring agency: Illinois Environmental Protection Agency
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2004-01-01   2022-09-30   BGI Models PQ200-VSCC or PQ200A-VSCC - Gravimetric
+         9    2013-04-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2022-10-01   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         23   2022-10-01   2023-10-31   Teledyne T640 at 5.0 LPM (Corrected) - Broadband spectroscopy
+         Suggested chronological stitching:
+           2004-01-01 to 2013-03-31: POC 1
+           2013-04-01 to 2022-09-30: POC 9
+           2022-10-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         2    2013-04-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2013-04-01 to present: POC 2
+
+  3. REGIONAL OFFICE BUILDING
+     AQS site ID: 17-031-4007
+     Distance: 10.1 km
+     Coordinates: 42.06029, -87.86322
+     Location: Des Plaines, Cook, Illinois
+     Address: 9511 W. HARRISON ST
+     Monitoring agency: Illinois Environmental Protection Agency
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2001-01-01   2016-12-14   Thermo Electron Model RAAS2.5-100 w/VSCC - Gravimetric
+         3    2016-12-15   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         23   2016-12-15   2023-10-31   Teledyne T640 at 5.0 LPM (Corrected) - Broadband spectroscopy
+         Suggested chronological stitching:
+           2001-01-01 to 2016-12-14: POC 1
+           2016-12-15 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2002-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2002-01-01 to present: POC 1
+
+  4. COM ED MAINTENANCE BLDG
+     AQS site ID: 17-031-0076
+     Distance: 29.3 km
+     Coordinates: 41.75140, -87.71349
+     Location: Chicago, Cook, Illinois
+     Address: 7801 LAWNDALE
+     Monitoring agency: Illinois Environmental Protection Agency
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2000-01-01   2024-12-31   Met One E-SEQ-FRM PM2.5 with VSCC - Gravimetric
+         3    2025-01-01   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         Suggested chronological stitching:
+           2000-01-01 to 2024-12-31: POC 1
+           2025-01-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2004-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2004-01-01 to present: POC 1
+
+  5. VILLAGE GARAGE
+     AQS site ID: 17-031-0001
+     Distance: 36.5 km
+     Coordinates: 41.67099, -87.73246
+     Location: Alsip, Cook, Illinois
+     Address: 4500 W. 123RD ST.
+     Monitoring agency: Illinois Environmental Protection Agency
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2013-04-01   2025-01-31   Met One E-SEQ-FRM PM2.5 with VSCC - Gravimetric
+         3    2025-02-01   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         Suggested chronological stitching:
+           2013-04-01 to 2025-01-31: POC 1
+           2025-02-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1988-06-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1988-06-01 to present: POC 1
+
+  6. CARY GROVE HS
+     AQS site ID: 17-111-0001
+     Distance: 39.2 km
+     Coordinates: 42.22144, -88.24221
+     Location: Cary, McHenry, Illinois
+     Address: FIRST ST. & THREE OAKS RD.
+     Monitoring agency: Illinois Environmental Protection Agency
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2000-01-01   2021-06-09   Thermo Electron Model RAAS2.5-100 w/VSCC - Gravimetric
+         3    2021-06-10   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         23   2021-06-10   2023-10-31   Teledyne T640 at 5.0 LPM (Corrected) - Broadband spectroscopy
+         Suggested chronological stitching:
+           2000-01-01 to 2021-06-09: POC 1
+           2021-06-10 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1980-06-25   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1980-06-25 to present: POC 1
+
+  7. PROBE LOCATED ON NORTH EDGE OF UPPER ROOF, 96 FT FROM WEST EDGE
+     AQS site ID: 17-031-4006
+     Distance: 6.0 km
+     Coordinates: 42.02781, -87.90534
+     Location: Des Plaines, Cook, Illinois
+     Address: FOREST ELEM SCHOOL, 1375 5TH AVE
+     Monitoring agency: Illinois Environmental Protection Agency
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2000-12-31   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         Suggested chronological stitching:
+           1999-01-01 to 2000-12-31: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1993-04-01   2001-10-31   INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           1993-04-01 to 2001-10-31: POC 1
+
+  8. Elgin DMV
+     AQS site ID: 17-089-0124
+     Distance: 31.8 km
+     Coordinates: 42.02131, -88.28298
+     Location: Elgin, Kane, Illinois
+     Address: 595 S. State Street
+     Monitoring agency: Illinois Environmental Protection Agency
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2024-10-01   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         Suggested chronological stitching:
+           2024-10-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2024-11-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2024-11-01 to present: POC 1
+
+========================================================================================
+Seattle-Tacoma, WA (seattle_tacoma)
+ClimateView coordinates: 47.4440, -122.3140
+Search radius: 40.0 km; monitor history searched from 1980
+
+Found 26 physical AQS site(s). Showing the best 8:
+
+  1. SEATTLE - BEACON HILL
+     AQS site ID: 53-033-0080
+     Distance: 13.8 km
+     Coordinates: 47.56824, -122.30863
+     Location: Seattle, King, Washington
+     Address: 4103 BEACON HILL S
+     Monitoring agency: Washington State Department Of Ecology
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1998-11-01   present      Met One E-SEQ-FRM PM2.5 with VSCC - Gravimetric
+         3    2010-03-01   2019-12-31   Thermo Scientific TEOM 1400 FDMS or 1405 8500C FDMS w/VSCC - FDMS Gravimetric
+         5    2020-01-01   2023-12-31   Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         8    2024-01-01   present      Met One BAM-1022 Mass Monitor w/ VSCC or TE-PM2.5C - Beta Attenuation
+         Suggested chronological stitching:
+           1998-11-01 to 2010-02-28: POC 1
+           2010-03-01 to 2019-12-31: POC 3
+           2020-01-01 to 2023-12-31: POC 5
+           2024-01-01 to present: POC 8
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1997-04-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1997-04-01 to present: POC 1
+
+  2. SEATTLE - DUWAMISH
+     AQS site ID: 53-033-0057
+     Distance: 13.0 km
+     Coordinates: 47.55975, -122.33827
+     Location: Seattle, King, Washington
+     Address: 4700 East Marginal Way South
+     Monitoring agency: Washington State Department Of Ecology
+     Available pollutants: PM2.5
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1998-10-17   present      Met One E-SEQ-FRM PM2.5 with VSCC - Gravimetric
+         2    2008-01-01   2023-12-31   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2010-12-27   2018-12-31   Thermo Scientific 1405-F FDMS w/VSCC - FDMS Gravimetric
+         5    2019-01-01   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           1998-10-17 to 2007-12-31: POC 1
+           2008-01-01 to 2010-12-26: POC 2
+           2010-12-27 to 2018-12-31: POC 3
+           2019-01-01 to present: POC 5
+
+  3. ISSAQUAH -  LAKE SAMMAMISH (Wiithin Lake Sammamish State Park)
+     AQS site ID: 53-033-0010
+     Distance: 22.3 km
+     Coordinates: 47.55250, -122.06472
+     Location: Issaquah, King, Washington
+     Address: 2000 NW SAMMAMISH RD
+     Monitoring agency: Washington State Department Of Ecology
+     Available pollutants: Ozone
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1975-12-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1975-12-01 to present: POC 1
+
+  4. SeaTac-Sunset Park
+     AQS site ID: 53-033-0040
+     Distance: 3.8 km
+     Coordinates: 47.47850, -122.31110
+     Location: SeaTac, King, Washington
+     Address: 13831 18th Avenue S
+     Monitoring agency: Washington State Department Of Ecology
+     Available pollutants: PM2.5
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         5    2025-04-03   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           2025-04-03 to present: POC 5
+
+  5. Tukwila Allentown
+     AQS site ID: 53-033-0069
+     Distance: 6.6 km
+     Coordinates: 47.49853, -122.27839
+     Location: Tukwila, King, Washington
+     Address: 11675 44th Ave S, Tukwila, WA 98178
+     Monitoring agency: Washington State Department Of Ecology
+     Available pollutants: PM2.5
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         5    2021-04-01   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           2021-04-01 to present: POC 5
+
+  6. Kent-S 236th St
+     AQS site ID: 53-033-0095
+     Distance: 7.4 km
+     Coordinates: 47.39082, -122.25585
+     Location: Kent, King, Washington
+     Address: 6300 S 236th St, Kent, WA 98032
+     Monitoring agency: Washington State Department Of Ecology
+     Available pollutants: PM2.5
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         5    2025-11-25   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           2025-11-25 to present: POC 5
+
+  7. Unnamed AQS site
+     AQS site ID: 53-033-2001
+     Distance: 8.6 km
+     Coordinates: 47.39621, -122.22456
+     Location: Kent, King, Washington
+     Address: 22916-86TH AVE. S.
+     Monitoring agency: Washington State Department Of Ecology
+     Available pollutants: Ozone
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1974-01-01   1986-12-31   INSTRUMENTAL - CHEMILUMINESCENCE
+         Suggested chronological stitching:
+           1974-01-01 to 1986-12-31: POC 1
+
+  8. Seattle-10th & Weller
+     AQS site ID: 53-033-0030
+     Distance: 17.0 km
+     Coordinates: 47.59722, -122.31972
+     Location: Seattle, King, Washington
+     Address: 10th & Weller
+     Monitoring agency: Washington State Department Of Ecology
+     Available pollutants: PM2.5
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2014-05-19   2017-03-31   Thermo Scientific TEOM 1400 FDMS or 1405 8500C FDMS w/VSCC - FDMS Gravimetric
+         5    2017-04-01   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           2014-05-19 to 2017-03-31: POC 3
+           2017-04-01 to present: POC 5
+
+========================================================================================
+Los Angeles Downtown / USC, CA (los_angeles_usc)
+ClimateView coordinates: 34.0230, -118.2850
+Search radius: 40.0 km; monitor history searched from 1980
+
+Found 35 physical AQS site(s). Showing the best 8:
+
+  1. Los Angeles-North Main Street
+     AQS site ID: 06-037-1103
+     Distance: 7.2 km
+     Coordinates: 34.06659, -118.22688
+     Location: Los Angeles, Los Angeles, California
+     Address: 1630 N MAIN ST, LOS ANGELES
+     Monitoring agency: South Coast Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    1999-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2008-01-01   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         9    2011-10-01   2011-10-01   Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           1999-01-01 to 2007-12-31: POC 1
+           2008-01-01 to 2011-09-30: POC 3
+           2011-10-01 to 2011-10-01: POC 9
+           2011-10-02 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1979-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1979-01-01 to present: POC 1
+
+  2. Pasadena
+     AQS site ID: 06-037-2005
+     Distance: 19.0 km
+     Coordinates: 34.13260, -118.12720
+     Location: Pasadena, Los Angeles, California
+     Address: 752 S. WILSON AVE., PASADENA
+     Monitoring agency: South Coast Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    1999-01-01   2020-02-04   Thermo Electron Model RAAS2.5-300 Sequential w/VSCC - Gravimetric
+         Suggested chronological stitching:
+           1999-01-01 to present: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1982-03-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1982-03-01 to present: POC 1
+
+  3. Reseda
+     AQS site ID: 06-037-1201
+     Distance: 30.1 km
+     Coordinates: 34.19925, -118.53276
+     Location: Reseda, Los Angeles, California
+     Address: 18330 GAULT ST., RESEDA
+     Monitoring agency: South Coast Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    1999-01-01   2001-12-31    - 
+         Suggested chronological stitching:
+           1999-01-01 to present: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1978-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1978-01-01 to present: POC 1
+
+  4. Compton
+     AQS site ID: 06-037-1302
+     Distance: 15.4 km
+     Coordinates: 33.90139, -118.20500
+     Location: Compton, Los Angeles, California
+     Address: 700 North Bullis Road
+     Monitoring agency: South Coast Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2008-11-02   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2024-01-01   2024-01-01   Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           2008-11-02 to 2023-12-31: POC 1
+           2024-01-01 to 2024-01-01: POC 3
+           2024-01-02 to present: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2008-11-05   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2008-11-05 to present: POC 1
+
+  5. Pico Rivera #2
+     AQS site ID: 06-037-1602
+     Distance: 20.0 km
+     Coordinates: 34.01029, -118.06850
+     Location: Pico Rivera, Los Angeles, California
+     Address: 4144 SAN GABRIEL RIVER PKWY, PICO RIVERA
+     Monitoring agency: South Coast Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2005-10-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         21   2017-02-01   2022-01-20   R & P Model 2000 PM-2.5 Air Sampler w/VSCC - Gravimetric
+         2    2017-05-01   2022-01-17   R & P Model 2000 PM-2.5 Air Sampler w/VSCC - Gravimetric
+         Suggested chronological stitching:
+           2005-10-01 to 2017-01-31: POC 1
+           2017-02-01 to 2017-04-30: POC 21
+           2017-05-01 to 2022-01-17: POC 2
+           2022-01-18 to 2022-01-20: POC 21
+           2022-01-21 to present: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2005-09-12   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2005-09-12 to present: POC 1
+
+  6. Anaheim
+     AQS site ID: 06-059-0007
+     Distance: 38.5 km
+     Coordinates: 33.83062, -117.93845
+     Location: Anaheim, Orange, California
+     Address: 1630 W. PAMPAS LANE
+     Monitoring agency: South Coast Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2001-09-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         5    2001-09-01   2001-09-02    - 
+         3    2008-01-01   present      Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         2    2017-05-01   2018-08-07   Thermo Electron Model RAAS2.5-300 Sequential w/VSCC - Gravimetric
+         Suggested chronological stitching:
+           2001-09-01 to 2007-12-31: POC 1
+           2008-01-01 to 2017-04-30: POC 3
+           2017-05-01 to 2018-08-07: POC 2
+           2018-08-08 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2001-09-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2001-09-01 to present: POC 1
+
+  7. Lynwood
+     AQS site ID: 06-037-1301
+     Distance: 12.5 km
+     Coordinates: 33.92899, -118.21071
+     Location: Lynwood, Los Angeles, California
+     Address: 11220 LONG BEACH BLVD., LYNWOOD
+     Monitoring agency: South Coast Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2008-12-02   Andersen RAAS2.5-300 PM2.5 SEQ w/WINS - GRAVIMETRIC
+         2    1999-01-01   2001-12-31    - 
+         Suggested chronological stitching:
+           1999-01-01 to 2008-12-02: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1978-01-01   2008-11-05   INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1978-01-01 to 2008-11-05: POC 1
+
+  8. Burbank
+     AQS site ID: 06-037-1002
+     Distance: 17.3 km
+     Coordinates: 34.17605, -118.31712
+     Location: Burbank, Los Angeles, California
+     Address: 228 W. PALM AVE., BURBANK
+     Monitoring agency: South Coast Air Quality Management District
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2014-06-30   Andersen RAAS2.5-300 PM2.5 SEQ w/WINS - GRAVIMETRIC
+         2    1999-01-01   2001-12-31    - 
+         3    2008-01-01   2009-12-31   Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         Suggested chronological stitching:
+           1999-01-01 to 2007-12-31: POC 1
+           2008-01-01 to 2009-12-31: POC 3
+           2010-01-01 to 2014-06-30: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1978-01-01   2014-06-30   INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1978-01-01 to 2014-06-30: POC 1
+
+========================================================================================
+Phoenix Sky Harbor, AZ (phoenix_sky_harbor)
+ClimateView coordinates: 33.4280, -111.9980
+Search radius: 40.0 km; monitor history searched from 1980
+
+Found 47 physical AQS site(s). Showing the best 8:
+
+  1. JLG SUPERSITE
+     AQS site ID: 04-013-9997
+     Distance: 12.4 km
+     Coordinates: 33.50383, -112.09577
+     Location: Phoenix, Maricopa, Arizona
+     Address: 4530 N 17TH AVENUE
+     Monitoring agency: Arizona Department Of Environmental Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    2009-04-08   2011-06-30   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2011-01-01   present      Teledyne T640X at 16.67 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         Suggested chronological stitching:
+           1999-01-01 to 2009-04-07: POC 1
+           2009-04-08 to 2010-12-31: POC 2
+           2011-01-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1993-07-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1993-07-01 to present: POC 1
+
+  2. SOUTH PHOENIX
+     AQS site ID: 04-013-4003
+     Distance: 7.7 km
+     Coordinates: 33.40314, -112.07526
+     Location: Phoenix, Maricopa, Arizona
+     Address: 33 W TAMARISK AVE, PHOENIX
+     Monitoring agency: Maricopa County Air Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2005-01-01   2012-07-01   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2010-05-01   present      Thermo Scientific TEOM 1405-DF Dichotomous FDMS - FDMS Gravimetric
+         Suggested chronological stitching:
+           2005-01-01 to 2010-04-30: POC 1
+           2010-05-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-10-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1999-10-01 to present: POC 1
+
+  3. TEMPE
+     AQS site ID: 04-013-4005
+     Distance: 6.2 km
+     Coordinates: 33.41123, -111.93471
+     Location: Tempe, Maricopa, Arizona
+     Address: 1525 S COLLEGE AVE, TEMPE
+     Monitoring agency: Maricopa County Air Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2012-03-01   present      Thermo Scientific TEOM 1405-DF Dichotomous FDMS - FDMS Gravimetric
+         Suggested chronological stitching:
+           2012-03-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2000-07-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2000-07-01 to present: POC 1
+
+  4. WEST PHOENIX
+     AQS site ID: 04-013-0019
+     Distance: 14.8 km
+     Coordinates: 33.48378, -112.14256
+     Location: Phoenix, Maricopa, Arizona
+     Address: 3847 W EARLL DR-WEST PHOENIX STATION
+     Monitoring agency: Maricopa County Air Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2000-06-13   2014-12-31   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    2004-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2010-05-01   present      Thermo Scientific TEOM 1405-DF Dichotomous FDMS - FDMS Gravimetric
+         Suggested chronological stitching:
+           2000-06-13 to 2003-12-31: POC 1
+           2004-01-01 to 2010-04-30: POC 2
+           2010-05-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1984-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1984-01-01 to present: POC 1
+
+  5. MESA
+     AQS site ID: 04-013-1003
+     Distance: 12.5 km
+     Coordinates: 33.41018, -111.86536
+     Location: Mesa, Maricopa, Arizona
+     Address: 310 S BROOKS, MESA
+     Monitoring agency: Maricopa County Air Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2005-04-28   2012-01-31   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         3    2012-11-01   present      Thermo Scientific TEOM 1405-DF Dichotomous FDMS - FDMS Gravimetric
+         Suggested chronological stitching:
+           2005-04-28 to 2012-01-31: POC 1
+           2012-11-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1980-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1980-01-01 to present: POC 1
+
+  6. NORTH PHOENIX
+     AQS site ID: 04-013-1004
+     Distance: 16.0 km
+     Coordinates: 33.56031, -112.06619
+     Location: Phoenix, Maricopa, Arizona
+     Address: 601 E BUTLER DR ,PHOENIX
+     Monitoring agency: Maricopa County Air Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2011-09-01   present      Thermo Scientific TEOM 1405-DF Dichotomous FDMS - FDMS Gravimetric
+         Suggested chronological stitching:
+           2011-09-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1975-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1975-01-01 to present: POC 1
+
+  7. GLENDALE
+     AQS site ID: 04-013-2001
+     Distance: 24.3 km
+     Coordinates: 33.57453, -112.19193
+     Location: Glendale, Maricopa, Arizona
+     Address: 6000 W OLIVE AVE,GLENDALE
+     Monitoring agency: Maricopa County Air Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2011-06-01   present      Thermo Scientific TEOM 1405-DF Dichotomous FDMS - FDMS Gravimetric
+         Suggested chronological stitching:
+           2011-06-01 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1974-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1974-01-01 to present: POC 1
+
+  8. Senior Center Air Monitoring Station
+     AQS site ID: 04-013-7020
+     Distance: 14.8 km
+     Coordinates: 33.48813, -111.85544
+     Location: Scottsdale, Maricopa, Arizona
+     Address: 10844 EAST OSBORN ROAD SCOTTSDALE AZ 85256
+     Monitoring agency: Salt River Pima-Maricopa Indian Community of Salt River Reservation, AZ
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2004-05-14   present      Met One E-FRM PM2.5 with VSCC - Gravimetric
+         2    2004-05-14   present      Met One E-FRM PM2.5 with VSCC - Gravimetric
+         Suggested chronological stitching:
+           2004-05-14 to present: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2004-10-01   2022-08-19   INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           2004-10-01 to 2022-08-19: POC 1
+
+========================================================================================
+Denver, CO (denver)
+ClimateView coordinates: 39.8330, -104.6580
+Search radius: 40.0 km; monitor history searched from 1980
+
+Found 27 physical AQS site(s). Showing the best 8:
+
+  1. DENVER - CAMP
+     AQS site ID: 08-031-0002
+     Distance: 29.6 km
+     Coordinates: 39.75118, -104.98762
+     Location: Denver, Denver, Colorado
+     Address: 2105 BROADWAY
+     Monitoring agency: Colorado Department of Public Health And Environment
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   present      Met One E-SEQ-FRM PM2.5 with VSCC - Gravimetric
+         2    2001-09-22   present      Met One E-SEQ-FRM PM2.5 with VSCC - Gravimetric
+         3    2013-04-05   present      GRIMM EDM Model 180 with naphion dryer - Laser Light Scattering
+         Suggested chronological stitching:
+           1999-01-01 to 2001-09-21: POC 1
+           2001-09-22 to 2013-04-04: POC 2
+           2013-04-05 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         2    1975-01-01   1985-12-31   INSTRUMENTAL - CHEMILUMINESCENCE
+         3    1986-01-01   1997-11-06   INSTRUMENTAL - ULTRA VIOLET
+         5    2005-06-29   2008-01-29   INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         6    2005-06-29   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1975-01-01 to 1985-12-31: POC 2
+           1986-01-01 to 1997-11-06: POC 3
+           2005-06-29 to present: POC 6
+
+  2. Welby
+     AQS site ID: 08-001-3001
+     Distance: 24.9 km
+     Coordinates: 39.83812, -104.94984
+     Location: Welby, Adams, Colorado
+     Address: 3174 E. 78TH AVE.
+     Monitoring agency: Colorado Department of Public Health And Environment
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2024-01-03   present      Teledyne T640X at 16.67 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         4    2024-05-01   present      Teledyne T640X at 16.67 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         Suggested chronological stitching:
+           2024-01-03 to 2024-04-30: POC 3
+           2024-05-01 to present: POC 4
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1973-07-01   1988-11-07   INSTRUMENTAL - CHEMILUMINESCENCE
+         2    1986-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1973-07-01 to 1985-12-31: POC 1
+           1986-01-01 to present: POC 2
+
+  3. La Casa
+     AQS site ID: 08-031-0026
+     Distance: 30.2 km
+     Coordinates: 39.77949, -105.00518
+     Location: Denver, Denver, Colorado
+     Address: 4545 Navajo St.
+     Monitoring agency: Colorado Department of Public Health And Environment
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2012-09-27   present      Met One E-SEQ-FRM PM2.5 with VSCC - Gravimetric
+         3    2015-02-18   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         23   2015-02-18   2023-07-20   Teledyne T640 at 5.0 LPM (Corrected) - Broadband spectroscopy
+         Suggested chronological stitching:
+           2012-09-27 to 2015-02-17: POC 1
+           2015-02-18 to present: POC 3
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2013-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2013-01-01 to present: POC 1
+
+  4. DENVER MUNICIPAL ANIMAL SHELTER
+     AQS site ID: 08-031-0025
+     Distance: 32.4 km
+     Coordinates: 39.70401, -104.99811
+     Location: Denver, Denver, Colorado
+     Address: 678 S. JASON ST.
+     Monitoring agency: Colorado Department of Public Health And Environment
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2007-10-01   2012-09-03   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         Suggested chronological stitching:
+           2007-10-01 to 2012-09-03: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2008-04-22   2012-09-03   INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2008-04-22 to 2012-09-03: POC 1
+
+  5. Aurora East
+     AQS site ID: 08-005-0006
+     Distance: 22.9 km
+     Coordinates: 39.63852, -104.56933
+     Location: Not in a City, Arapahoe, Colorado
+     Address: 36001 E. Quincy Ave.
+     Monitoring agency: Colorado Department of Public Health And Environment
+     Available pollutants: Ozone
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2009-06-09   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           2009-06-09 to present: POC 1
+
+  6. HIGHLAND RESERVOIR
+     AQS site ID: 08-005-0002
+     Distance: 39.0 km
+     Coordinates: 39.56789, -104.95719
+     Location: Southglenn, Arapahoe, Colorado
+     Address: 8100 S. UNIVERSITY BLVD
+     Monitoring agency: Colorado Department of Public Health And Environment
+     Available pollutants: Ozone
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1978-06-21   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1978-06-21 to present: POC 1
+
+  7. Birch Street
+     AQS site ID: 08-001-0010
+     Distance: 23.8 km
+     Coordinates: 39.82810, -104.93647
+     Location: Commerce City, Adams, Colorado
+     Address: 7275 Birch St
+     Monitoring agency: Colorado Department of Public Health And Environment
+     Available pollutants: PM2.5
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         3    2021-03-14   present      Teledyne T640X at 16.67 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         2    2021-03-17   present      Met One E-SEQ-FRM PM2.5 with VSCC - Gravimetric
+         Suggested chronological stitching:
+           2021-03-14 to 2021-03-16: POC 3
+           2021-03-17 to present: POC 2
+
+  8. DENVER - NJH-E
+     AQS site ID: 08-031-0013
+     Distance: 26.3 km
+     Coordinates: 39.73858, -104.93993
+     Location: Denver, Denver, Colorado
+     Address: 14TH AVE. & ALBION ST.
+     Monitoring agency: Colorado Department of Public Health And Environment
+     Available pollutants: PM2.5
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-11-15   2001-03-31   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         3    2018-03-15   present      Teledyne T640 at 5.0 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         23   2018-03-15   2023-07-20   Teledyne T640 at 5.0 LPM (Corrected) - Broadband spectroscopy
+         Suggested chronological stitching:
+           1999-11-15 to 2001-03-31: POC 1
+           2018-03-15 to present: POC 3
+
+========================================================================================
+Houston Intercontinental, TX (houston_intercontinental)
+ClimateView coordinates: 29.9800, -95.3400
+Search radius: 40.0 km; monitor history searched from 1980
+
+Found 28 physical AQS site(s). Showing the best 8:
+
+  1. Houston Aldine
+     AQS site ID: 48-201-0024
+     Distance: 8.9 km
+     Coordinates: 29.90103, -95.32615
+     Location: Houston, Harris, Texas
+     Address: 4510 1/2 Aldine Mail Rd
+     Monitoring agency: Texas Commission On Environmental Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2001-05-01   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         2    1999-08-16   2001-05-01   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         5    2000-08-14   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         4    2019-05-22   present      Met One BAM-1022 Mass Monitor w/ VSCC or TE-PM2.5C - Beta Attenuation
+         Suggested chronological stitching:
+           1999-01-01 to 1999-08-15: POC 1
+           1999-08-16 to 2000-08-13: POC 2
+           2000-08-14 to 2019-05-21: POC 5
+           2019-05-22 to present: POC 4
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         2    1974-04-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1974-04-01 to present: POC 2
+
+  2. Clinton
+     AQS site ID: 48-201-1035
+     Distance: 28.5 km
+     Coordinates: 29.73374, -95.25760
+     Location: Houston, Harris, Texas
+     Address: 9525 1/2 Clinton Dr
+     Monitoring agency: Texas Commission On Environmental Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         2    1999-04-06   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         4    2024-10-16   present      Teledyne T640X at 16.67 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         Suggested chronological stitching:
+           1999-01-01 to 1999-04-05: POC 1
+           1999-04-06 to 2024-10-15: POC 2
+           2024-10-16 to present: POC 4
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         2    1978-01-01   1985-01-01   INSTRUMENTAL - CHEMILUMINESCENCE
+         3    1983-01-01   present      INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           1978-01-01 to 1982-12-31: POC 2
+           1983-01-01 to present: POC 3
+
+  3. Houston North Wayside
+     AQS site ID: 48-201-0046
+     Distance: 17.7 km
+     Coordinates: 29.82852, -95.28396
+     Location: Houston, Harris, Texas
+     Address: 7330 1/2 North Wayside
+     Monitoring agency: Texas Commission On Environmental Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    2021-05-04   present      Met One BAM-1022 Mass Monitor w/ VSCC or TE-PM2.5C - Beta Attenuation
+         Suggested chronological stitching:
+           2021-05-04 to present: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1983-01-01   present      INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           1983-01-01 to present: POC 1
+
+  4. Houston East
+     AQS site ID: 48-201-1034
+     Distance: 26.2 km
+     Coordinates: 29.76803, -95.22057
+     Location: Houston, Harris, Texas
+     Address: 1262 1/2 Mae Drive
+     Monitoring agency: Texas Commission On Environmental Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         5    2002-01-01   2005-08-31   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         1    2017-07-13   present      Met One BAM-1022 Mass Monitor w/ VSCC or TE-PM2.5C - Beta Attenuation
+         Suggested chronological stitching:
+           2002-01-01 to 2005-08-31: POC 5
+           2017-07-13 to present: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1973-01-01   1985-01-01   INSTRUMENTAL - CHEMILUMINESCENCE
+         2    1983-01-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1973-01-01 to 1982-12-31: POC 1
+           1983-01-01 to present: POC 2
+
+  5. Houston Deer Park #2
+     AQS site ID: 48-201-1039
+     Distance: 39.9 km
+     Coordinates: 29.67055, -95.12993
+     Location: Deer Park, Harris, Texas
+     Address: 4413 Glenwood Avenue
+     Monitoring agency: Texas Commission On Environmental Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-03   2000-08-12   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         5    2000-02-09   2000-10-01   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         4    2011-01-05   2023-03-16   Met One BAM-1020 Mass Monitor w/VSCC - Beta Attenuation
+         8    2013-08-10   present      R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         6    2023-02-23   present      Teledyne T640X at 16.67 LPM w/Network Data Alignment enabled - Broadband spectroscopy
+         26   2023-02-23   2023-07-05   Teledyne T640X at 16.67 LPM (Corrected) - Broadband spectroscopy
+         Suggested chronological stitching:
+           1999-01-03 to 2000-02-08: POC 1
+           2000-02-09 to 2000-10-01: POC 5
+           2011-01-05 to 2013-08-09: POC 4
+           2013-08-10 to 2023-02-22: POC 8
+           2023-02-23 to present: POC 6
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1996-10-25   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1996-10-25 to present: POC 1
+
+  6. Houston Bayland Park
+     AQS site ID: 48-201-0055
+     Distance: 35.2 km
+     Coordinates: 29.69566, -95.49924
+     Location: Houston, Harris, Texas
+     Address: 6400 Bissonnet Street
+     Monitoring agency: Texas Commission On Environmental Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         5    2000-08-14   2005-08-31   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         1    2022-04-22   present      Met One BAM-1022 Mass Monitor w/ VSCC or TE-PM2.5C - Beta Attenuation
+         Suggested chronological stitching:
+           2000-08-14 to 2005-08-31: POC 5
+           2022-04-22 to present: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1998-03-24   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1998-03-24 to present: POC 1
+
+  7. Channelview
+     AQS site ID: 48-201-0026
+     Distance: 28.6 km
+     Coordinates: 29.80272, -95.12552
+     Location: Channelview, Harris, Texas
+     Address: 1405 Sheldon Road
+     Monitoring agency: Texas Commission On Environmental Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-01   2000-08-16   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         5    2000-08-14   2005-08-31   R & P Model 2025 PM-2.5 Sequential Air Sampler w/VSCC - Gravimetric
+         Suggested chronological stitching:
+           1999-01-01 to 2000-08-13: POC 1
+           2000-08-14 to 2005-08-31: POC 5
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1980-01-01   1984-01-01   INSTRUMENTAL - CHEMILUMINESCENCE
+         2    1983-01-01   1988-12-31   INSTRUMENTAL - CHEMILUMINESCENCE
+         3    2001-08-01   present      INSTRUMENTAL - ULTRA VIOLET ABSORPTION
+         Suggested chronological stitching:
+           1980-01-01 to 1982-12-31: POC 1
+           1983-01-01 to 1988-12-31: POC 2
+           2001-08-01 to present: POC 3
+
+  8. SOUTH OF CRAWFORD & POLK INTERSECTION
+     AQS site ID: 48-201-1037
+     Distance: 25.5 km
+     Coordinates: 29.75111, -95.36139
+     Location: Houston, Harris, Texas
+     Address: 1307 1/2 CRAWFORD ST.
+     Monitoring agency: Texas Commission On Environmental Quality
+     Available pollutants: PM2.5, Ozone
+       PM2.5: parameter=88101
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1999-01-03   2001-03-26   R & P Model 2025 PM2.5 Sequential w/WINS - GRAVIMETRIC
+         Suggested chronological stitching:
+           1999-01-03 to 2001-03-26: POC 1
+       Ozone: parameter=44201
+         POC  Open date    Close date   Method
+         ---  ----------   ----------   ------
+         1    1978-01-01   1984-01-01   INSTRUMENTAL - CHEMILUMINESCENCE
+         2    1983-01-01   2001-03-27   INSTRUMENTAL - ULTRA VIOLET
+         Suggested chronological stitching:
+           1978-01-01 to 1982-12-31: POC 1
+           1983-01-01 to 2001-03-27: POC 2
+
+========================================================================================
+Suggested stations.py
+========================================================================================
+
+STATIONS = {
+    'san_francisco_sfo': {
+        'name': 'San Francisco / SFO, CA',
+        'latitude': 37.619,
+        'longitude': -122.375,
+        'noaa_station_id': 'USW00023234',
+        'noaa_start_year': 1945,
+        'aqs_site_id': '06-075-0005',
+        'aqs_site_name': 'San Francisco',
+        'aqs_distance_km': 16.5,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
+    },
+    'new_york_central_park': {
+        'name': 'New York Central Park, NY',
+        'latitude': 40.782,
+        'longitude': -73.965,
+        'noaa_station_id': 'USW00094728',
+        'noaa_start_year': 1869,
+        'aqs_site_id': '36-005-0110',
+        'aqs_site_name': 'IS 52',
+        'aqs_distance_km': 6.5,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
+    },
+    'chicago_ohare': {
+        'name': "Chicago O'Hare, IL",
+        'latitude': 41.974,
+        'longitude': -87.903,
+        'noaa_station_id': 'USW00094846',
+        'noaa_start_year': 1958,
+        'aqs_site_id': '17-031-4201',
+        'aqs_site_name': 'NORTHBROOK WATER PLANT',
+        'aqs_distance_km': 20.3,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
+    },
+    'seattle_tacoma': {
+        'name': 'Seattle-Tacoma, WA',
+        'latitude': 47.444,
+        'longitude': -122.314,
+        'noaa_station_id': 'USW00024233',
+        'noaa_start_year': 1948,
+        'aqs_site_id': '53-033-0080',
+        'aqs_site_name': 'SEATTLE - BEACON HILL',
+        'aqs_distance_km': 13.8,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
+    },
+    'los_angeles_usc': {
+        'name': 'Los Angeles Downtown / USC, CA',
+        'latitude': 34.023,
+        'longitude': -118.285,
+        'noaa_station_id': 'USW00023174',
+        'noaa_start_year': 1944,
+        'aqs_site_id': '06-037-1103',
+        'aqs_site_name': 'Los Angeles-North Main Street',
+        'aqs_distance_km': 7.2,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
+    },
+    'phoenix_sky_harbor': {
+        'name': 'Phoenix Sky Harbor, AZ',
+        'latitude': 33.428,
+        'longitude': -111.998,
+        'noaa_station_id': 'USW00023183',
+        'noaa_start_year': 1933,
+        'aqs_site_id': '04-013-9997',
+        'aqs_site_name': 'JLG SUPERSITE',
+        'aqs_distance_km': 12.4,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
+    },
+    'denver': {
+        'name': 'Denver, CO',
+        'latitude': 39.833,
+        'longitude': -104.658,
+        'noaa_station_id': 'USW00023062',
+        'noaa_start_year': 1948,
+        'aqs_site_id': '08-031-0002',
+        'aqs_site_name': 'DENVER - CAMP',
+        'aqs_distance_km': 29.6,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
+    },
+    'houston_intercontinental': {
+        'name': 'Houston Intercontinental, TX',
+        'latitude': 29.98,
+        'longitude': -95.34,
+        'noaa_station_id': 'USW00012960',
+        'noaa_start_year': 1969,
+        'aqs_site_id': '48-201-0024',
+        'aqs_site_name': 'Houston Aldine',
+        'aqs_distance_km': 8.9,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
+    },
+}
+

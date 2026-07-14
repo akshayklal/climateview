@@ -6,6 +6,8 @@ from climateview.data_loader import load_precipitation_data
 from climateview.data_loader import load_temperature_data
 from climateview.precipitation import render_precipitation_tab
 from climateview.temperature import render_temperature_tab
+from climateview.air_quality import render_air_quality_tab
+from climateview.data_loader import load_air_quality_data
 from climateview.stations import STATIONS
 
 
@@ -96,9 +98,32 @@ if st.session_state.selected_station in STATIONS:
         station_id=noaa_station_id
     )
 
+    aqs_site_id = station.get("aqs_site_id")
+
+    if aqs_site_id:
+        pm25_data = load_air_quality_data(
+            aqs_site_id=aqs_site_id,
+            pollutant="pm25",
+        )
+
+        ozone_data = load_air_quality_data(
+            aqs_site_id=aqs_site_id,
+            pollutant="ozone",
+        )
+    else:
+        pm25_data = {
+            "metadata": {},
+            "data": pd.DataFrame(),
+        }
+
+        ozone_data = {
+            "metadata": {},
+            "data": pd.DataFrame(),
+        }
+
     # Detail tabs
-    temperature_tab, precipitation_tab = st.tabs(
-        ["Temperature", "Precipitation"]
+    temperature_tab, precipitation_tab, air_quality_tab = st.tabs(
+        ["Temperature", "Precipitation", "Air Quality"]
     )
 
     with temperature_tab:
@@ -110,6 +135,13 @@ if st.session_state.selected_station in STATIONS:
     with precipitation_tab:
         render_precipitation_tab(
             precipitation_data,
+            station_name=station_name,
+        )
+
+    with air_quality_tab:
+        render_air_quality_tab(
+            pm25_data=pm25_data,
+            ozone_data=ozone_data,
             station_name=station_name,
         )
 
@@ -128,8 +160,8 @@ else:
             "Explore long-term climate trends across the United States"
         )
         st.caption(
-            "Historical temperature and precipitation records "
-            "from NOAA weather stations."
+            "Historical temperature, precipitation, and air quality records "
+            "from NOAA and EPA monitoring stations."
         )
 
     with metric_col:
@@ -192,7 +224,7 @@ else:
                 "html": (
                     "<b>{name}</b><br/>"
                     "<span style='color:#666;'>"
-                    "Temperature and precipitation trends"
+                    "Temperature, precipitation, and air quality trends"
                     "</span><br/>"
                     "<span style='color:#999;'>Click to open</span>"
                 ),
@@ -233,6 +265,7 @@ else:
 
     # Data source note
     st.caption(
-        "Data source: NOAA Global Historical Climatology Network. "
+        "Data sources: NOAA Global Historical Climatology Network "
+        "and U.S. EPA Air Quality System. "
         "Station records may cover different date ranges."
     )

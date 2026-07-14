@@ -1,153 +1,106 @@
 STATIONS = {
-    "san_francisco_sfo": {
-        "name": "San Francisco / SFO, CA",
-        "latitude": 37.619,
-        "longitude": -122.375,
-
-        "noaa_station_id": "USW00023234",
-        "noaa_start_year": 1945,
-
-        "aqs_site_id": "06-075-0005",
-        "aqs_site_name": "San Francisco",
-        "aqs_distance_km": 16.5,
-        "aqs_pm25_parameter_code": "88101",
-        "aqs_pm25_poc": "3",
-        "aqs_ozone_parameter_code": "44201",
-        "aqs_ozone_poc": "1",
-
-        "active": True,
+    'san_francisco_sfo': {
+        'name': 'San Francisco / SFO, CA',
+        'latitude': 37.619,
+        'longitude': -122.375,
+        'noaa_station_id': 'USW00023234',
+        'noaa_start_year': 1945,
+        'aqs_site_id': '06-075-0005',
+        'aqs_site_name': 'San Francisco',
+        'aqs_distance_km': 16.5,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
     },
-
-    "new_york_central_park": {
-        "name": "New York Central Park, NY",
-        "latitude": 40.782,
-        "longitude": -73.965,
-
-        "noaa_station_id": "USW00094728",
-        "noaa_start_year": 1869,
-
-        "aqs_site_id": "36-005-0110",
-        "aqs_site_name": "IS 52",
-        "aqs_distance_km": 6.5,
-        "aqs_pm25_parameter_code": "88101",
-        "aqs_pm25_poc": "1",
-        "aqs_ozone_parameter_code": "44201",
-        "aqs_ozone_poc": "1",
-
-        "active": True,
+    'new_york_central_park': {
+        'name': 'New York Central Park, NY',
+        'latitude': 40.782,
+        'longitude': -73.965,
+        'noaa_station_id': 'USW00094728',
+        'noaa_start_year': 1869,
+        'aqs_site_id': '36-005-0110',
+        'aqs_site_name': 'IS 52',
+        'aqs_distance_km': 6.5,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
     },
-
-    "chicago_ohare": {
-        "name": "Chicago O'Hare, IL",
-        "latitude": 41.974,
-        "longitude": -87.903,
-
-        "noaa_station_id": "USW00094846",
-        "noaa_start_year": 1958,
-
-        "aqs_site_id": "17-031-4201",
-        "aqs_site_name": "Northbrook Water Plant",
-        "aqs_distance_km": 20.3,
-        "aqs_pm25_parameter_code": "88101",
-        "aqs_pm25_poc": "1",
-        "aqs_ozone_parameter_code": "44201",
-        "aqs_ozone_poc": "1",
-
-        "active": True,
+    'chicago_ohare': {
+        'name': "Chicago O'Hare, IL",
+        'latitude': 41.974,
+        'longitude': -87.903,
+        'noaa_station_id': 'USW00094846',
+        'noaa_start_year': 1958,
+        'aqs_site_id': '17-031-4201',
+        'aqs_site_name': 'NORTHBROOK WATER PLANT',
+        'aqs_distance_km': 20.3,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
     },
-
-    "seattle_tacoma": {
-        "name": "Seattle-Tacoma, WA",
-        "latitude": 47.444,
-        "longitude": -122.314,
-
-        "noaa_station_id": "USW00024233",
-        "noaa_start_year": 1948,
-
-        "aqs_site_id": "53-033-0080",
-        "aqs_site_name": "Seattle - Beacon Hill",
-        "aqs_distance_km": 13.8,
-        "aqs_pm25_parameter_code": "88101",
-        "aqs_pm25_poc": "1",
-        "aqs_ozone_parameter_code": "44201",
-        "aqs_ozone_poc": "1",
-
-        "active": True,
+    'seattle_tacoma': {
+        'name': 'Seattle-Tacoma, WA',
+        'latitude': 47.444,
+        'longitude': -122.314,
+        'noaa_station_id': 'USW00024233',
+        'noaa_start_year': 1948,
+        'aqs_site_id': '53-033-0080',
+        'aqs_site_name': 'SEATTLE - BEACON HILL',
+        'aqs_distance_km': 13.8,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
     },
-
-    "los_angeles_usc": {
-        "name": "Los Angeles Downtown / USC, CA",
-        "latitude": 34.023,
-        "longitude": -118.285,
-
-        "noaa_station_id": "USW00023174",
-        "noaa_start_year": 1944,
-
-        "aqs_site_id": "06-037-1103",
-        "aqs_site_name": "Los Angeles-North Main Street",
-        "aqs_distance_km": 7.2,
-        "aqs_pm25_parameter_code": "88101",
-        "aqs_pm25_poc": "2",
-        "aqs_ozone_parameter_code": "44201",
-        "aqs_ozone_poc": "1",
-
-        "active": True,
+    'los_angeles_usc': {
+        'name': 'Los Angeles Downtown / USC, CA',
+        'latitude': 34.023,
+        'longitude': -118.285,
+        'noaa_station_id': 'USW00023174',
+        'noaa_start_year': 1944,
+        'aqs_site_id': '06-037-1103',
+        'aqs_site_name': 'Los Angeles-North Main Street',
+        'aqs_distance_km': 7.2,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
     },
-
-    "phoenix_sky_harbor": {
-        "name": "Phoenix Sky Harbor, AZ",
-        "latitude": 33.428,
-        "longitude": -111.998,
-
-        "noaa_station_id": "USW00023183",
-        "noaa_start_year": 1933,
-
-        "aqs_site_id": "04-013-9997",
-        "aqs_site_name": "JLG Supersite",
-        "aqs_distance_km": 12.4,
-        "aqs_pm25_parameter_code": "88101",
-        "aqs_pm25_poc": "1",
-        "aqs_ozone_parameter_code": "44201",
-        "aqs_ozone_poc": "1",
-
-        "active": True,
+    'phoenix_sky_harbor': {
+        'name': 'Phoenix Sky Harbor, AZ',
+        'latitude': 33.428,
+        'longitude': -111.998,
+        'noaa_station_id': 'USW00023183',
+        'noaa_start_year': 1933,
+        'aqs_site_id': '04-013-9997',
+        'aqs_site_name': 'JLG SUPERSITE',
+        'aqs_distance_km': 12.4,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
     },
-
-    "denver": {
-        "name": "Denver, CO",
-        "latitude": 39.833,
-        "longitude": -104.658,
-
-        "noaa_station_id": "USW00023062",
-        "noaa_start_year": 1948,
-
-        "aqs_site_id": "08-031-0002",
-        "aqs_site_name": "Denver - CAMP",
-        "aqs_distance_km": 29.6,
-        "aqs_pm25_parameter_code": "88101",
-        "aqs_pm25_poc": "1",
-        "aqs_ozone_parameter_code": "44201",
-        "aqs_ozone_poc": "6",
-
-        "active": True,
+    'denver': {
+        'name': 'Denver, CO',
+        'latitude': 39.833,
+        'longitude': -104.658,
+        'noaa_station_id': 'USW00023062',
+        'noaa_start_year': 1948,
+        'aqs_site_id': '08-031-0002',
+        'aqs_site_name': 'DENVER - CAMP',
+        'aqs_distance_km': 29.6,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
     },
-
-    "houston_intercontinental": {
-        "name": "Houston Intercontinental, TX",
-        "latitude": 29.980,
-        "longitude": -95.340,
-
-        "noaa_station_id": "USW00012960",
-        "noaa_start_year": 1969,
-
-        "aqs_site_id": "48-201-0024",
-        "aqs_site_name": "Houston Aldine",
-        "aqs_distance_km": 8.9,
-        "aqs_pm25_parameter_code": "88101",
-        "aqs_pm25_poc": "5",
-        "aqs_ozone_parameter_code": "44201",
-        "aqs_ozone_poc": "2",
-
-        "active": True,
+    'houston_intercontinental': {
+        'name': 'Houston Intercontinental, TX',
+        'latitude': 29.98,
+        'longitude': -95.34,
+        'noaa_station_id': 'USW00012960',
+        'noaa_start_year': 1969,
+        'aqs_site_id': '48-201-0024',
+        'aqs_site_name': 'Houston Aldine',
+        'aqs_distance_km': 8.9,
+        'aqs_pm25_parameter_code': '88101',
+        'aqs_ozone_parameter_code': '44201',
+        'active': True,
     },
 }
