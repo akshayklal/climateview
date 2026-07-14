@@ -1,5 +1,5 @@
-pydeck
-streamlit
+streamlit>=1.47
+pydeck==0.9.2
 pandas
 plotly
 numpy
