@@ -8,6 +8,10 @@ from climateview.precipitation import render_precipitation_tab
 from climateview.temperature import render_temperature_tab
 from climateview.stations import STATIONS
 
+ESRI_TOPO_TILE_URL = (
+    "https://server.arcgisonline.com/ArcGIS/rest/services/"
+    "World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+)
 
 # Page configuration
 st.set_page_config(
@@ -173,20 +177,33 @@ else:
         id="weather-stations",
     )
 
+    # Esri World Topographic basemap
+    basemap_layer = pdk.Layer(
+        "TileLayer",
+        data=ESRI_TOPO_TILE_URL,
+        min_zoom=0,
+        max_zoom=19,
+        tile_size=256,
+    )
+
     # Initial map position
     view_state = pdk.ViewState(
-        latitude=39.8283,
-        longitude=-98.5795,
-        zoom=3.65,
+        latitude=39.2,
+        longitude=-98.2,
+        zoom=3.5,
         pitch=0,
     )
 
-    # Render interactive map
     map_deck = st.pydeck_chart(
         pdk.Deck(
-            layers=[station_layer],
+            layers=[
+                basemap_layer,
+                station_layer,
+            ],
             initial_view_state=view_state,
-            map_style="mapbox://styles/mapbox/light-v11",
+            map_provider=None,
+            map_style=None,
+            height=1000,
             tooltip={
                 "html": (
                     "<b>{name}</b><br/>"
