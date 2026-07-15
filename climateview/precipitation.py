@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from climateview.ai import (
     SummaryGenerationError,
+    answer_analysis_question,
     summarize_analysis,
 )
 from climateview.statistics import (
@@ -594,21 +595,118 @@ def render_precipitation_tab(data, station_name):
         ),
     )
 
-    st.subheader("AI interpretation")
+    insight_signature = (
+        station_name,
+        precipitation_view,
+        selected_years[0],
+        selected_years[1],
+        rain_year_start_month,
+    )
 
-    try:
-        with st.spinner(
-            "Analyzing the selected precipitation data..."
-        ):
-            summary_response = summarize_analysis(analysis)
+    signature_key = "precipitation_ai_signature"
+    text_key = "precipitation_ai_text"
+    mode_key = "precipitation_ai_mode"
+    ask_visible_key = "precipitation_ai_ask_visible"
 
-        st.write(summary_response.text)
+    signature_changed = (
+        st.session_state.get(signature_key)
+        != insight_signature
+    )
 
-    except SummaryGenerationError:
-        st.info(
-            "The AI interpretation is temporarily unavailable. "
-            "The chart and statistics are still available."
+    if signature_changed:
+        st.session_state[signature_key] = insight_signature
+        st.session_state[text_key] = None
+        st.session_state[mode_key] = "summary"
+        st.session_state[ask_visible_key] = False
+
+    heading_col, reset_col, ask_col, spacer_col = st.columns(
+        [2.2, 1, 1, 6],
+        vertical_alignment="center",
+    )
+
+    with heading_col:
+        st.subheader("AI Insights")
+
+    with reset_col:
+        reset_clicked = st.button(
+            "Reset",
+            key="precipitation_ai_reset",
+            use_container_width=True,
         )
+
+    with ask_col:
+        ask_clicked = st.button(
+            "Ask",
+            key="precipitation_ai_ask",
+            use_container_width=True,
+        )
+
+    if ask_clicked:
+        st.session_state[ask_visible_key] = True
+
+    if reset_clicked:
+        st.session_state[mode_key] = "summary"
+        st.session_state[ask_visible_key] = False
+        st.session_state[text_key] = None
+
+    if st.session_state.get(ask_visible_key, False):
+        with st.form(
+            "precipitation_ai_question_form",
+            clear_on_submit=True,
+        ):
+            question = st.text_input(
+                "Ask a question about the selected precipitation data",
+                placeholder=(
+                    "For example: Are recent decades drier?"
+                ),
+            )
+
+            question_submitted = st.form_submit_button(
+                "Ask AI"
+            )
+
+        if question_submitted and question.strip():
+            try:
+                with st.spinner("Answering your question..."):
+                    answer_response = answer_analysis_question(
+                        analysis,
+                        question,
+                    )
+
+                st.session_state[text_key] = answer_response.text
+                st.session_state[mode_key] = "answer"
+                st.session_state[ask_visible_key] = False
+                st.rerun()
+
+            except SummaryGenerationError:
+                st.info(
+                    "The AI answer is temporarily unavailable."
+                )
+
+    if st.session_state.get(text_key) is None:
+        try:
+            with st.spinner(
+                "Analyzing the selected precipitation data..."
+            ):
+                summary_response = summarize_analysis(
+                    analysis
+                )
+
+            st.session_state[text_key] = (
+                summary_response.text
+            )
+            st.session_state[mode_key] = "summary"
+
+        except SummaryGenerationError:
+            st.info(
+                "AI Insights are temporarily unavailable. "
+                "The chart and statistics are still available."
+            )
+
+    insight_text = st.session_state.get(text_key)
+
+    if insight_text:
+        st.write(insight_text)
 
     st.plotly_chart(
         figure,

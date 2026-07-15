@@ -25,6 +25,21 @@ Follow these rules:
 - Do not use headings, bullet points, markdown, or technical notation.
 """.strip()
 
+QUESTION_SYSTEM_INSTRUCTIONS = """
+You answer questions about climate and environmental data for a general audience.
+
+Follow these rules:
+- Base the answer only on the supplied statistics and insights.
+- Do not invent facts or causes.
+- If the supplied data cannot answer the question, say so clearly.
+- Distinguish observed patterns from statistically significant trends.
+- Do not claim causation from correlation or time-series patterns.
+- For precipitation, higher or lower values are not inherently better.
+- Use plain, friendly language.
+- Keep the answer concise, usually 60 to 130 words.
+- Do not use headings, bullet points, markdown, or technical notation.
+""".strip()
+
 def build_summary_prompt(result: AnalysisResult) -> str:
     """
     Build a compact prompt from verified statistics.
@@ -123,6 +138,27 @@ def build_summary_payload(result: AnalysisResult) -> dict[str, Any]:
 
     return payload
 
+def build_question_prompt(
+    result: AnalysisResult,
+    question: str,
+) -> str:
+    """
+    Build a grounded question-answer prompt for the selected chart.
+    """
+
+    cleaned_question = question.strip()
+
+    if not cleaned_question:
+        raise ValueError("Question must not be empty.")
+
+    payload = build_summary_payload(result)
+
+    return (
+        "Answer the user's question about the currently displayed chart.\n\n"
+        f"Verified chart analysis:\n"
+        f"{json.dumps(payload, indent=2, ensure_ascii=False)}\n\n"
+        f"User question:\n{cleaned_question}"
+    )
 
 def _serialize_insight(insight: Any) -> dict[str, Any]:
     value: dict[str, Any] = {

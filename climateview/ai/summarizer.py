@@ -8,8 +8,12 @@ from openai import OpenAIError
 
 from climateview.statistics.models import AnalysisResult
 
-from .prompt_builder import SYSTEM_INSTRUCTIONS, build_summary_prompt
-
+from .prompt_builder import (
+    QUESTION_SYSTEM_INSTRUCTIONS,
+    SYSTEM_INSTRUCTIONS,
+    build_question_prompt,
+    build_summary_prompt,
+)
 
 DEFAULT_MODEL = "gpt-5-mini"
 DEFAULT_MAX_OUTPUT_TOKENS = 300
@@ -98,5 +102,72 @@ def summarize_analysis(
 
     return SummaryResponse(
         text=summary,
+        model=resolved_model,
+    )
+
+def answer_analysis_question(
+    result: AnalysisResult,
+    question: str,
+    *,
+    model: str | None = None,
+    api_key: str | None = None,
+    max_output_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS,
+) -> SummaryResponse:
+    """
+    Answer a user question using the verified chart analysis.
+    """
+
+    cleaned_question = question.strip()
+
+    if not cleaned_question:
+        raise ValueError("Question must not be empty.")
+
+    resolved_api_key = api_key or os.getenv("OPENAI_API_KEY")
+
+    if not resolved_api_key:
+        raise SummaryGenerationError(
+            "OPENAI_API_KEY is not configured."
+        )
+
+    resolved_model = (
+        model
+        or os.getenv("CLIMATEVIEW_OPENAI_MODEL")
+        or DEFAULT_MODEL
+    )
+
+    prompt = build_question_prompt(result, cleaned_question)
+    client = OpenAI(api_key=resolved_api_key)
+
+    try:
+        response = client.responses.create(
+            model=resolved_model,
+            instructions=QUESTION_SYSTEM_INSTRUCTIONS,
+            input=prompt,
+            reasoning={"effort": "low"},
+            max_output_tokens=max_output_tokens,
+        )
+    except OpenAIError as exc:
+        raise SummaryGenerationError(
+            f"OpenAI question answering failed: {exc}"
+        ) from exc
+
+    answer = response.output_text.strip()
+
+    if not answer:
+        status = getattr(response, "status", None)
+        incomplete_details = getattr(
+            response,
+            "incomplete_details",
+            None,
+        )
+
+        raise SummaryGenerationError(
+            "OpenAI returned no visible answer. "
+            f"status={status}, "
+            f"incomplete_details={incomplete_details}"
+        )
+
+    return SummaryResponse(
+        text=answer,
         model=resolved_model,
     )
