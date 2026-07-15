@@ -2,7 +2,15 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-
+from climateview.ai import (
+    SummaryGenerationError,
+    summarize_analysis,
+)
+from climateview.statistics import (
+    AnalysisContext,
+    DataSchema,
+    analyze_series,
+)
 
 MONTH_NAME_TO_NUMBER = {
     "January": 1,
@@ -569,6 +577,38 @@ def render_precipitation_tab(data, station_name):
             else None
         ),
     )
+
+    analysis = analyze_series(
+        dataframe=aggregated_data,
+        context=AnalysisContext(
+            location=station_name,
+            metric="precipitation",
+            unit="inches",
+            aggregation=precipitation_view.lower().replace(" ", "_"),
+            start_period=selected_years[0],
+            end_period=selected_years[1],
+        ),
+        schema=DataSchema(
+            period_column=x_col,
+            value_column="total_prcp_in",
+        ),
+    )
+
+    st.subheader("AI interpretation")
+
+    try:
+        with st.spinner(
+            "Analyzing the selected precipitation data..."
+        ):
+            summary_response = summarize_analysis(analysis)
+
+        st.write(summary_response.text)
+
+    except SummaryGenerationError:
+        st.info(
+            "The AI interpretation is temporarily unavailable. "
+            "The chart and statistics are still available."
+        )
 
     st.plotly_chart(
         figure,

@@ -3,3 +3,6 @@ pydeck==0.9.2
 pandas
 plotly
 numpy
+scipy
+pytest
+openai
