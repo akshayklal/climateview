@@ -34,6 +34,11 @@ st.markdown(
         [data-testid="stCaptionContainer"] {
             margin-bottom: 0.25rem;
         }
+        
+        /* Prevents the old page from briefly overlapping the new page during navigation. */        
+        [data-stale="true"] {
+            display: none !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,

@@ -149,7 +149,7 @@ def build_temperature_figure(
                 x=aggregated_data[x_col],
                 y=max_trend_values,
                 mode="lines",
-                name=f"Maximum trend ({max_trend:+.3f} °F/year)",
+                name="Maximum trend",
                 line={"dash": "dash"},
                 hoverinfo="skip",
             )
@@ -161,18 +161,13 @@ def build_temperature_figure(
                 x=aggregated_data[x_col],
                 y=min_trend_values,
                 mode="lines",
-                name=f"Minimum trend ({min_trend:+.3f} °F/year)",
+                name=f"Minimum trend",
                 line={"dash": "dash"},
                 hoverinfo="skip",
             )
         )
 
     figure.update_layout(
-        title={
-            "text": f"Average Maximum and Minimum Temperatures — {station_name}",
-            "x": 0,
-            "xanchor": "left",
-        },
         xaxis_title=x_title,
         yaxis_title="Temperature (°F)",
         height=520,
@@ -180,15 +175,15 @@ def build_temperature_figure(
             "l": 40,
             "r": 30,
             "t": 70,
-            "b": 40,
+            "b": 100,
         },
         hovermode="x unified",
         legend={
             "orientation": "h",
-            "yanchor": "bottom",
-            "y": 1.02,
-            "xanchor": "right",
-            "x": 1,
+            "yanchor": "top",
+            "y": -0.20,
+            "xanchor": "center",
+            "x": 0.5,
         },
     )
 
@@ -278,7 +273,7 @@ def render_temperature_table(aggregated_data, aggregation):
 
     st.dataframe(
         display_data,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -417,7 +412,7 @@ def render_temperature_tab(data, station_name):
 
     st.plotly_chart(
         figure,
-        use_container_width=True,
+        width="stretch",
         config={
             "displayModeBar": False,
             "responsive": True,

@@ -202,8 +202,7 @@ def build_precipitation_figure(
                 y=trend_values,
                 mode="lines",
                 name=(
-                    "Trend "
-                    f"({precipitation_trend:+.3f} in/year)"
+                    "Trend"
                 ),
                 line={"dash": "dash"},
                 hoverinfo="skip",
@@ -211,11 +210,6 @@ def build_precipitation_figure(
         )
 
     figure.update_layout(
-        title={
-            "text": f"{chart_title} — {station_name}",
-            "x": 0,
-            "xanchor": "left",
-        },
         xaxis_title=x_title,
         yaxis_title="Precipitation (inches)",
         height=520,
@@ -223,15 +217,15 @@ def build_precipitation_figure(
             "l": 40,
             "r": 30,
             "t": 70,
-            "b": 40,
+            "b": 100,
         },
         hovermode="x unified",
         legend={
             "orientation": "h",
-            "yanchor": "bottom",
-            "y": 1.02,
-            "xanchor": "right",
-            "x": 1,
+            "yanchor": "top",
+            "y": -0.20,
+            "xanchor": "center",
+            "x": 0.5,
         },
         bargap=0.15,
     )
@@ -400,7 +394,7 @@ def render_precipitation_table(
 
     st.dataframe(
         display_data,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -631,14 +625,14 @@ def render_precipitation_tab(data, station_name):
         reset_clicked = st.button(
             "Reset",
             key="precipitation_ai_reset",
-            use_container_width=True,
+            width="stretch",
         )
 
     with ask_col:
         ask_clicked = st.button(
             "Ask",
             key="precipitation_ai_ask",
-            use_container_width=True,
+            width="stretch",
         )
 
     if ask_clicked:
@@ -710,7 +704,7 @@ def render_precipitation_tab(data, station_name):
 
     st.plotly_chart(
         figure,
-        use_container_width=True,
+        width="stretch",
         config={
             "displayModeBar": False,
             "responsive": True,
