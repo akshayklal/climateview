@@ -2,8 +2,8 @@ from typing import Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import streamlit as st
 
 
@@ -166,12 +166,42 @@ def _y_axis_title(
     return "Annual average daily max ozone (ppb)"
 
 
+def _annual_unhealthy_days(df: pd.DataFrame) -> pd.DataFrame:
+    if "aqi" not in df.columns:
+        return pd.DataFrame(columns=["year", "unhealthy_days"])
+
+    valid = df.copy()
+    valid["date"] = pd.to_datetime(
+        valid["date"],
+        errors="coerce",
+    )
+    valid["aqi"] = pd.to_numeric(
+        valid["aqi"],
+        errors="coerce",
+    )
+    valid = valid.dropna(
+        subset=["date", "aqi"],
+    )
+
+    if valid.empty:
+        return pd.DataFrame(columns=["year", "unhealthy_days"])
+
+    valid["year"] = valid["date"].dt.year
+    valid["unhealthy_day"] = valid["aqi"] > 100
+
+    return (
+        valid.groupby("year", as_index=False)
+        .agg(unhealthy_days=("unhealthy_day", "sum"))
+    )
+
+
 def _build_air_quality_figure(
     aggregated: pd.DataFrame,
     pollutant: str,
     aggregation: str,
     x_column: str,
     x_title: str,
+    unhealthy_days: Optional[pd.DataFrame] = None,
 ) -> Tuple[go.Figure, Optional[float]]:
     _, unit = _value_column_and_unit(pollutant)
     y_title = _y_axis_title(
@@ -184,7 +214,16 @@ def _build_air_quality_figure(
         x_column,
     )
 
-    figure = go.Figure()
+    show_unhealthy_days = (
+        aggregation == "Year"
+        and unhealthy_days is not None
+        and not unhealthy_days.empty
+    )
+
+    if show_unhealthy_days:
+        figure = make_subplots(specs=[[{"secondary_y": True}]])
+    else:
+        figure = go.Figure()
 
     figure.add_trace(
         go.Scatter(
@@ -205,7 +244,8 @@ def _build_air_quality_figure(
                 f"Value: %{{y:.2f}} {unit}"
                 "<extra></extra>"
             ),
-        )
+        ),
+        secondary_y=False if show_unhealthy_days else None,
     )
 
     if fitted is not None:
@@ -217,16 +257,60 @@ def _build_air_quality_figure(
                 name="Trend",
                 line={"dash": "dash"},
                 hoverinfo="skip",
-            )
+            ),
+            secondary_y=False if show_unhealthy_days else None,
+        )
+
+    if show_unhealthy_days:
+        annual = aggregated[["year"]].merge(
+            unhealthy_days,
+            on="year",
+            how="left",
+        )
+        annual["unhealthy_days"] = (
+            annual["unhealthy_days"].fillna(0).astype(int)
+        )
+
+        figure.add_trace(
+            go.Bar(
+                x=annual["year"],
+                y=annual["unhealthy_days"],
+                name="Unhealthy AQI days",
+                opacity=0.32,
+                hovertemplate=(
+                    "Year: %{x}<br>"
+                    "Unhealthy AQI days: %{y}"
+                    "<extra></extra>"
+                ),
+            ),
+            secondary_y=True,
+        )
+
+        figure.update_yaxes(
+            title_text=y_title,
+            showgrid=True,
+            zeroline=False,
+            secondary_y=False,
+        )
+        figure.update_yaxes(
+            title_text="Unhealthy AQI days",
+            showgrid=False,
+            rangemode="tozero",
+            secondary_y=True,
+        )
+    else:
+        figure.update_yaxes(
+            title_text=y_title,
+            showgrid=True,
+            zeroline=False,
         )
 
     figure.update_layout(
         xaxis_title=x_title,
-        yaxis_title=y_title,
         height=460,
         margin={
             "l": 40,
-            "r": 30,
+            "r": 55 if show_unhealthy_days else 30,
             "t": 20,
             "b": 90,
         },
@@ -238,75 +322,12 @@ def _build_air_quality_figure(
             "xanchor": "center",
             "x": 0.5,
         },
+        barmode="overlay",
     )
 
     figure.update_xaxes(showgrid=False)
-    figure.update_yaxes(
-        showgrid=True,
-        zeroline=False,
-    )
 
     return figure, trend
-
-
-def _render_aqi_days(df: pd.DataFrame) -> None:
-    if "aqi" not in df.columns:
-        return
-
-    valid = df.copy()
-    valid["date"] = pd.to_datetime(
-        valid["date"],
-        errors="coerce",
-    )
-    valid["aqi"] = pd.to_numeric(
-        valid["aqi"],
-        errors="coerce",
-    )
-    valid = valid.dropna(
-        subset=["date", "aqi"],
-    )
-
-    if valid.empty:
-        return
-
-    valid["year"] = valid["date"].dt.year
-    valid["unhealthy_day"] = valid["aqi"] > 100
-
-    annual = (
-        valid.groupby("year", as_index=False)
-        .agg(
-            unhealthy_days=("unhealthy_day", "sum"),
-            aqi_days=("aqi", "count"),
-        )
-    )
-
-    figure = px.bar(
-        annual,
-        x="year",
-        y="unhealthy_days",
-        labels={
-            "year": "Year",
-            "unhealthy_days": "Days with AQI above 100",
-        },
-        title="Days with unhealthy AQI",
-    )
-
-    figure.update_traces(
-        hovertemplate=(
-            "Year: %{x}<br>"
-            "Days: %{y}<extra></extra>"
-        )
-    )
-
-    figure.update_layout(
-        height=380,
-        margin=dict(l=20, r=20, t=60, b=50),
-    )
-
-    st.plotly_chart(
-        figure,
-        width="stretch",
-    )
 
 
 def _render_pollutant_section(
@@ -376,12 +397,25 @@ def _render_pollutant_section(
         )
         return
 
+    filtered_source_df = source_df[
+        pd.to_datetime(
+            source_df["date"],
+            errors="coerce",
+        ).dt.year.between(
+            selected_years[0],
+            selected_years[1],
+        )
+    ].copy()
+
+    unhealthy_days = _annual_unhealthy_days(filtered_source_df)
+
     figure, trend = _build_air_quality_figure(
         aggregated=aggregated,
         pollutant=pollutant,
         aggregation=aggregation,
         x_column=x_column,
         x_title=x_title,
+        unhealthy_days=unhealthy_days,
     )
 
     _, unit = _value_column_and_unit(pollutant)
@@ -425,18 +459,6 @@ def _render_pollutant_section(
     st.plotly_chart(
         figure,
         width="stretch",
-    )
-
-    _render_aqi_days(
-        source_df[
-            pd.to_datetime(
-                source_df["date"],
-                errors="coerce",
-            ).dt.year.between(
-                selected_years[0],
-                selected_years[1],
-            )
-        ].copy()
     )
 
     with st.expander(
