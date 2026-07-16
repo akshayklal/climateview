@@ -643,10 +643,13 @@ def render_precipitation_tab(data, station_name):
         st.session_state[ask_visible_key] = False
         st.session_state[text_key] = None
 
+    question_submitted = False
+    question = ""
+
     if st.session_state.get(ask_visible_key, False):
         with st.form(
-            "precipitation_ai_question_form",
-            clear_on_submit=True,
+                "precipitation_ai_question_form",
+                clear_on_submit=True,
         ):
             question = st.text_input(
                 "Ask a question about the selected precipitation data",
@@ -659,49 +662,15 @@ def render_precipitation_tab(data, station_name):
                 "Ask AI"
             )
 
-        if question_submitted and question.strip():
-            try:
-                with st.spinner("Answering your question..."):
-                    answer_response = answer_analysis_question(
-                        analysis,
-                        question,
-                    )
-
-                st.session_state[text_key] = answer_response.text
-                st.session_state[mode_key] = "answer"
-                st.session_state[ask_visible_key] = False
-                st.rerun()
-
-            except SummaryGenerationError:
-                st.info(
-                    "The AI answer is temporarily unavailable."
-                )
-
-    if st.session_state.get(text_key) is None:
-        try:
-            with st.spinner(
-                "Analyzing the selected precipitation data..."
-            ):
-                summary_response = summarize_analysis(
-                    analysis
-                )
-
-            st.session_state[text_key] = (
-                summary_response.text
-            )
-            st.session_state[mode_key] = "summary"
-
-        except SummaryGenerationError:
-            st.info(
-                "AI Insights are temporarily unavailable. "
-                "The chart and statistics are still available."
-            )
+    # Reserve the AI text area above the chart.
+    insight_placeholder = st.empty()
 
     insight_text = st.session_state.get(text_key)
 
     if insight_text:
-        st.write(insight_text)
+        insight_placeholder.write(insight_text)
 
+    # Render the chart immediately, before waiting for the AI response.
     st.plotly_chart(
         figure,
         width="stretch",
@@ -710,6 +679,51 @@ def render_precipitation_tab(data, station_name):
             "responsive": True,
         },
     )
+
+    # Run AI work only after the chart has been emitted.
+    if question_submitted and question.strip():
+        try:
+            with st.spinner("Answering your question..."):
+                answer_response = answer_analysis_question(
+                    analysis,
+                    question,
+                )
+
+            st.session_state[text_key] = answer_response.text
+            st.session_state[mode_key] = "answer"
+            st.session_state[ask_visible_key] = False
+
+            insight_placeholder.write(
+                answer_response.text
+            )
+
+        except SummaryGenerationError:
+            insight_placeholder.info(
+                "The AI answer is temporarily unavailable."
+            )
+
+    elif st.session_state.get(text_key) is None:
+        try:
+            with insight_placeholder.container():
+                with st.spinner(
+                        "Analyzing the selected precipitation data..."
+                ):
+                    summary_response = summarize_analysis(
+                        analysis
+                    )
+                    
+            st.session_state[text_key] = summary_response.text
+            st.session_state[mode_key] = "summary"
+
+            insight_placeholder.write(
+                summary_response.text
+            )
+
+        except SummaryGenerationError:
+            insight_placeholder.info(
+                "AI Insights are temporarily unavailable. "
+                "The chart and statistics are still available."
+            )
 
     with st.expander(
         "View underlying precipitation data",
