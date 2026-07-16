@@ -24,6 +24,7 @@ def _value_column_and_unit(
     return "daily_max", "ppb"
 
 
+@st.cache_data(show_spinner=False)
 def _prepare_daily_data(
     df: pd.DataFrame,
     pollutant: str,
@@ -331,16 +332,42 @@ def _build_air_quality_figure(
 
 
 def _render_pollutant_section(
-    dataset: Dict,
-    pollutant: str,
+    pm25_data: Dict,
+    ozone_data: Dict,
 ) -> None:
+    control_columns = st.columns(
+        [1.4, 2.0, 5.6],
+        vertical_alignment="bottom",
+    )
+
+    with control_columns[0]:
+        pollutant_label = st.segmented_control(
+            "Pollutant",
+            options=["PM2.5", "Ozone"],
+            default="PM2.5",
+            key="air_quality_pollutant",
+        )
+
+    pollutant = (
+        "ozone"
+        if pollutant_label == "Ozone"
+        else "pm25"
+    )
+
+    dataset = (
+        ozone_data
+        if pollutant == "ozone"
+        else pm25_data
+    )
+
     if _empty_dataset(dataset):
         label = "PM2.5" if pollutant == "pm25" else "ozone"
         st.info(f"No processed {label} data is available.")
         return
 
     metadata = dataset["metadata"]
-    source_df = dataset["data"].copy()
+    source_df = dataset["data"]
+
     daily = _prepare_daily_data(
         source_df,
         pollutant,
@@ -354,12 +381,7 @@ def _render_pollutant_section(
     max_year = int(daily["year"].max())
     pollutant_key = "pm25" if pollutant == "pm25" else "ozone"
 
-    aggregation_col, period_col = st.columns(
-        [2.4, 3.2],
-        vertical_alignment="bottom",
-    )
-
-    with aggregation_col:
+    with control_columns[1]:
         aggregation = st.segmented_control(
             "Aggregation",
             options=["Day", "Month", "Year"],
@@ -370,7 +392,7 @@ def _render_pollutant_section(
     if aggregation is None:
         aggregation = "Year"
 
-    with period_col:
+    with control_columns[2]:
         selected_years = st.slider(
             "Period",
             min_value=min_year,
@@ -397,11 +419,12 @@ def _render_pollutant_section(
         )
         return
 
+    source_dates = pd.to_datetime(
+        source_df["date"],
+        errors="coerce",
+    )
     filtered_source_df = source_df[
-        pd.to_datetime(
-            source_df["date"],
-            errors="coerce",
-        ).dt.year.between(
+        source_dates.dt.year.between(
             selected_years[0],
             selected_years[1],
         )
@@ -456,6 +479,7 @@ def _render_pollutant_section(
             f"{len(filtered_daily):,}",
         )
 
+    st.write("Chart goes here")
     st.plotly_chart(
         figure,
         width="stretch",
@@ -491,18 +515,7 @@ def render_air_quality_tab(
     station_name: str,
 ) -> None:
     """Render the Air Quality tab for one ClimateView station."""
-    pm25_tab, ozone_tab = st.tabs(
-        ["PM2.5", "Ozone"]
+    _render_pollutant_section(
+        pm25_data,
+        ozone_data,
     )
-
-    with pm25_tab:
-        _render_pollutant_section(
-            pm25_data,
-            "pm25",
-        )
-
-    with ozone_tab:
-        _render_pollutant_section(
-            ozone_data,
-            "ozone",
-        )

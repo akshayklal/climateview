@@ -18,6 +18,10 @@ st.set_page_config(
     layout="wide",
 )
 
+# Hide stale content only while navigating between the map and station page.
+if "station_navigation_in_progress" not in st.session_state:
+    st.session_state.station_navigation_in_progress = False
+
 st.markdown(
     """
     <style>
@@ -33,16 +37,24 @@ st.markdown(
 
         [data-testid="stCaptionContainer"] {
             margin-bottom: 0.25rem;
-        }
-        
-        /* Prevents the old page from briefly overlapping the new page during navigation. */        
-        [data-stale="true"] {
-            display: none !important;
-        }
+        }        
     </style>
     """,
     unsafe_allow_html=True,
 )
+
+if st.session_state.station_navigation_in_progress:
+    st.markdown(
+        """
+        <style>
+            /* Hide the previous page only during map/station navigation. */
+            [data-stale="true"] {
+                display: none !important;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # Build station dataframe for the map
 df_stations = pd.DataFrame(
@@ -71,6 +83,10 @@ if (
 
 # SCREEN 2: Selected station detail page
 if st.session_state.selected_station in STATIONS:
+    # The transition CSS has already been emitted for this rerun.
+    # Disable it for later tab and control reruns.
+    st.session_state.station_navigation_in_progress = False
+
     station_key = st.session_state.selected_station
     station = STATIONS[station_key]
 
@@ -128,28 +144,32 @@ if st.session_state.selected_station in STATIONS:
 
     # Detail tabs
     temperature_tab, precipitation_tab, air_quality_tab = st.tabs(
-        ["Temperature", "Precipitation", "Air Quality"]
+        ["Temperature", "Precipitation", "Air Quality"],
+        key="climate_data_tabs",
+        on_change="rerun",
     )
 
-    with temperature_tab:
-        render_temperature_tab(
-            temperature_data,
-            station_name=station_name,
-        )
+    if temperature_tab.open:
+        with temperature_tab:
+            render_temperature_tab(
+                temperature_data,
+                station_name=station_name,
+            )
 
-    with precipitation_tab:
-        render_precipitation_tab(
-            precipitation_data,
-            station_name=station_name,
-        )
+    elif precipitation_tab.open:
+        with precipitation_tab:
+            render_precipitation_tab(
+                precipitation_data,
+                station_name=station_name,
+            )
 
-    with air_quality_tab:
-        render_air_quality_tab(
-            pm25_data=pm25_data,
-            ozone_data=ozone_data,
-            station_name=station_name,
-        )
-
+    elif air_quality_tab.open:
+        with air_quality_tab:
+            render_air_quality_tab(
+                pm25_data=pm25_data,
+                ozone_data=ozone_data,
+                station_name=station_name,
+            )
 
 # SCREEN 1: Landing page and station map
 else:
@@ -265,6 +285,7 @@ else:
             st.session_state.selected_station = (
                 clicked_row["station_key"]
             )
+            st.session_state.station_navigation_in_progress = True
 
             st.rerun()
 
