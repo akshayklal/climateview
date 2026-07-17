@@ -167,9 +167,13 @@ def _y_axis_title(
     return "Annual average daily max ozone (ppb)"
 
 
-def _annual_unhealthy_days(df: pd.DataFrame) -> pd.DataFrame:
+def _unhealthy_days(
+    df: pd.DataFrame,
+    aggregation: str,
+) -> pd.DataFrame:
     if "aqi" not in df.columns:
-        return pd.DataFrame(columns=["year", "unhealthy_days"])
+        key_column = "date" if aggregation == "Month" else "year"
+        return pd.DataFrame(columns=[key_column, "unhealthy_days"])
 
     valid = df.copy()
     valid["date"] = pd.to_datetime(
@@ -184,14 +188,30 @@ def _annual_unhealthy_days(df: pd.DataFrame) -> pd.DataFrame:
         subset=["date", "aqi"],
     )
 
+    key_column = "date" if aggregation == "Month" else "year"
     if valid.empty:
-        return pd.DataFrame(columns=["year", "unhealthy_days"])
+        return pd.DataFrame(columns=[key_column, "unhealthy_days"])
 
-    valid["year"] = valid["date"].dt.year
-    valid["unhealthy_day"] = valid["aqi"] > 100
+    # Keep one AQI value per date so duplicate source records do not
+    # inflate the unhealthy-day count.
+    daily_aqi = (
+        valid.groupby("date", as_index=False)
+        .agg(aqi=("aqi", "max"))
+        .sort_values("date")
+    )
+    daily_aqi["unhealthy_day"] = daily_aqi["aqi"] > 100
 
+    if aggregation == "Month":
+        return (
+            daily_aqi.set_index("date")
+            .resample("MS")
+            .agg(unhealthy_days=("unhealthy_day", "sum"))
+            .reset_index()
+        )
+
+    daily_aqi["year"] = daily_aqi["date"].dt.year
     return (
-        valid.groupby("year", as_index=False)
+        daily_aqi.groupby("year", as_index=False)
         .agg(unhealthy_days=("unhealthy_day", "sum"))
     )
 
@@ -216,7 +236,7 @@ def _build_air_quality_figure(
     )
 
     show_unhealthy_days = (
-        aggregation == "Year"
+        aggregation in ("Month", "Year")
         and unhealthy_days is not None
         and not unhealthy_days.empty
     )
@@ -263,23 +283,27 @@ def _build_air_quality_figure(
         )
 
     if show_unhealthy_days:
-        annual = aggregated[["year"]].merge(
+        unhealthy_x_column = (
+            "date" if aggregation == "Month" else "year"
+        )
+        unhealthy = aggregated[[unhealthy_x_column]].merge(
             unhealthy_days,
-            on="year",
+            on=unhealthy_x_column,
             how="left",
         )
-        annual["unhealthy_days"] = (
-            annual["unhealthy_days"].fillna(0).astype(int)
+        unhealthy["unhealthy_days"] = (
+            unhealthy["unhealthy_days"].fillna(0).astype(int)
         )
+        hover_period = "Month" if aggregation == "Month" else "Year"
 
         figure.add_trace(
             go.Bar(
-                x=annual["year"],
-                y=annual["unhealthy_days"],
+                x=unhealthy[unhealthy_x_column],
+                y=unhealthy["unhealthy_days"],
                 name="Unhealthy AQI days",
                 opacity=0.32,
                 hovertemplate=(
-                    "Year: %{x}<br>"
+                    f"{hover_period}: %{{x}}<br>"
                     "Unhealthy AQI days: %{y}"
                     "<extra></extra>"
                 ),
@@ -430,7 +454,10 @@ def _render_pollutant_section(
         )
     ].copy()
 
-    unhealthy_days = _annual_unhealthy_days(filtered_source_df)
+    unhealthy_days = _unhealthy_days(
+        filtered_source_df,
+        aggregation,
+    )
 
     figure, trend = _build_air_quality_figure(
         aggregated=aggregated,
