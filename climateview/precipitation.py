@@ -672,13 +672,27 @@ def render_precipitation_tab(data, station_name):
         st.session_state[text_key] = None
         st.session_state[question_key] = ""
 
-    heading_col, form_col, reset_col = st.columns(
-        [1.8, 7.7, 0.9],
+    st.subheader("AI Insights")
+
+    # Reserve exactly four visible text lines. Longer responses scroll
+    # inside the response viewport without moving the chart.
+    with st.container(height=88, border=False):
+        insight_placeholder = st.empty()
+
+        insight_text = st.session_state.get(text_key)
+
+        if insight_text:
+            render_ai_response(
+                insight_placeholder,
+                insight_text,
+            )
+
+    # Follow-up controls sit below the automatic summary so the page reads
+    # naturally: review the insight first, then ask a specific question.
+    form_col, reset_col = st.columns(
+        [9.1, 0.9],
         vertical_alignment="center",
     )
-
-    with heading_col:
-        st.subheader("AI Insights")
 
     with form_col:
         with st.form(
@@ -687,7 +701,7 @@ def render_precipitation_tab(data, station_name):
             border=False,
         ):
             question_col, ask_col = st.columns(
-                [7.0, 1.0],
+                [8.0, 1.0],
                 vertical_alignment="center",
             )
 
@@ -712,19 +726,6 @@ def render_precipitation_tab(data, station_name):
             width="stretch",
             on_click=reset_precipitation_ai,
         )
-
-    # Reserve exactly four visible text lines. Longer responses scroll
-    # inside the response viewport without moving the chart.
-    with st.container(height=88, border=False):
-        insight_placeholder = st.empty()
-
-        insight_text = st.session_state.get(text_key)
-
-        if insight_text:
-            render_ai_response(
-                insight_placeholder,
-                insight_text,
-            )
 
     # Render the chart immediately, before waiting for the AI response.
     st.plotly_chart(
