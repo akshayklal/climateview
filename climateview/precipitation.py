@@ -1,14 +1,8 @@
-import html
-
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from climateview.ai import (
-    SummaryGenerationError,
-    answer_analysis_question,
-    summarize_analysis,
-)
+from climateview.ai_insights import render_ai_insights
 from climateview.statistics import (
     AnalysisContext,
     DataSchema,
@@ -30,20 +24,6 @@ MONTH_NAME_TO_NUMBER = {
     "December": 12,
 }
 
-
-
-def render_ai_response(placeholder, response_text):
-    """Render exactly four visible text lines with a visible scrollbar."""
-    escaped_text = html.escape(response_text).replace("\n", "<br>")
-
-    placeholder.markdown(
-        f"""
-        <div class="precipitation-ai-response">
-            {escaped_text}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 def build_precipitation_aggregation(
@@ -417,43 +397,6 @@ def render_precipitation_table(
 
 
 def render_precipitation_tab(data, station_name):
-    st.markdown(
-        """
-        <style>
-        .precipitation-ai-response {
-            box-sizing: border-box;
-            height: 5.4rem;
-            line-height: 1.35rem;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            padding: 0 0.35rem 0 0;
-            margin: 0;
-            scrollbar-gutter: stable;
-            scrollbar-width: thin;
-            scrollbar-color:
-                rgba(128, 128, 128, 0.55)
-                rgba(128, 128, 128, 0.12);
-        }
-
-        .precipitation-ai-response::-webkit-scrollbar {
-            width: 8px;
-            display: block;
-        }
-
-        .precipitation-ai-response::-webkit-scrollbar-track {
-            background: rgba(128, 128, 128, 0.12);
-            border-radius: 4px;
-        }
-
-        .precipitation-ai-response::-webkit-scrollbar-thumb {
-            background: rgba(128, 128, 128, 0.55);
-            border-radius: 4px;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
     if data is None or data.empty:
         st.warning(
             "No precipitation data is available for this station."
@@ -651,140 +594,31 @@ def render_precipitation_tab(data, station_name):
         rain_year_start_month,
     )
 
-    signature_key = "precipitation_ai_signature"
-    text_key = "precipitation_ai_text"
-    mode_key = "precipitation_ai_mode"
-    question_key = "precipitation_ai_question"
-
-    signature_changed = (
-        st.session_state.get(signature_key)
-        != insight_signature
-    )
-
-    if signature_changed:
-        st.session_state[signature_key] = insight_signature
-        st.session_state[text_key] = None
-        st.session_state[mode_key] = "summary"
-        st.session_state[question_key] = ""
-
-    def reset_precipitation_ai():
-        st.session_state[mode_key] = "summary"
-        st.session_state[text_key] = None
-        st.session_state[question_key] = ""
-
-    st.subheader("AI Insights")
-
-    # Reserve exactly four visible text lines. Longer responses scroll
-    # inside the response viewport without moving the chart.
-    with st.container(height=88, border=False):
-        insight_placeholder = st.empty()
-
-        insight_text = st.session_state.get(text_key)
-
-        if insight_text:
-            render_ai_response(
-                insight_placeholder,
-                insight_text,
-            )
-
-    # Follow-up controls sit below the automatic summary so the page reads
-    # naturally: review the insight first, then ask a specific question.
-    form_col, reset_col = st.columns(
-        [9.1, 0.9],
-        vertical_alignment="center",
-    )
-
-    with form_col:
-        with st.form(
-            "precipitation_ai_form",
-            clear_on_submit=False,
-            border=False,
-        ):
-            question_col, ask_col = st.columns(
-                [8.0, 1.0],
-                vertical_alignment="center",
-            )
-
-            with question_col:
-                question = st.text_input(
-                    "Ask a question about the selected precipitation data",
-                    placeholder="Ask about trends, anomalies, or specific years...",
-                    key=question_key,
-                    label_visibility="collapsed",
-                )
-
-            with ask_col:
-                question_submitted = st.form_submit_button(
-                    "Ask",
-                    width="stretch",
-                )
-
-    with reset_col:
-        st.button(
-            "Reset",
-            key="precipitation_ai_reset",
+    def render_precipitation_chart():
+        st.plotly_chart(
+            figure,
             width="stretch",
-            on_click=reset_precipitation_ai,
+            config={
+                "displayModeBar": False,
+                "responsive": True,
+            },
         )
 
-    # Render the chart immediately, before waiting for the AI response.
-    st.plotly_chart(
-        figure,
-        width="stretch",
-        config={
-            "displayModeBar": False,
-            "responsive": True,
-        },
+    render_ai_insights(
+        analysis=analysis,
+        state_prefix="precipitation",
+        signature=insight_signature,
+        render_below=render_precipitation_chart,
+        question_label=(
+            "Ask a question about the selected precipitation data"
+        ),
+        question_placeholder=(
+            "Ask about trends, anomalies, or specific years..."
+        ),
+        summary_spinner_text=(
+            "Analyzing the selected precipitation data..."
+        ),
     )
-
-    # Run AI work only after the chart has been emitted. Both the initial
-    # summary and submitted questions use the same AI-area placeholder,
-    # keeping the spinner out of the bottom of the page.
-    if question_submitted and question.strip():
-        try:
-            with insight_placeholder.container():
-                with st.spinner("Answering your question..."):
-                    answer_response = answer_analysis_question(
-                        analysis,
-                        question,
-                    )
-
-            st.session_state[text_key] = answer_response.text
-            st.session_state[mode_key] = "answer"
-
-            render_ai_response(
-                insight_placeholder,
-                answer_response.text,
-            )
-
-        except SummaryGenerationError:
-            insight_placeholder.info(
-                "The AI answer is temporarily unavailable."
-            )
-
-    elif st.session_state.get(text_key) is None:
-        try:
-            with insight_placeholder.container():
-                with st.spinner(
-                    "Analyzing the selected precipitation data..."
-                ):
-                    summary_response = summarize_analysis(
-                        analysis
-                    )
-
-            st.session_state[text_key] = summary_response.text
-            st.session_state[mode_key] = "summary"
-
-            render_ai_response(
-                insight_placeholder,
-                summary_response.text,
-            )
-
-        except SummaryGenerationError:
-            insight_placeholder.info(
-                "AI Insights are temporarily unavailable. "
-                "The chart and statistics are still available."
-            )
 
     with st.expander(
         "View underlying precipitation data",

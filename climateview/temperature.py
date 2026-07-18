@@ -3,6 +3,13 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+from climateview.ai_insights import render_ai_insights
+from climateview.statistics import (
+    AnalysisContext,
+    DataSchema,
+    analyze_series,
+)
+
 
 def build_temperature_aggregation(data, aggregation):
     if aggregation == "Month":
@@ -410,13 +417,59 @@ def render_temperature_tab(data, station_name):
         f"{years_included}",
     )
 
-    st.plotly_chart(
-        figure,
-        width="stretch",
-        config={
-            "displayModeBar": False,
-            "responsive": True,
-        },
+    analysis_data = aggregated_data.copy()
+    analysis_data["avg_temperature_f"] = (
+        analysis_data["avg_tmax_f"]
+        + analysis_data["avg_tmin_f"]
+    ) / 2.0
+
+    analysis = analyze_series(
+        dataframe=analysis_data,
+        context=AnalysisContext(
+            location=station_name,
+            metric="temperature",
+            unit="degrees Fahrenheit",
+            aggregation=aggregation.lower(),
+            start_period=selected_years[0],
+            end_period=selected_years[1],
+        ),
+        schema=DataSchema(
+            period_column=x_col,
+            value_column="avg_temperature_f",
+        ),
+    )
+
+    insight_signature = (
+        station_name,
+        aggregation,
+        selected_years[0],
+        selected_years[1],
+    )
+
+    def render_temperature_chart():
+        st.plotly_chart(
+            figure,
+            width="stretch",
+            config={
+                "displayModeBar": False,
+                "responsive": True,
+            },
+        )
+
+    render_ai_insights(
+        analysis=analysis,
+        state_prefix="temperature",
+        signature=insight_signature,
+        render_below=render_temperature_chart,
+        question_label=(
+            "Ask a question about the selected temperature data"
+        ),
+        question_placeholder=(
+            "Ask about warming trends, anomalies, or specific years..."
+        ),
+        summary_spinner_text=(
+            "Analyzing the selected temperature data..."
+        ),
     )
 
     with st.expander(

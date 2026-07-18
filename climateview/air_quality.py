@@ -6,6 +6,13 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import streamlit as st
 
+from climateview.ai_insights import render_ai_insights
+from climateview.statistics import (
+    AnalysisContext,
+    DataSchema,
+    analyze_series,
+)
+
 
 def _empty_dataset(dataset: Dict) -> bool:
     if not dataset:
@@ -358,6 +365,7 @@ def _build_air_quality_figure(
 def _render_pollutant_section(
     pm25_data: Dict,
     ozone_data: Dict,
+    station_name: str,
 ) -> None:
     control_columns = st.columns(
         [1.4, 2.0, 5.6],
@@ -506,10 +514,56 @@ def _render_pollutant_section(
             f"{len(filtered_daily):,}",
         )
 
-    st.write("Chart goes here")
-    st.plotly_chart(
-        figure,
-        width="stretch",
+    pollutant_name = "PM2.5" if pollutant == "pm25" else "ozone"
+
+    analysis = analyze_series(
+        dataframe=aggregated,
+        context=AnalysisContext(
+            location=station_name,
+            metric=pollutant_name,
+            unit=unit,
+            aggregation=aggregation.lower(),
+            start_period=selected_years[0],
+            end_period=selected_years[1],
+        ),
+        schema=DataSchema(
+            period_column=x_column,
+            value_column="display_value",
+        ),
+    )
+
+    insight_signature = (
+        station_name,
+        pollutant_key,
+        aggregation,
+        selected_years[0],
+        selected_years[1],
+    )
+
+    def render_air_quality_chart():
+        st.plotly_chart(
+            figure,
+            width="stretch",
+            config={
+                "displayModeBar": False,
+                "responsive": True,
+            },
+        )
+
+    render_ai_insights(
+        analysis=analysis,
+        state_prefix=f"air_quality_{pollutant_key}",
+        signature=insight_signature,
+        render_below=render_air_quality_chart,
+        question_label=(
+            f"Ask a question about the selected {pollutant_name} data"
+        ),
+        question_placeholder=(
+            "Ask about trends, unhealthy periods, or specific years..."
+        ),
+        summary_spinner_text=(
+            f"Analyzing the selected {pollutant_name} data..."
+        ),
     )
 
     with st.expander(
@@ -545,4 +599,5 @@ def render_air_quality_tab(
     _render_pollutant_section(
         pm25_data,
         ozone_data,
+        station_name,
     )
