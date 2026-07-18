@@ -25,9 +25,9 @@ PRECIPITATION_FILE = (
 )
 
 
-def load_san_francisco_annual_precipitation() -> pd.DataFrame:
+def load_los_angeles_annual_precipitation() -> pd.DataFrame:
     """
-    Load the processed San Francisco/SFO daily precipitation file and
+    Load the processed Los Angeles Downtown/USC daily precipitation file and
     aggregate it into calendar-year totals.
     """
 
@@ -58,7 +58,7 @@ def load_san_francisco_annual_precipitation() -> pd.DataFrame:
 
 def test_generate_real_precipitation_summary() -> None:
     """
-    Generate an AI interpretation from the real San Francisco
+    Generate an AI interpretation from the real Los Angeles
     precipitation analysis.
 
     Run with pytest -s to display the generated summary.
@@ -67,12 +67,12 @@ def test_generate_real_precipitation_summary() -> None:
     if not os.getenv("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY is not configured.")
 
-    chart_df = load_san_francisco_annual_precipitation()
+    chart_df = load_los_angeles_annual_precipitation()
 
     analysis = analyze_series(
         dataframe=chart_df,
         context=AnalysisContext(
-            location="San Francisco / SFO, CA",
+            location="Los Angeles Downtown / USC, CA",
             metric="precipitation",
             unit="inches",
             aggregation="calendar_year",
