@@ -60,7 +60,7 @@ def render_ai_insights(
     analysis,
     state_prefix: str,
     signature: Hashable,
-    render_below: Callable[[], None],
+    render_below: Callable[[tuple[str, ...], tuple[str, ...]], None],
     question_label: str,
     question_placeholder: str,
     summary_spinner_text: str,
@@ -82,17 +82,23 @@ def render_ai_insights(
     text_key = f"{state_prefix}_ai_text"
     mode_key = f"{state_prefix}_ai_mode"
     question_key = f"{state_prefix}_ai_question"
+    references_key = f"{state_prefix}_ai_referenced_periods"
+    series_key = f"{state_prefix}_ai_referenced_series"
 
     if st.session_state.get(signature_key) != signature:
         st.session_state[signature_key] = signature
         st.session_state[text_key] = None
         st.session_state[mode_key] = "summary"
         st.session_state[question_key] = ""
+        st.session_state[references_key] = ()
+        st.session_state[series_key] = ()
 
     def reset_ai() -> None:
         st.session_state[mode_key] = "summary"
         st.session_state[text_key] = None
         st.session_state[question_key] = ""
+        st.session_state[references_key] = ()
+        st.session_state[series_key] = ()
 
     st.subheader("AI Insights")
 
@@ -143,7 +149,10 @@ def render_ai_insights(
 
     # The page supplies its chart or other content here. This is deliberately
     # emitted before any AI request so slow AI generation cannot block it.
-    render_below()
+    render_below(
+        tuple(st.session_state.get(references_key, ())),
+        tuple(st.session_state.get(series_key, ())),
+    )
 
     if question_submitted and question.strip():
         try:
@@ -156,7 +165,10 @@ def render_ai_insights(
 
             st.session_state[text_key] = answer_response.text
             st.session_state[mode_key] = "answer"
+            st.session_state[references_key] = answer_response.referenced_periods
+            st.session_state[series_key] = answer_response.referenced_series
             _render_response(insight_placeholder, answer_response.text)
+            st.rerun()
 
         except SummaryGenerationError:
             insight_placeholder.info(
@@ -171,7 +183,12 @@ def render_ai_insights(
 
             st.session_state[text_key] = summary_response.text
             st.session_state[mode_key] = "summary"
+            # The automatic insight summarizes the chart as a whole. Only a
+            # direct answer to a user's question should highlight chart data.
+            st.session_state[references_key] = ()
+            st.session_state[series_key] = ()
             _render_response(insight_placeholder, summary_response.text)
+            st.rerun()
 
         except SummaryGenerationError:
             insight_placeholder.info(

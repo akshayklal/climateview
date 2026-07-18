@@ -4,6 +4,11 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from climateview.ai_insights import render_ai_insights
+from climateview.charts import (
+    HIGHLIGHT_COLOR,
+    insert_gap_breaks,
+    select_referenced_periods,
+)
 from climateview.statistics import (
     AnalysisContext,
     DataSchema,
@@ -110,6 +115,20 @@ def build_temperature_figure(
     x_title,
     station_name,
 ):
+    if x_col == "month":
+        maximum_gap = pd.Timedelta(days=45)
+    elif x_col == "year":
+        maximum_gap = 1.5
+    else:
+        maximum_gap = 15
+
+    plot_data = insert_gap_breaks(
+        aggregated_data,
+        x_col=x_col,
+        y_cols=["avg_tmax_f", "avg_tmin_f"],
+        max_gap=maximum_gap,
+    )
+
     max_trend, max_trend_values = calculate_linear_trend(
         aggregated_data,
         "avg_tmax_f",
@@ -124,10 +143,11 @@ def build_temperature_figure(
 
     figure.add_trace(
         go.Scatter(
-            x=aggregated_data[x_col],
-            y=aggregated_data["avg_tmax_f"],
+            x=plot_data[x_col],
+            y=plot_data["avg_tmax_f"],
             mode="lines+markers",
             name="Average maximum",
+            connectgaps=False,
             hovertemplate=(
                 "%{x}<br>"
                 "Average maximum: %{y:.1f} °F"
@@ -138,10 +158,11 @@ def build_temperature_figure(
 
     figure.add_trace(
         go.Scatter(
-            x=aggregated_data[x_col],
-            y=aggregated_data["avg_tmin_f"],
+            x=plot_data[x_col],
+            y=plot_data["avg_tmin_f"],
             mode="lines+markers",
             name="Average minimum",
+            connectgaps=False,
             hovertemplate=(
                 "%{x}<br>"
                 "Average minimum: %{y:.1f} °F"
@@ -436,6 +457,10 @@ def render_temperature_tab(data, station_name):
         schema=DataSchema(
             period_column=x_col,
             value_column="avg_temperature_f",
+            ranked_value_columns={
+                "average maximum temperature": "avg_tmax_f",
+                "average minimum temperature": "avg_tmin_f",
+            },
         ),
     )
 
@@ -446,7 +471,53 @@ def render_temperature_tab(data, station_name):
         selected_years[1],
     )
 
-    def render_temperature_chart():
+    def render_temperature_chart(referenced_periods, referenced_series):
+        highlighted = select_referenced_periods(
+            aggregated_data,
+            x_col,
+            referenced_periods,
+        )
+        if not highlighted.empty:
+            temperature_series = (
+                ("avg_tmax_f", "Referenced maximum"),
+                ("avg_tmin_f", "Referenced minimum"),
+            )
+            normalized_series = {
+                series.strip().lower() for series in referenced_series
+            }
+            line_specific_series = normalized_series & {
+                "average maximum temperature",
+                "average minimum temperature",
+            }
+            if line_specific_series:
+                temperature_series = tuple(
+                    item
+                    for item in temperature_series
+                    if (
+                        item[0] == "avg_tmax_f"
+                        and "average maximum temperature" in line_specific_series
+                    )
+                    or (
+                        item[0] == "avg_tmin_f"
+                        and "average minimum temperature" in line_specific_series
+                    )
+                )
+
+            for value_col, label in temperature_series:
+                figure.add_trace(
+                    go.Scatter(
+                        x=highlighted[x_col],
+                        y=highlighted[value_col],
+                        mode="markers",
+                        name=label,
+                        marker={
+                            "color": HIGHLIGHT_COLOR,
+                            "size": 12,
+                            "line": {"color": "white", "width": 2},
+                        },
+                        hoverinfo="skip",
+                    )
+                )
         st.plotly_chart(
             figure,
             width="stretch",

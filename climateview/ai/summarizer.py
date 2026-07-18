@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from openai import OpenAI
 from openai import OpenAIError
+from pydantic import BaseModel, Field, ValidationError
 
 from climateview.statistics.models import AnalysisResult
 
@@ -16,7 +17,7 @@ from .prompt_builder import (
 )
 
 DEFAULT_MODEL = "gpt-5-mini"
-DEFAULT_MAX_OUTPUT_TOKENS = 300
+DEFAULT_MAX_OUTPUT_TOKENS = 1000
 
 
 class SummaryGenerationError(RuntimeError):
@@ -33,6 +34,25 @@ class SummaryResponse:
 
     text: str
     model: str
+    referenced_periods: tuple[str, ...] = ()
+    referenced_series: tuple[str, ...] = ()
+
+
+class _ChartResponse(BaseModel):
+    text: str = Field(description="The answer shown to the user.")
+    referenced_periods: list[str] = Field(
+        description=(
+            "Exact individual chart periods explicitly referenced in the "
+            "answer, copied from the verified analysis. Use an empty list "
+            "for trends, ranges, or periods not present in the analysis."
+        )
+    )
+    referenced_series: list[str] = Field(
+        description=(
+            "Exact ranked_periods series names used for the answer. Use an "
+            "empty list when no ranked series was used."
+        )
+    )
 
 
 def summarize_analysis(
@@ -77,19 +97,21 @@ def summarize_analysis(
     client = OpenAI(api_key=resolved_api_key)
 
     try:
-        response = client.responses.create(
+        response = client.responses.parse(
             model=resolved_model,
             instructions=SYSTEM_INSTRUCTIONS,
             input=prompt,
             reasoning={"effort": "low"},
-            max_output_tokens=1000,
+            max_output_tokens=max_output_tokens,
+            text_format=_ChartResponse,
         )
-    except OpenAIError as exc:
+    except (OpenAIError, ValidationError) as exc:
         raise SummaryGenerationError(
             f"OpenAI summary generation failed: {exc}"
         ) from exc
 
-    summary = response.output_text.strip()
+    parsed = response.output_parsed
+    summary = parsed.text.strip() if parsed is not None else ""
 
     if not summary:
         status = getattr(response, "status", None)
@@ -103,6 +125,8 @@ def summarize_analysis(
     return SummaryResponse(
         text=summary,
         model=resolved_model,
+        referenced_periods=tuple(parsed.referenced_periods),
+        referenced_series=tuple(parsed.referenced_series),
     )
 
 def answer_analysis_question(
@@ -139,19 +163,21 @@ def answer_analysis_question(
     client = OpenAI(api_key=resolved_api_key)
 
     try:
-        response = client.responses.create(
+        response = client.responses.parse(
             model=resolved_model,
             instructions=QUESTION_SYSTEM_INSTRUCTIONS,
             input=prompt,
             reasoning={"effort": "low"},
             max_output_tokens=max_output_tokens,
+            text_format=_ChartResponse,
         )
-    except OpenAIError as exc:
+    except (OpenAIError, ValidationError) as exc:
         raise SummaryGenerationError(
             f"OpenAI question answering failed: {exc}"
         ) from exc
 
-    answer = response.output_text.strip()
+    parsed = response.output_parsed
+    answer = parsed.text.strip() if parsed is not None else ""
 
     if not answer:
         status = getattr(response, "status", None)
@@ -170,4 +196,6 @@ def answer_analysis_question(
     return SummaryResponse(
         text=answer,
         model=resolved_model,
+        referenced_periods=tuple(parsed.referenced_periods),
+        referenced_series=tuple(parsed.referenced_series),
     )

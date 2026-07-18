@@ -219,6 +219,46 @@ def calculate_extremes(
     return minimum, maximum
 
 
+def calculate_ranked_extremes(
+    dataframe: pd.DataFrame,
+    period_column: str,
+    value_column: str,
+    limit: int = 10,
+) -> dict[str, list[ExtremeValue]]:
+    """Return verified highest and lowest observations in rank order."""
+    if limit < 1:
+        raise ValueError("Ranking limit must be at least 1.")
+
+    prepared = prepare_series(
+        dataframe=dataframe,
+        period_column=period_column,
+        value_column=value_column,
+    )
+
+    def serialize(rows: pd.DataFrame) -> list[ExtremeValue]:
+        return [
+            ExtremeValue(
+                period=_to_python_scalar(row[period_column]),
+                value=float(row[value_column]),
+            )
+            for _, row in rows.iterrows()
+        ]
+
+    highest = prepared.sort_values(
+        [value_column, period_column],
+        ascending=[False, True],
+    ).head(limit)
+    lowest = prepared.sort_values(
+        [value_column, period_column],
+        ascending=[True, True],
+    ).head(limit)
+
+    return {
+        "highest": serialize(highest),
+        "lowest": serialize(lowest),
+    }
+
+
 def calculate_variability_statistics(
     values: pd.Series | Sequence[float],
 ) -> VariabilityStatistics:

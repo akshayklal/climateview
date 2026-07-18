@@ -29,6 +29,7 @@ class DataSchema:
 
     period_column: str
     value_column: str
+    ranked_value_columns: dict[str, str] = field(default_factory=dict)
 
 @dataclass(frozen=True)
 class DataQualityStatistics:
@@ -140,6 +141,9 @@ class AnalysisResult:
     minimum: ExtremeValue
     maximum: ExtremeValue
     recent_change: RecentChangeStatistics | None
+    rankings: dict[str, dict[str, list[ExtremeValue]]] = field(
+        default_factory=dict
+    )
     metric_specific: dict[str, Any] = field(default_factory=dict)
     insights: list[Insight] = field(default_factory=list)
 

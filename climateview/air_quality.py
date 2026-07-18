@@ -7,6 +7,11 @@ from plotly.subplots import make_subplots
 import streamlit as st
 
 from climateview.ai_insights import render_ai_insights
+from climateview.charts import (
+    HIGHLIGHT_COLOR,
+    insert_gap_breaks,
+    select_referenced_periods,
+)
 from climateview.statistics import (
     AnalysisContext,
     DataSchema,
@@ -242,6 +247,20 @@ def _build_air_quality_figure(
         x_column,
     )
 
+    if aggregation == "Day":
+        maximum_gap = pd.Timedelta(days=30)
+    elif aggregation == "Month":
+        maximum_gap = pd.Timedelta(days=45)
+    else:
+        maximum_gap = 1.5
+
+    plot_data = insert_gap_breaks(
+        aggregated,
+        x_col=x_column,
+        y_cols=["display_value"],
+        max_gap=maximum_gap,
+    )
+
     show_unhealthy_days = (
         aggregation in ("Month", "Year")
         and unhealthy_days is not None
@@ -255,8 +274,8 @@ def _build_air_quality_figure(
 
     figure.add_trace(
         go.Scatter(
-            x=aggregated[x_column],
-            y=aggregated["display_value"],
+            x=plot_data[x_column],
+            y=plot_data["display_value"],
             mode=(
                 "lines"
                 if aggregation in ("Day", "Month")
@@ -267,6 +286,7 @@ def _build_air_quality_figure(
                 if aggregation == "Day"
                 else "Average"
             ),
+            connectgaps=False,
             hovertemplate=(
                 "%{x}<br>"
                 f"Value: %{{y:.2f}} {unit}"
@@ -475,6 +495,7 @@ def _render_pollutant_section(
         x_title=x_title,
         unhealthy_days=unhealthy_days,
     )
+    uses_secondary_axis = "yaxis2" in figure.layout
 
     _, unit = _value_column_and_unit(pollutant)
     average_value = float(
@@ -540,7 +561,28 @@ def _render_pollutant_section(
         selected_years[1],
     )
 
-    def render_air_quality_chart():
+    def render_air_quality_chart(referenced_periods, _referenced_series):
+        highlighted = select_referenced_periods(
+            aggregated,
+            x_column,
+            referenced_periods,
+        )
+        if not highlighted.empty:
+            figure.add_trace(
+                go.Scatter(
+                    x=highlighted[x_column],
+                    y=highlighted["display_value"],
+                    mode="markers",
+                    name="AI referenced period",
+                    marker={
+                        "color": HIGHLIGHT_COLOR,
+                        "size": 12,
+                        "line": {"color": "white", "width": 2},
+                    },
+                    hoverinfo="skip",
+                ),
+                secondary_y=False if uses_secondary_axis else None,
+            )
         st.plotly_chart(
             figure,
             width="stretch",

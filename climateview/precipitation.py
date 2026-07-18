@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from climateview.ai_insights import render_ai_insights
+from climateview.charts import HIGHLIGHT_COLOR, select_referenced_periods
 from climateview.statistics import (
     AnalysisContext,
     DataSchema,
@@ -594,7 +595,18 @@ def render_precipitation_tab(data, station_name):
         rain_year_start_month,
     )
 
-    def render_precipitation_chart():
+    def render_precipitation_chart(referenced_periods, _referenced_series):
+        highlighted = select_referenced_periods(
+            aggregated_data,
+            x_col,
+            referenced_periods,
+        )
+        if not highlighted.empty:
+            highlighted_indices = set(highlighted.index)
+            figure.data[0].marker.color = [
+                HIGHLIGHT_COLOR if index in highlighted_indices else "#636efa"
+                for index in aggregated_data.index
+            ]
         st.plotly_chart(
             figure,
             width="stretch",

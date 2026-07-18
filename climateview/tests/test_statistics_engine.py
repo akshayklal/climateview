@@ -104,6 +104,15 @@ def test_analyze_precipitation_series(
     assert result.maximum.period == 2019
     assert result.maximum.value == pytest.approx(19.5)
 
+    assert [
+        item.period
+        for item in result.rankings["precipitation"]["highest"][:3]
+    ] == [2019, 2018, 2017]
+    assert [
+        item.period
+        for item in result.rankings["precipitation"]["lowest"][:3]
+    ] == [2000, 2001, 2002]
+
     assert result.trend is not None
     assert result.trend.slope_per_period == pytest.approx(0.5)
     assert result.trend.total_fitted_change == pytest.approx(9.5)
@@ -193,3 +202,24 @@ def test_rows_with_missing_values_are_removed(
     assert result.data_quality.observation_count == 3
     assert result.minimum.period == 2000
     assert result.maximum.period == 2003
+
+
+def test_additional_series_can_be_ranked(
+    annual_precipitation_df: pd.DataFrame,
+    analysis_context: AnalysisContext,
+) -> None:
+    dataframe = annual_precipitation_df.assign(
+        secondary=list(reversed(range(20)))
+    )
+    result = analyze_series(
+        dataframe=dataframe,
+        context=analysis_context,
+        schema=DataSchema(
+            period_column="year",
+            value_column="precipitation_inches",
+            ranked_value_columns={"secondary metric": "secondary"},
+        ),
+    )
+
+    assert result.rankings["secondary metric"]["highest"][0].period == 2000
+    assert result.rankings["secondary metric"]["lowest"][0].period == 2019

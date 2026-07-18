@@ -9,6 +9,7 @@ from .generic import (
     calculate_descriptive_statistics,
     calculate_extremes,
     calculate_recent_change_statistics,
+    calculate_ranked_extremes,
     calculate_trend_statistics,
     calculate_variability_statistics,
     prepare_series,
@@ -94,6 +95,19 @@ def analyze_series(
         value_column=value_column,
     )
 
+    ranking_columns = {
+        context.metric: value_column,
+        **schema.ranked_value_columns,
+    }
+    rankings = {
+        label: calculate_ranked_extremes(
+            dataframe=dataframe,
+            period_column=period_column,
+            value_column=ranking_value_column,
+        )
+        for label, ranking_value_column in ranking_columns.items()
+    }
+
     # ------------------------------------------------------------------
     # Metric-specific statistics
     # ------------------------------------------------------------------
@@ -133,6 +147,7 @@ def analyze_series(
         minimum=minimum,
         maximum=maximum,
         recent_change=recent_change,
+        rankings=rankings,
         metric_specific=metric_specific,
         insights=insights,
     )

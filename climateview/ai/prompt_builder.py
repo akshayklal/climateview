@@ -23,6 +23,7 @@ Follow these rules:
 - Prefer rounded values appropriate for a general audience.
 - Write one concise paragraph of approximately 90 to 140 words.
 - Do not use headings, bullet points, markdown, or technical notation.
+- Always return empty referenced_periods and referenced_series lists for this automatic chart summary.
 """.strip()
 
 QUESTION_SYSTEM_INSTRUCTIONS = """
@@ -38,6 +39,8 @@ Follow these rules:
 - Use plain, friendly language.
 - Keep the answer concise, usually 60 to 130 words.
 - Do not use headings, bullet points, markdown, or technical notation.
+- In referenced_periods, include only exact individual chart periods explicitly mentioned in the text. Copy their values exactly from the supplied analysis. Do not include ranges or general time spans.
+- In referenced_series, include the exact ranked_periods series names used to answer the question.
 """.strip()
 
 def build_summary_prompt(result: AnalysisResult) -> str:
@@ -92,6 +95,19 @@ def build_summary_payload(result: AnalysisResult) -> dict[str, Any]:
                 "period": result.maximum.period,
                 "value": _round_optional(result.maximum.value, 1),
             },
+        },
+        "ranked_periods": {
+            label: {
+                direction: [
+                    {
+                        "period": item.period,
+                        "value": _round_optional(item.value, 1),
+                    }
+                    for item in items
+                ]
+                for direction, items in ranking.items()
+            }
+            for label, ranking in result.rankings.items()
         },
         "variability": {
             "level": result.variability.variability_level,
