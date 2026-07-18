@@ -1,6 +1,6 @@
 {
-  "station_key": "chicago_ohare",
-  "station_name": "Chicago O'Hare, IL",
+  "station_key": "chicago_midway",
+  "station_name": "Chicago Midway AP 3SW, IL",
   "aqs_site_id": "17-031-4201",
   "aqs_site_name": "NORTHBROOK WATER PLANT",
   "pollutant": "pm25",
