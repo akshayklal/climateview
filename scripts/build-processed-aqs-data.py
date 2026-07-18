@@ -215,9 +215,13 @@ def normalize_poc(value: object) -> str:
 
 
 def monitor_file_path(pollutant: str, aqs_site_id: str) -> Path:
-    return RAW_DATA_DIR / "aqs-monitors-{}-{}.json".format(
-        pollutant,
-        aqs_site_id,
+    return (
+        RAW_DATA_DIR
+        / aqs_site_id
+        / "aqs-monitors-{}-{}.json".format(
+            pollutant,
+            aqs_site_id,
+        )
     )
 
 
@@ -280,8 +284,9 @@ def load_raw_rows(
     aqs_site_id: str,
 ) -> Tuple[List[Dict], List[Path]]:
     pattern = raw_file_pattern(pollutant, aqs_site_id)
+    station_directory = RAW_DATA_DIR / aqs_site_id
     files = sorted(
-        RAW_DATA_DIR.glob(pattern),
+        station_directory.glob(pattern),
         key=lambda path: (extract_year(path), path.name),
     )
 
@@ -297,7 +302,7 @@ def load_raw_rows(
             "No raw AQS files found for {} {} using {}".format(
                 pollutant,
                 aqs_site_id,
-                RAW_DATA_DIR / pattern,
+                station_directory / pattern,
             )
         )
 

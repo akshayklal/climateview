@@ -71,9 +71,15 @@ def output_station_id(station_code: str) -> str:
 
 
 def raw_file_path(file_station_id: str, year: int) -> Path:
-    return RAW_DATA_DIR / "noaa-precipitation-PRCP-{}-{}.json".format(
-        file_station_id,
-        year,
+    station_directory = file_station_id.replace("GHCND_", "", 1)
+
+    return (
+        RAW_DATA_DIR
+        / station_directory
+        / "noaa-precipitation-PRCP-{}-{}.json".format(
+            file_station_id,
+            year,
+        )
     )
 
 

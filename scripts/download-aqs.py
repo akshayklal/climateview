@@ -141,17 +141,25 @@ def parse_aqs_date(value: object) -> date | None:
 
 
 def raw_output_path(pollutant: str, aqs_site_id: str, year: int) -> Path:
-    return RAW_DATA_DIR / "aqs-{}-{}-{}.json".format(
-        pollutant,
-        aqs_site_id,
-        year,
+    return (
+        RAW_DATA_DIR
+        / aqs_site_id
+        / "aqs-{}-{}-{}.json".format(
+            pollutant,
+            aqs_site_id,
+            year,
+        )
     )
 
 
 def monitor_output_path(pollutant: str, aqs_site_id: str) -> Path:
-    return RAW_DATA_DIR / "aqs-monitors-{}-{}.json".format(
-        pollutant,
-        aqs_site_id,
+    return (
+        RAW_DATA_DIR
+        / aqs_site_id
+        / "aqs-monitors-{}-{}.json".format(
+            pollutant,
+            aqs_site_id,
+        )
     )
 
 
