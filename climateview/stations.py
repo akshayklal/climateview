@@ -79,4 +79,14 @@ STATIONS = {
         'aqs_site_name': 'Houston Aldine',
         'aqs_distance_km': 8.9,
     },
+    'st_louis_st_charles': {
+        'name': 'St. Louis / St. Charles, MO',
+        'latitude': 38.8142,
+        'longitude': -90.5139,
+        'noaa_station_id': 'USC00237397',
+        'noaa_start_year': 1893,
+        'aqs_site_id': '17-119-3007',
+        'aqs_site_name': 'WATER PLANT',
+        'aqs_distance_km': 35.7
+    },
 }

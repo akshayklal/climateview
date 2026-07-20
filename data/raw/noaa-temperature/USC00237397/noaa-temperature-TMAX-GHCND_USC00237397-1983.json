@@ -1,0 +1,695 @@
+[
+  {
+    "date": "1983-01-01T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 39.0
+  },
+  {
+    "date": "1983-01-02T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 50.0
+  },
+  {
+    "date": "1983-01-03T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 36.0
+  },
+  {
+    "date": "1983-01-04T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 35.0
+  },
+  {
+    "date": "1983-01-05T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 52.0
+  },
+  {
+    "date": "1983-01-06T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 37.0
+  },
+  {
+    "date": "1983-01-07T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 61.0
+  },
+  {
+    "date": "1983-01-08T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 43.0
+  },
+  {
+    "date": "1983-01-09T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 40.0
+  },
+  {
+    "date": "1983-01-10T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 44.0
+  },
+  {
+    "date": "1983-01-11T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 43.0
+  },
+  {
+    "date": "1983-01-12T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 34.0
+  },
+  {
+    "date": "1983-01-13T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 37.0
+  },
+  {
+    "date": "1983-01-14T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 43.0
+  },
+  {
+    "date": "1983-01-15T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 44.0
+  },
+  {
+    "date": "1983-01-16T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 34.0
+  },
+  {
+    "date": "1983-01-17T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 42.0
+  },
+  {
+    "date": "1983-01-18T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 30.0
+  },
+  {
+    "date": "1983-01-19T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 28.0
+  },
+  {
+    "date": "1983-01-20T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 30.0
+  },
+  {
+    "date": "1983-01-21T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 35.0
+  },
+  {
+    "date": "1983-01-22T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 33.0
+  },
+  {
+    "date": "1983-01-23T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 36.0
+  },
+  {
+    "date": "1983-01-24T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 36.0
+  },
+  {
+    "date": "1983-01-25T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 37.0
+  },
+  {
+    "date": "1983-01-26T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 36.0
+  },
+  {
+    "date": "1983-01-27T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 33.0
+  },
+  {
+    "date": "1983-01-28T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 33.0
+  },
+  {
+    "date": "1983-01-29T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 43.0
+  },
+  {
+    "date": "1983-01-30T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 42.0
+  },
+  {
+    "date": "1983-01-31T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 40.0
+  },
+  {
+    "date": "1983-02-01T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 36.0
+  },
+  {
+    "date": "1983-02-02T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 35.0
+  },
+  {
+    "date": "1983-02-03T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",I,0,0700",
+    "value": 23.0
+  },
+  {
+    "date": "1983-02-04T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 23.0
+  },
+  {
+    "date": "1983-02-05T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 31.0
+  },
+  {
+    "date": "1983-02-06T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 31.0
+  },
+  {
+    "date": "1983-02-07T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 33.0
+  },
+  {
+    "date": "1983-02-08T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 35.0
+  },
+  {
+    "date": "1983-02-09T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 40.0
+  },
+  {
+    "date": "1983-02-10T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 44.0
+  },
+  {
+    "date": "1983-02-11T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 44.0
+  },
+  {
+    "date": "1983-02-12T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 45.0
+  },
+  {
+    "date": "1983-02-13T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 47.0
+  },
+  {
+    "date": "1983-02-14T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 54.0
+  },
+  {
+    "date": "1983-02-15T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 57.0
+  },
+  {
+    "date": "1983-02-16T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 62.0
+  },
+  {
+    "date": "1983-02-17T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 47.0
+  },
+  {
+    "date": "1983-02-18T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 42.0
+  },
+  {
+    "date": "1983-02-19T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 55.0
+  },
+  {
+    "date": "1983-02-20T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 67.0
+  },
+  {
+    "date": "1983-02-21T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 72.0
+  },
+  {
+    "date": "1983-02-22T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 68.0
+  },
+  {
+    "date": "1983-02-23T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 68.0
+  },
+  {
+    "date": "1983-02-24T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 50.0
+  },
+  {
+    "date": "1983-02-25T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 42.0
+  },
+  {
+    "date": "1983-02-26T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 41.0
+  },
+  {
+    "date": "1983-02-27T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 47.0
+  },
+  {
+    "date": "1983-02-28T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 51.0
+  },
+  {
+    "date": "1983-03-01T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 61.0
+  },
+  {
+    "date": "1983-03-02T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 67.0
+  },
+  {
+    "date": "1983-03-03T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 76.0
+  },
+  {
+    "date": "1983-03-04T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 83.0
+  },
+  {
+    "date": "1983-03-05T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 76.0
+  },
+  {
+    "date": "1983-03-06T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 61.0
+  },
+  {
+    "date": "1983-03-07T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 61.0
+  },
+  {
+    "date": "1983-03-08T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 57.0
+  },
+  {
+    "date": "1983-03-09T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 39.0
+  },
+  {
+    "date": "1983-03-10T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 29.0
+  },
+  {
+    "date": "1983-12-01T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 37.0
+  },
+  {
+    "date": "1983-12-02T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 36.0
+  },
+  {
+    "date": "1983-12-03T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 38.0
+  },
+  {
+    "date": "1983-12-04T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 35.0
+  },
+  {
+    "date": "1983-12-05T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 41.0
+  },
+  {
+    "date": "1983-12-06T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 46.0
+  },
+  {
+    "date": "1983-12-07T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 40.0
+  },
+  {
+    "date": "1983-12-08T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 40.0
+  },
+  {
+    "date": "1983-12-09T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 42.0
+  },
+  {
+    "date": "1983-12-10T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 42.0
+  },
+  {
+    "date": "1983-12-11T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",I,0,0700",
+    "value": 47.0
+  },
+  {
+    "date": "1983-12-12T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 55.0
+  },
+  {
+    "date": "1983-12-13T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 46.0
+  },
+  {
+    "date": "1983-12-14T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 40.0
+  },
+  {
+    "date": "1983-12-15T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 33.0
+  },
+  {
+    "date": "1983-12-16T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 28.0
+  },
+  {
+    "date": "1983-12-17T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 25.0
+  },
+  {
+    "date": "1983-12-18T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 27.0
+  },
+  {
+    "date": "1983-12-19T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 10.0
+  },
+  {
+    "date": "1983-12-20T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 2.0
+  },
+  {
+    "date": "1983-12-21T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 22.0
+  },
+  {
+    "date": "1983-12-22T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 21.0
+  },
+  {
+    "date": "1983-12-23T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 5.0
+  },
+  {
+    "date": "1983-12-24T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 2.0
+  },
+  {
+    "date": "1983-12-26T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 9.0
+  },
+  {
+    "date": "1983-12-27T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 18.0
+  },
+  {
+    "date": "1983-12-28T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 26.0
+  },
+  {
+    "date": "1983-12-29T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 25.0
+  },
+  {
+    "date": "1983-12-30T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 24.0
+  },
+  {
+    "date": "1983-12-31T00:00:00",
+    "datatype": "TMAX",
+    "station": "GHCND:USC00237397",
+    "attributes": ",,0,0700",
+    "value": 23.0
+  }
+]
