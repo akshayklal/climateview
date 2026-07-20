@@ -217,3 +217,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Downloaded source data is reproducible and is not needed by the deployed app.
+# Existing raw files already tracked by Git remain tracked.
+data/raw/
