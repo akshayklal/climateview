@@ -27,9 +27,6 @@ def resolve_station(
     stations: Dict[str, Dict],
     station_value: str,
 ) -> Tuple[str, Dict]:
-    if station_value in stations:
-        return station_value, stations[station_value]
-
     normalized_value = station_value.replace("GHCND:", "")
 
     for station_key, station in stations.items():
@@ -41,11 +38,13 @@ def resolve_station(
         if noaa_station_id == normalized_value:
             return station_key, station
 
-    valid_keys = ", ".join(sorted(stations.keys()))
+    valid_ids = ", ".join(
+        station["noaa_station_id"] for station in stations.values()
+    )
     raise ValueError(
-        "Unknown station '{}'. Valid station keys: {}".format(
+        "Unknown NOAA station ID '{}'. Valid IDs: {}".format(
             station_value,
-            valid_keys,
+            valid_ids,
         )
     )
 
@@ -147,25 +146,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--station",
         help=(
-            "ClimateView station key or NOAA station ID. "
-            "If omitted, all active stations are processed."
+            "NOAA station ID, such as USC00111577. "
+            "If omitted, all stations are processed."
         ),
-    )
-
-    parser.add_argument(
-        "--start-year",
-        type=int,
-        help=(
-            "First year to process. If omitted, each station uses "
-            "noaa_start_year + 1 from stations.py."
-        ),
-    )
-
-    parser.add_argument(
-        "--end-year",
-        type=int,
-        default=date.today().year - 1,
-        help="Last year to process. Defaults to the last completed calendar year.",
     )
 
     return parser.parse_args()
@@ -179,16 +162,13 @@ def main() -> None:
         station_key, station = resolve_station(stations, args.station)
         selected_stations = [(station_key, station)]
     else:
-        selected_stations = [
-            (station_key, station)
-            for station_key, station in stations.items()
-            if station.get("active", False)
-        ]
+        selected_stations = list(stations.items())
 
     if not selected_stations:
-        raise ValueError("No active stations found in stations.py")
+        raise ValueError("No stations found in stations.py")
 
     PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    end_year = date.today().year - 1
 
     for station_key, station in selected_stations:
         noaa_station_id = station.get("noaa_station_id")
@@ -201,25 +181,23 @@ def main() -> None:
             )
             continue
 
-        if args.start_year is not None:
-            start_year = args.start_year
-        else:
-            noaa_start_year = station.get("noaa_start_year")
-
-            if noaa_start_year is None:
-                print(
-                    "Skipping station '{}': no noaa_start_year in stations.py "
-                    "and --start-year was not specified.".format(station_key)
+        noaa_start_year = station.get("noaa_start_year")
+        if noaa_start_year is None:
+            print(
+                "Skipping station '{}': no noaa_start_year in stations.py.".format(
+                    station_key
                 )
-                continue
+            )
+            continue
 
-            start_year = int(noaa_start_year) + 1
+        # Skip the potentially partial first calendar year of operation.
+        start_year = int(noaa_start_year) + 1
 
-        if args.end_year < start_year:
+        if end_year < start_year:
             print(
                 "Skipping station '{}': end year {} is earlier than start year {}.".format(
                     station_key,
-                    args.end_year,
+                    end_year,
                     start_year,
                 )
             )
@@ -230,14 +208,14 @@ def main() -> None:
                 station.get("name", station_key),
                 noaa_station_id,
                 start_year,
-                args.end_year,
+                end_year,
             )
         )
 
         processed = build_processed_precipitation_data(
             station_code=noaa_station_id,
             start_year=start_year,
-            end_year=args.end_year,
+            end_year=end_year,
         )
 
         station_id = output_station_id(noaa_station_id)

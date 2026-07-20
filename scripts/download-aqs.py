@@ -13,13 +13,13 @@ import requests
 
 
 # AQS architecture:
-# - stations.py stores the selected physical AQS site and pollutant parameter codes.
+# - stations.py stores the selected physical AQS site.
 # - POCs are not stored in stations.py because EPA may add, retire, or replace them.
 # - This script discovers all POCs dynamically and saves their monitor metadata.
 # - This script downloads all daily rows for all POCs without stitching them.
 # - build-processed-aqs-data.py will later stitch POCs chronologically:
-#   the most recently opened POC that is still active is used for each date,
-#   with fallback to an older active POC when a temporary newer POC closes.
+#   the oldest active POC is retained until it closes, with per-day fallback
+#   to the next-oldest active POC when the preferred monitor has no data.
 
 AQS_API_BASE_URL = "https://aqs.epa.gov/data/api"
 DAILY_DATA_URL = f"{AQS_API_BASE_URL}/dailyData/bySite"
@@ -33,49 +33,34 @@ REQUEST_TIMEOUT_SECONDS = 120
 # Broad metadata range used only to discover monitor opening and closing dates.
 MONITOR_SEARCH_START_DATE = "19500101"
 
-POLLUTANTS = {
-    "pm25": {
-        "label": "PM2.5",
-        "parameter_field": "aqs_pm25_parameter_code",
-    },
-    "ozone": {
-        "label": "Ozone",
-        "parameter_field": "aqs_ozone_parameter_code",
-    },
+PARAMETERS = {
+    "42101": ("carbon_monoxide", "Carbon monoxide"),
+    "14129": ("lead", "Lead"),
+    "42602": ("nitrogen_dioxide", "Nitrogen dioxide"),
+    "88101": ("pm25", "PM2.5"),
+    "81102": ("pm10", "PM10"),
+    "44201": ("ozone", "Ozone"),
+    "42401": ("sulfur_dioxide", "Sulfur dioxide"),
 }
 
 
 def load_stations() -> Dict[str, Dict]:
-    """Load STATIONS from climateview/stations.py or stations.py."""
+    """Load the project station registry."""
     project_root = Path(__file__).resolve().parent.parent
 
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
 
-    try:
-        from climateview.stations import STATIONS
+    from climateview.stations import STATIONS
 
-        return STATIONS
-    except ModuleNotFoundError:
-        try:
-            from stations import STATIONS
-
-            return STATIONS
-        except ModuleNotFoundError as exc:
-            raise RuntimeError(
-                "Could not import STATIONS. Run this script from the ClimateView "
-                "project or place stations.py in the project root/climateview package."
-            ) from exc
+    return STATIONS
 
 
 def resolve_station(
     stations: Dict[str, Dict],
     station_value: str,
 ) -> Tuple[str, Dict]:
-    """Resolve a ClimateView key, NOAA station ID, or AQS site ID."""
-    if station_value in stations:
-        return station_value, stations[station_value]
-
+    """Resolve a NOAA station ID to its stations.py entry."""
     normalized_noaa = station_value.replace("GHCND:", "")
 
     for station_key, station in stations.items():
@@ -83,28 +68,19 @@ def resolve_station(
             "GHCND:",
             "",
         )
-        aqs_site_id = str(station.get("aqs_site_id", ""))
-
-        if normalized_noaa == noaa_station_id or station_value == aqs_site_id:
+        if normalized_noaa == noaa_station_id:
             return station_key, station
 
-    valid_keys = ", ".join(sorted(stations.keys()))
+    valid_ids = ", ".join(
+        station["noaa_station_id"] for station in stations.values()
+    )
     raise ValueError(
-        "Unknown station '{}'. Valid station keys: {}".format(
+        "Unknown NOAA station ID '{}'. Valid IDs: {}".format(
             station_value,
-            valid_keys,
+            valid_ids,
         )
     )
 
-
-def get_aqs_credentials(args) -> tuple[str, str]:
-    if not args.email:
-        raise ValueError("--email is required")
-
-    if not args.key:
-        raise ValueError("--key is required")
-
-    return args.email, args.key
 
 def split_aqs_site_id(aqs_site_id: str) -> Tuple[str, str, str]:
     """Split an AQS site ID such as 06-075-0005 into state/county/site."""
@@ -294,24 +270,17 @@ def normalize_monitor_records(records: List[Dict]) -> List[Dict]:
     unique = {}
 
     for record in records:
-        poc = str(record.get("poc", ""))
-        open_date = record.get("open_date") or record.get("monitor_begin_date")
-        close_date = record.get("close_date") or record.get("monitor_end_date")
-
-        key = (
-            poc,
-            str(open_date or ""),
-            str(close_date or ""),
+        identity = (
+            str(record.get("poc", "")),
+            str(record.get("open_date") or ""),
+            str(record.get("close_date") or ""),
         )
-        unique[key] = record
+        unique[identity] = record
 
     return sorted(
         unique.values(),
         key=lambda row: (
-            parse_aqs_date(
-                row.get("open_date") or row.get("monitor_begin_date")
-            )
-            or date.max,
+            parse_aqs_date(row.get("open_date")) or date.max,
             int(str(row.get("poc", "0")))
             if str(row.get("poc", "")).isdigit()
             else 10**9,
@@ -350,11 +319,8 @@ def earliest_monitor_year(records: List[Dict]) -> int | None:
     years = []
 
     for record in records:
-        open_date = parse_aqs_date(
-            record.get("open_date") or record.get("monitor_begin_date")
-        )
-
-        if open_date is not None:
+        open_date = parse_aqs_date(record.get("open_date"))
+        if open_date:
             years.append(open_date.year)
 
     return min(years) if years else None
@@ -375,29 +341,14 @@ def describe_pocs(records: List[Dict]) -> str:
 def download_year(
     email: str,
     key: str,
-    station_key: str,
-    station: Dict,
     pollutant: str,
+    pollutant_label: str,
+    parameter_code: str,
+    station_name: str,
+    aqs_site_id: str,
     year: int,
     overwrite: bool,
 ) -> None:
-    pollutant_config = POLLUTANTS[pollutant]
-    parameter_code = station.get(pollutant_config["parameter_field"])
-    aqs_site_id = station.get("aqs_site_id")
-
-    if not aqs_site_id:
-        print("Skipping {}: no AQS site ID configured.".format(station_key))
-        return
-
-    if not parameter_code:
-        print(
-            "Skipping {} {}: no parameter code configured.".format(
-                station_key,
-                pollutant_config["label"],
-            )
-        )
-        return
-
     output_file = raw_output_path(pollutant, aqs_site_id, year)
 
     if output_file.exists() and not overwrite:
@@ -408,8 +359,8 @@ def download_year(
 
     print(
         "Downloading {} for {} ({}), year {}".format(
-            pollutant_config["label"],
-            station["name"],
+            pollutant_label,
+            station_name,
             aqs_site_id,
             year,
         )
@@ -428,8 +379,8 @@ def download_year(
     if not records:
         print(
             "No {} data available for {} in {}; skipping.".format(
-                pollutant_config["label"],
-                station.get("name", station_key),
+                pollutant_label,
+                station_name,
                 year,
             )
         )
@@ -450,20 +401,11 @@ def download_year(
     with output_file.open("w", encoding="utf-8") as file:
         json.dump(records, file, indent=2)
 
-    downloaded_pocs = sorted(
-        {
-            str(row.get("poc"))
-            for row in records
-            if row.get("poc") not in (None, "")
-        },
-        key=lambda value: int(value) if value.isdigit() else 10**9,
-    )
-
     print(
         "Wrote {} records to {} (POCs: {})".format(
             len(records),
             output_file,
-            ", ".join(downloaded_pocs) if downloaded_pocs else "none",
+            describe_pocs(records),
         )
     )
 
@@ -471,7 +413,7 @@ def download_year(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Download raw EPA AQS daily PM2.5 and ozone summaries for "
+            "Download raw EPA AQS daily pollutant summaries for "
             "ClimateView stations. All POCs are downloaded."
         )
     )
@@ -479,32 +421,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--station",
         help=(
-            "Optional ClimateView station key, NOAA station ID, or AQS site ID. "
-            "If omitted, all active stations are downloaded."
+            "NOAA station ID, such as USC00111577. "
+            "If omitted, all stations are downloaded."
         ),
     )
 
     parser.add_argument(
         "--pollutant",
-        choices=["pm25", "ozone", "all"],
-        default="all",
-        help="Pollutant to download. Default: all.",
-    )
-
-    parser.add_argument(
-        "--start-year",
-        type=int,
+        required=True,
         help=(
-            "First year to download. If omitted, the earliest opening year "
-            "among all discovered POCs is used."
+            "Five-digit AQS parameter code, such as 44201 for ozone "
+            "or 88101 for PM2.5."
         ),
-    )
-
-    parser.add_argument(
-        "--end-year",
-        type=int,
-        default=date.today().year - 1,
-        help="Last year to download. Defaults to the last completed calendar year.",
     )
 
     parser.add_argument(
@@ -531,39 +459,24 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
 
-    if args.end_year > date.today().year:
-        raise ValueError("end-year cannot be later than the current year")
-
     stations = load_stations()
-    email, key = get_aqs_credentials(args)
+    parameter_code = args.pollutant.strip()
+    pollutant, pollutant_label = PARAMETERS.get(
+        parameter_code,
+        (parameter_code, f"AQS parameter {parameter_code}"),
+    )
+    end_year = date.today().year - 1
 
     if args.station:
         station_key, station = resolve_station(stations, args.station)
         selected_stations = [(station_key, station)]
     else:
-        selected_stations = [
-            (station_key, station)
-            for station_key, station in stations.items()
-            if station.get("active", False)
-        ]
+        selected_stations = list(stations.items())
 
     if not selected_stations:
-        raise ValueError("No active stations found in stations.py")
-
-    pollutants = (
-        list(POLLUTANTS.keys())
-        if args.pollutant == "all"
-        else [args.pollutant]
-    )
+        raise ValueError("No stations found in stations.py")
 
     for station_key, station in selected_stations:
-        if not station.get("active", False):
-            print(
-                "Station {} is inactive but was explicitly selected.".format(
-                    station_key
-                )
-            )
-
         aqs_site_id = station.get("aqs_site_id")
         if not aqs_site_id:
             print("Skipping {}: no AQS site ID configured.".format(station_key))
@@ -571,103 +484,88 @@ def main() -> None:
 
         state, county, site = split_aqs_site_id(aqs_site_id)
 
-        for pollutant in pollutants:
-            pollutant_config = POLLUTANTS[pollutant]
-            parameter_code = station.get(
-                pollutant_config["parameter_field"]
+        station_name = station.get("name", station_key)
+
+        print(
+            "Discovering {} monitors for {} ({})".format(
+                pollutant_label,
+                station_name,
+                aqs_site_id,
             )
+        )
 
-            if not parameter_code:
-                print(
-                    "Skipping {} {}: no parameter code configured.".format(
-                        station_key,
-                        pollutant_config["label"],
-                    )
-                )
-                continue
+        monitor_records = normalize_monitor_records(
+            fetch_monitors(
+                email=args.email,
+                key=args.key,
+                parameter_code=parameter_code,
+                state=state,
+                county=county,
+                site=site,
+            )
+        )
 
+        if not monitor_records:
             print(
-                "Discovering {} monitors for {} ({})".format(
-                    pollutant_config["label"],
-                    station.get("name", station_key),
-                    aqs_site_id,
+                "No {} monitors found for {}; skipping.".format(
+                    pollutant_label,
+                    station_name,
                 )
             )
+            continue
 
-            monitor_records = normalize_monitor_records(
-                fetch_monitors(
-                    email=email,
-                    key=key,
-                    parameter_code=parameter_code,
-                    state=state,
-                    county=county,
-                    site=site,
+        save_monitor_metadata(
+            records=monitor_records,
+            pollutant=pollutant,
+            aqs_site_id=aqs_site_id,
+            overwrite=args.overwrite,
+        )
+
+        start_year = earliest_monitor_year(monitor_records)
+        if start_year is None:
+            print(
+                "Could not determine a start year for {} {}; skipping.".format(
+                    station_key,
+                    pollutant_label,
                 )
             )
+            continue
 
-            if not monitor_records:
-                print(
-                    "No {} monitors found for {}; skipping.".format(
-                        pollutant_config["label"],
-                        station.get("name", station_key),
-                    )
+        if end_year < start_year:
+            print(
+                "Skipping {} {}: end year {} is earlier than start year {}.".format(
+                    station_key,
+                    pollutant_label,
+                    end_year,
+                    start_year,
                 )
-                continue
+            )
+            continue
 
-            save_monitor_metadata(
-                records=monitor_records,
+        print(
+            "Using {} for {} with POCs [{}], start year {}, end year {}".format(
+                station_name,
+                pollutant_label,
+                describe_pocs(monitor_records),
+                start_year,
+                end_year,
+            )
+        )
+
+        for year in range(start_year, end_year + 1):
+            download_year(
+                email=args.email,
+                key=args.key,
                 pollutant=pollutant,
+                pollutant_label=pollutant_label,
+                parameter_code=parameter_code,
+                station_name=station_name,
                 aqs_site_id=aqs_site_id,
+                year=year,
                 overwrite=args.overwrite,
             )
 
-            if args.start_year is not None:
-                start_year = args.start_year
-            else:
-                start_year = earliest_monitor_year(monitor_records)
-
-                if start_year is None:
-                    print(
-                        "Could not determine a start year for {} {}; skipping.".format(
-                            station_key,
-                            pollutant_config["label"],
-                        )
-                    )
-                    continue
-
-            if args.end_year < start_year:
-                print(
-                    "Skipping {} {}: end year {} is earlier than start year {}.".format(
-                        station_key,
-                        pollutant_config["label"],
-                        args.end_year,
-                        start_year,
-                    )
-                )
-                continue
-
-            print(
-                "Using {} for {} with POCs [{}], start year {}, end year {}".format(
-                    station.get("name", station_key),
-                    pollutant_config["label"],
-                    describe_pocs(monitor_records),
-                    start_year,
-                    args.end_year,
-                )
-            )
-
-            for year in range(start_year, args.end_year + 1):
-                download_year(
-                    email=email,
-                    key=key,
-                    station_key=station_key,
-                    station=station,
-                    pollutant=pollutant,
-                    year=year,
-                    overwrite=args.overwrite,
-                )
-
-                time.sleep(REQUEST_DELAY_SECONDS)
+            time.sleep(REQUEST_DELAY_SECONDS)
 
 
 if __name__ == "__main__":

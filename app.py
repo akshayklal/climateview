@@ -66,7 +66,6 @@ df_stations = pd.DataFrame(
             "lon": station["longitude"],
         }
         for station_key, station in STATIONS.items()
-        if station["active"]
     ]
 )
 

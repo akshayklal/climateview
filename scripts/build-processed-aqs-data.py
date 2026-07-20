@@ -2,7 +2,6 @@
 
 import argparse
 import json
-import re
 import sys
 from collections import defaultdict
 from datetime import date, datetime
@@ -11,14 +10,12 @@ from typing import Dict, Iterable, List, Optional, Tuple
 
 
 # AQS processing architecture:
-# - stations.py stores the selected physical AQS site and parameter codes.
+# - stations.py stores the selected physical AQS site.
 # - download-aqs.py saves all POCs and all daily summary rows without stitching.
 # - This script ranks active POCs for each date using monitor open/close dates.
-# - The most recently opened active POC is preferred.
+# - The oldest active POC is preferred until it closes.
 # - If the preferred POC has no data on a particular date, the script falls
-#   back to the next-highest-ranked active POC that actually has data.
-# - If a temporary newer POC closes, processing falls back to the newest older
-#   POC that is still active.
+#   back to the next-oldest active POC that actually has data.
 # - After POC selection, duplicate regulatory-standard rows are reduced to one
 #   daily row using pollutant-specific sample-duration and standard priorities.
 
@@ -28,7 +25,7 @@ PROCESSED_DATA_DIR = Path("data/processed/aqs")
 POLLUTANTS = {
     "pm25": {
         "label": "PM2.5",
-        "parameter_field": "aqs_pm25_parameter_code",
+        "parameter_code": "88101",
         "preferred_sample_durations": (
             "24-HR BLK AVG",
             "24 HOUR",
@@ -44,7 +41,7 @@ POLLUTANTS = {
     },
     "ozone": {
         "label": "Ozone",
-        "parameter_field": "aqs_ozone_parameter_code",
+        "parameter_code": "44201",
         "preferred_sample_durations": (
             "8-HR RUN AVG BEGIN HOUR",
             "8 HOUR",
@@ -58,39 +55,29 @@ POLLUTANTS = {
         ),
     },
 }
+POLLUTANTS_BY_CODE = {
+    config["parameter_code"]: name
+    for name, config in POLLUTANTS.items()
+}
 
 
 def load_stations() -> Dict[str, Dict]:
-    """Load STATIONS from climateview/stations.py or stations.py."""
+    """Load the project station registry."""
     project_root = Path(__file__).resolve().parent.parent
 
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
 
-    try:
-        from climateview.stations import STATIONS
+    from climateview.stations import STATIONS
 
-        return STATIONS
-    except ModuleNotFoundError:
-        try:
-            from stations import STATIONS
-
-            return STATIONS
-        except ModuleNotFoundError as exc:
-            raise RuntimeError(
-                "Could not import STATIONS. Run this script from the ClimateView "
-                "project or place stations.py in the project root/climateview package."
-            ) from exc
+    return STATIONS
 
 
 def resolve_station(
     stations: Dict[str, Dict],
     station_value: str,
 ) -> Tuple[str, Dict]:
-    """Resolve a ClimateView key, NOAA station ID, or AQS site ID."""
-    if station_value in stations:
-        return station_value, stations[station_value]
-
+    """Resolve a NOAA station ID to its stations.py entry."""
     normalized_noaa = station_value.replace("GHCND:", "")
 
     for station_key, station in stations.items():
@@ -98,16 +85,16 @@ def resolve_station(
             "GHCND:",
             "",
         )
-        aqs_site_id = str(station.get("aqs_site_id", ""))
-
-        if normalized_noaa == noaa_station_id or station_value == aqs_site_id:
+        if normalized_noaa == noaa_station_id:
             return station_key, station
 
-    valid_keys = ", ".join(sorted(stations.keys()))
+    valid_ids = ", ".join(
+        station["noaa_station_id"] for station in stations.values()
+    )
     raise ValueError(
-        "Unknown station '{}'. Valid station keys: {}".format(
+        "Unknown NOAA station ID '{}'. Valid IDs: {}".format(
             station_value,
-            valid_keys,
+            valid_ids,
         )
     )
 
@@ -136,40 +123,16 @@ def poc_sort_value(value: object) -> Tuple[int, object]:
     return (1, text)
 
 
-def monitor_open_date(monitor: Dict) -> Optional[date]:
-    return parse_date(
-        monitor.get("open_date")
-        or monitor.get("monitor_begin_date")
-    )
-
-
-def monitor_close_date(monitor: Dict) -> Optional[date]:
-    return parse_date(
-        monitor.get("close_date")
-        or monitor.get("monitor_end_date")
-    )
-
-
 def active_monitors_ranked(
     monitors: Iterable[Dict],
     observation_date: date,
 ) -> List[Dict]:
-    """
-    Return all active monitors for one date in preferred order.
-
-    Priority:
-    1. Most recent open date.
-    2. Latest close date, with an open-ended monitor preferred.
-    3. Lowest POC as a deterministic final tie-breaker.
-
-    Returning the full ranked list allows processing to fall back when the
-    preferred POC has no actual observation row on a particular date.
-    """
+    """Return active monitors oldest-first for one observation date."""
     active = []
 
     for monitor in monitors:
-        open_date = monitor_open_date(monitor)
-        close_date = monitor_close_date(monitor)
+        open_date = monitor["_open_date"]
+        close_date = monitor["_close_date"]
 
         if open_date is None or open_date > observation_date:
             continue
@@ -180,18 +143,12 @@ def active_monitors_ranked(
         active.append(monitor)
 
     def priority(monitor: Dict) -> Tuple:
-        open_date = monitor_open_date(monitor)
-        close_date = monitor_close_date(monitor) or date.max
-        poc_type, poc_value = poc_sort_value(monitor.get("poc"))
-
-        numeric_poc = poc_value if poc_type == 0 else 10**9
-        text_poc = "" if poc_type == 0 else str(poc_value)
-
+        open_date = monitor["_open_date"]
+        close_date = monitor["_close_date"] or date.max
         return (
-            -open_date.toordinal(),
+            open_date.toordinal(),
             -close_date.toordinal(),
-            numeric_poc,
-            text_poc,
+            poc_sort_value(monitor.get("poc")),
         )
 
     return sorted(active, key=priority)
@@ -215,28 +172,17 @@ def normalize_poc(value: object) -> str:
 
 
 def monitor_file_path(pollutant: str, aqs_site_id: str) -> Path:
-    return (
-        RAW_DATA_DIR
-        / aqs_site_id
-        / "aqs-monitors-{}-{}.json".format(
-            pollutant,
-            aqs_site_id,
-        )
+    return RAW_DATA_DIR / aqs_site_id / (
+        f"aqs-monitors-{pollutant}-{aqs_site_id}.json"
     )
 
 
 def raw_file_pattern(pollutant: str, aqs_site_id: str) -> str:
-    return "aqs-{}-{}-*.json".format(
-        pollutant,
-        aqs_site_id,
-    )
+    return f"aqs-{pollutant}-{aqs_site_id}-*.json"
 
 
 def processed_file_path(pollutant: str, aqs_site_id: str) -> Path:
-    return PROCESSED_DATA_DIR / "aqs-{}-{}.json".format(
-        pollutant,
-        aqs_site_id,
-    )
+    return PROCESSED_DATA_DIR / f"aqs-{pollutant}-{aqs_site_id}.json"
 
 
 def load_json_list(path: Path) -> List[Dict]:
@@ -267,16 +213,11 @@ def load_monitor_metadata(
     if not monitors:
         raise ValueError("Monitor metadata is empty: {}".format(path))
 
+    for monitor in monitors:
+        monitor["_open_date"] = parse_date(monitor.get("open_date"))
+        monitor["_close_date"] = parse_date(monitor.get("close_date"))
+
     return monitors
-
-
-def extract_year(path: Path) -> int:
-    match = re.search(r"-(\d{4})\.json$", path.name)
-
-    if not match:
-        return 10**9
-
-    return int(match.group(1))
 
 
 def load_raw_rows(
@@ -285,17 +226,7 @@ def load_raw_rows(
 ) -> Tuple[List[Dict], List[Path]]:
     pattern = raw_file_pattern(pollutant, aqs_site_id)
     station_directory = RAW_DATA_DIR / aqs_site_id
-    files = sorted(
-        station_directory.glob(pattern),
-        key=lambda path: (extract_year(path), path.name),
-    )
-
-    # Exclude monitor metadata defensively.
-    files = [
-        path
-        for path in files
-        if not path.name.startswith("aqs-monitors-")
-    ]
+    files = sorted(station_directory.glob(pattern))
 
     if not files:
         raise FileNotFoundError(
@@ -414,30 +345,16 @@ def process_pollutant(
     station_key: str,
     station: Dict,
     pollutant: str,
-    overwrite: bool,
 ) -> None:
     config = POLLUTANTS[pollutant]
     aqs_site_id = station.get("aqs_site_id")
-    parameter_code = station.get(config["parameter_field"])
+    parameter_code = config["parameter_code"]
 
     if not aqs_site_id:
         print("Skipping {}: no aqs_site_id configured.".format(station_key))
         return
 
-    if not parameter_code:
-        print(
-            "Skipping {} {}: no parameter code configured.".format(
-                station_key,
-                config["label"],
-            )
-        )
-        return
-
     output_path = processed_file_path(pollutant, aqs_site_id)
-
-    if output_path.exists() and not overwrite:
-        print("Skipping existing file: {}".format(output_path))
-        return
 
     monitors = load_monitor_metadata(pollutant, aqs_site_id)
     raw_rows, raw_files = load_raw_rows(pollutant, aqs_site_id)
@@ -574,22 +491,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--station",
         help=(
-            "Optional ClimateView station key, NOAA station ID, or AQS site ID. "
-            "If omitted, all active stations are processed."
+            "NOAA station ID, such as USC00111577. "
+            "If omitted, all stations are processed."
         ),
     )
 
     parser.add_argument(
         "--pollutant",
-        choices=["pm25", "ozone", "all"],
-        default="all",
-        help="Pollutant to process. Default: all.",
-    )
-
-    parser.add_argument(
-        "--overwrite",
-        action="store_true",
-        help="Replace existing processed files.",
+        choices=sorted(POLLUTANTS_BY_CODE),
+        required=True,
+        help="AQS parameter code: 88101 for PM2.5 or 44201 for ozone.",
     )
 
     return parser.parse_args()
@@ -603,38 +514,28 @@ def main() -> None:
         station_key, station = resolve_station(stations, args.station)
         selected_stations = [(station_key, station)]
     else:
-        selected_stations = [
-            (station_key, station)
-            for station_key, station in stations.items()
-            if station.get("active", False)
-        ]
+        selected_stations = list(stations.items())
 
     if not selected_stations:
-        raise ValueError("No active stations found in stations.py")
+        raise ValueError("No stations found in stations.py")
 
-    pollutants = (
-        list(POLLUTANTS.keys())
-        if args.pollutant == "all"
-        else [args.pollutant]
-    )
+    pollutant = POLLUTANTS_BY_CODE[args.pollutant]
 
     for station_key, station in selected_stations:
-        for pollutant in pollutants:
-            try:
-                process_pollutant(
-                    station_key=station_key,
-                    station=station,
-                    pollutant=pollutant,
-                    overwrite=args.overwrite,
+        try:
+            process_pollutant(
+                station_key=station_key,
+                station=station,
+                pollutant=pollutant,
+            )
+        except (FileNotFoundError, ValueError) as exc:
+            print(
+                "Skipping {} {}: {}".format(
+                    station_key,
+                    POLLUTANTS[pollutant]["label"],
+                    exc,
                 )
-            except (FileNotFoundError, ValueError) as exc:
-                print(
-                    "Skipping {} {}: {}".format(
-                        station_key,
-                        POLLUTANTS[pollutant]["label"],
-                        exc,
-                    )
-                )
+            )
 
 
 if __name__ == "__main__":

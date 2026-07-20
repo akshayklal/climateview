@@ -31,10 +31,7 @@ def load_stations() -> Dict[str, Dict]:
 
 
 def resolve_station(stations: Dict[str, Dict], station_arg: str) -> Tuple[str, Dict]:
-    """Resolve a station key or NOAA station ID to its stations.py entry."""
-    if station_arg in stations:
-        return station_arg, stations[station_arg]
-
+    """Resolve a NOAA station ID to its stations.py entry."""
     normalized_id = station_arg.strip()
     if normalized_id.startswith("GHCND:"):
         normalized_id = normalized_id.split(":", 1)[1]
@@ -43,12 +40,14 @@ def resolve_station(stations: Dict[str, Dict], station_arg: str) -> Tuple[str, D
         if station.get("noaa_station_id") == normalized_id:
             return station_key, station
 
-    valid_values = ", ".join(
-        "{} ({})".format(key, station.get("noaa_station_id", "missing ID"))
-        for key, station in stations.items()
+    valid_ids = ", ".join(
+        station["noaa_station_id"] for station in stations.values()
     )
     raise ValueError(
-        "Unknown station '{}'. Valid stations: {}".format(station_arg, valid_values)
+        "Unknown NOAA station ID '{}'. Valid IDs: {}".format(
+            station_arg,
+            valid_ids,
+        )
     )
 
 
@@ -83,7 +82,6 @@ def fetch_noaa_data(
     datatype: str,
     start_date: str,
     end_date: str,
-    units: str,
 ) -> List[Dict]:
     params = {
         "datasetid": "GHCND",
@@ -93,7 +91,7 @@ def fetch_noaa_data(
         "enddate": end_date,
         "limit": 1000,
         "offset": 1,
-        "units": units,
+        "units": "standard",
     }
 
     headers = {
@@ -159,7 +157,6 @@ def download_year(
     file_station_id: str,
     datatype: str,
     year: int,
-    units: str,
     overwrite: bool,
 ) -> None:
     output_file = raw_output_path(datatype, file_station_id, year)
@@ -176,7 +173,6 @@ def download_year(
         datatype=datatype,
         start_date="{}-01-01".format(year),
         end_date="{}-06-30".format(year),
-        units=units,
     )
 
     second_half = fetch_noaa_data(
@@ -185,7 +181,6 @@ def download_year(
         datatype=datatype,
         start_date="{}-07-01".format(year),
         end_date="{}-12-31".format(year),
-        units=units,
     )
 
     records = first_half + second_half
@@ -197,7 +192,7 @@ def download_year(
         )
         return
 
-    RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    output_file.parent.mkdir(parents=True, exist_ok=True)
 
     with output_file.open("w") as f:
         json.dump(records, f, indent=2)
@@ -213,31 +208,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--station",
         help=(
-            "Station key from stations.py or NOAA station code, e.g. san_francisco_sfo or USW00023234.  If omitted, all active stations are downloaded."
+            "NOAA station ID, such as USC00111577. "
+            "If omitted, all stations are downloaded."
         ),
-    )
-
-    parser.add_argument(
-        "--start-year",
-        type=int,
-        help=(
-            "Optional first year to download. If omitted, uses "
-            "noaa_start_year from stations.py plus one year."
-        ),
-    )
-
-    parser.add_argument(
-        "--end-year",
-        type=int,
-        default=date.today().year - 1,
-        help="Last year to download. Defaults to the last completed calendar year.",
-    )
-
-    parser.add_argument(
-        "--units",
-        choices=["standard", "metric"],
-        default="standard",
-        help="NOAA units. Use standard for inches.",
     )
 
     parser.add_argument(
@@ -257,16 +230,13 @@ def main() -> None:
         station_key, station = resolve_station(stations, args.station)
         selected_stations = [(station_key, station)]
     else:
-        selected_stations = [
-            (station_key, station)
-            for station_key, station in stations.items()
-            if station.get("active", False)
-        ]
+        selected_stations = list(stations.items())
 
     if not selected_stations:
-        raise ValueError("No active stations found in stations.py")
+        raise ValueError("No stations found in stations.py")
 
     token = get_noaa_token()
+    end_year = date.today().year - 1
 
     for station_key, station in selected_stations:
         noaa_station_id = station.get("noaa_station_id")
@@ -278,24 +248,22 @@ def main() -> None:
             )
             continue
 
-        if args.start_year is not None:
-            start_year = args.start_year
-        else:
-            noaa_start_year = station.get("noaa_start_year")
-            if noaa_start_year is None:
-                print(
-                    "Skipping station '{}': no noaa_start_year in stations.py "
-                    "and --start-year was not specified.".format(station_key)
+        noaa_start_year = station.get("noaa_start_year")
+        if noaa_start_year is None:
+            print(
+                "Skipping station '{}': no noaa_start_year in stations.py.".format(
+                    station_key
                 )
-                continue
+            )
+            continue
 
-            start_year = int(noaa_start_year) + 1
+        start_year = int(noaa_start_year)
 
-        if args.end_year < start_year:
+        if end_year < start_year:
             print(
                 "Skipping station '{}': end year {} is earlier than start year {}.".format(
                     station_key,
-                    args.end_year,
+                    end_year,
                     start_year,
                 )
             )
@@ -306,13 +274,13 @@ def main() -> None:
                 station.get("name", station_key),
                 noaa_station_id,
                 start_year,
-                args.end_year,
+                end_year,
             )
         )
 
         api_station_id, file_station_id = normalize_station_id(noaa_station_id)
 
-        for year in range(start_year, args.end_year + 1):
+        for year in range(start_year, end_year + 1):
             for datatype in DATATYPES:
                 download_year(
                     token=token,
@@ -320,7 +288,6 @@ def main() -> None:
                     file_station_id=file_station_id,
                     datatype=datatype,
                     year=year,
-                    units=args.units,
                     overwrite=args.overwrite,
                 )
 

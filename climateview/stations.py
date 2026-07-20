@@ -8,9 +8,6 @@ STATIONS = {
         'aqs_site_id': '06-075-0005',
         'aqs_site_name': 'San Francisco',
         'aqs_distance_km': 16.5,
-        'aqs_pm25_parameter_code': '88101',
-        'aqs_ozone_parameter_code': '44201',
-        'active': True,
     },
     'new_york_central_park': {
         'name': 'New York Central Park, NY',
@@ -21,9 +18,6 @@ STATIONS = {
         'aqs_site_id': '36-005-0110',
         'aqs_site_name': 'IS 52',
         'aqs_distance_km': 6.5,
-        'aqs_pm25_parameter_code': '88101',
-        'aqs_ozone_parameter_code': '44201',
-        'active': True,
     },
     'chicago_midway': {
         'name': 'Chicago Midway AP 3SW, IL',
@@ -34,9 +28,6 @@ STATIONS = {
         'aqs_site_id': '17-031-4201',
         'aqs_site_name': 'NORTHBROOK WATER PLANT',
         'aqs_distance_km': 44.8,
-        'aqs_pm25_parameter_code': '88101',
-        'aqs_ozone_parameter_code': '44201',
-        'active': True,
     },
     'seattle_tacoma': {
         'name': 'Seattle-Tacoma, WA',
@@ -47,9 +38,6 @@ STATIONS = {
         'aqs_site_id': '53-033-0080',
         'aqs_site_name': 'SEATTLE - BEACON HILL',
         'aqs_distance_km': 13.8,
-        'aqs_pm25_parameter_code': '88101',
-        'aqs_ozone_parameter_code': '44201',
-        'active': True,
     },
     'los_angeles_usc': {
         'name': 'Los Angeles Downtown / USC, CA',
@@ -60,9 +48,6 @@ STATIONS = {
         'aqs_site_id': '06-037-1103',
         'aqs_site_name': 'Los Angeles-North Main Street',
         'aqs_distance_km': 7.2,
-        'aqs_pm25_parameter_code': '88101',
-        'aqs_ozone_parameter_code': '44201',
-        'active': True,
     },
     'phoenix_sky_harbor': {
         'name': 'Phoenix Sky Harbor, AZ',
@@ -73,9 +58,6 @@ STATIONS = {
         'aqs_site_id': '04-013-9997',
         'aqs_site_name': 'JLG SUPERSITE',
         'aqs_distance_km': 12.4,
-        'aqs_pm25_parameter_code': '88101',
-        'aqs_ozone_parameter_code': '44201',
-        'active': True,
     },
     'denver': {
         'name': 'Denver, CO',
@@ -86,9 +68,6 @@ STATIONS = {
         'aqs_site_id': '08-031-0002',
         'aqs_site_name': 'DENVER - CAMP',
         'aqs_distance_km': 29.6,
-        'aqs_pm25_parameter_code': '88101',
-        'aqs_ozone_parameter_code': '44201',
-        'active': True,
     },
     'houston_intercontinental': {
         'name': 'Houston Intercontinental, TX',
@@ -99,8 +78,5 @@ STATIONS = {
         'aqs_site_id': '48-201-0024',
         'aqs_site_name': 'Houston Aldine',
         'aqs_distance_km': 8.9,
-        'aqs_pm25_parameter_code': '88101',
-        'aqs_ozone_parameter_code': '44201',
-        'active': True,
     },
 }
