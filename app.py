@@ -69,16 +69,19 @@ df_stations = pd.DataFrame(
     ]
 )
 
-# Track selected station across Streamlit reruns
+# Keep the selected location in both the URL and session state. The URL makes
+# location pages bookmarkable, shareable, and resilient to browser refreshes.
 if "selected_station" not in st.session_state:
     st.session_state.selected_station = None
 
-# Clear invalid station IDs (e.g., after station list changes)
-if (
-    st.session_state.selected_station is not None
-    and st.session_state.selected_station not in STATIONS
-):
+url_location = st.query_params.get("location")
+
+if url_location in STATIONS:
+    st.session_state.selected_station = url_location
+else:
     st.session_state.selected_station = None
+    if url_location is not None:
+        del st.query_params["location"]
 
 # SCREEN 2: Selected station detail page
 if st.session_state.selected_station in STATIONS:
@@ -99,8 +102,11 @@ if st.session_state.selected_station in STATIONS:
     )
 
     with back_col:
-        if st.button("← All stations"):
+        if st.button("← All locations"):
             st.session_state.selected_station = None
+            st.session_state.station_navigation_in_progress = True
+            if "location" in st.query_params:
+                del st.query_params["location"]
             st.rerun()
 
     with title_col:
@@ -184,31 +190,18 @@ else:
             "Explore long-term climate trends across the United States"
         )
         st.caption(
-            "Historical temperature, precipitation, and air quality records "
-            "from NOAA and EPA monitoring stations."
+            "Historical temperature, precipitation, and air-quality records."
         )
 
     with metric_col:
         st.metric(
-            "Stations",
+            "Locations",
             len(df_stations),
         )
 
     st.divider()
 
-    # Map heading
-    heading_col, instruction_col = st.columns(
-        [2, 3],
-        vertical_alignment="center",
-    )
-
-    with heading_col:
-        st.subheader("Select a weather station")
-
-    with instruction_col:
-        st.caption(
-            "Click an orange marker to explore historical climate trends."
-        )
+    st.subheader("Select an orange marker to explore a location")
 
     # Station marker layer
     station_layer = pdk.Layer(
@@ -285,12 +278,12 @@ else:
                 clicked_row["station_key"]
             )
             st.session_state.station_navigation_in_progress = True
+            st.query_params["location"] = clicked_row["station_key"]
 
             st.rerun()
 
     # Data source note
     st.caption(
         "Data sources: NOAA Global Historical Climatology Network "
-        "and U.S. EPA Air Quality System. "
-        "Station records may cover different date ranges."
+        "and U.S. EPA Air Quality System"
     )
