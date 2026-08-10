@@ -1,9 +1,57 @@
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 
 
 HIGHLIGHT_COLOR = "#f97316"
+HORIZONTAL_LEGEND = {
+    "orientation": "h",
+    "yanchor": "top",
+    "y": -0.20,
+    "xanchor": "center",
+    "x": 0.5,
+}
+
+
+def apply_standard_layout(
+    figure,
+    *,
+    x_title,
+    height,
+    margins,
+    **layout_options,
+):
+    """Apply presentation shared by ClimateView time-series charts."""
+    figure.update_layout(
+        xaxis_title=x_title,
+        height=height,
+        margin=margins,
+        hovermode="x unified",
+        legend=HORIZONTAL_LEGEND,
+        **layout_options,
+    )
+    figure.update_xaxes(showgrid=False)
+
+
+def calculate_linear_trend(x_values, y_values):
+    """Return a linear slope and fitted values for numeric x/y data."""
+    trend_data = pd.DataFrame(
+        {
+            "x": x_values,
+            "y": y_values,
+        }
+    ).dropna()
+
+    if len(trend_data) < 2:
+        return None, None
+
+    slope, intercept = np.polyfit(
+        trend_data["x"],
+        trend_data["y"],
+        1,
+    )
+    fitted_values = slope * x_values + intercept
+
+    return float(slope), fitted_values
 
 
 def select_referenced_periods(df, x_col, references):
@@ -84,28 +132,3 @@ def insert_gap_breaks(df, x_col, y_cols, max_gap):
         rows.append(row.to_dict())
 
     return pd.DataFrame(rows, columns=plotted.columns)
-
-
-def add_trendline(fig, df, x_col, trend_x_col, y_col, name, unit_label):
-    trend_data = df[[x_col, trend_x_col, y_col]].dropna()
-
-    if len(trend_data) < 2:
-        return None
-
-    x = trend_data[trend_x_col].values
-    y = trend_data[y_col].values
-
-    slope_per_year, intercept = np.polyfit(x, y, 1)
-    trend_y = slope_per_year * x + intercept
-
-    fig.add_trace(
-        go.Scatter(
-            x=trend_data[x_col],
-            y=trend_y,
-            mode="lines",
-            name=f"{name} ({slope_per_year:+.3f} {unit_label}/year)",
-            line=dict(dash="dash"),
-        )
-    )
-
-    return slope_per_year

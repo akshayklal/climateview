@@ -1,6 +1,5 @@
 from typing import Dict, Optional, Tuple
 
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -9,6 +8,8 @@ import streamlit as st
 from climateview.ai_insights import render_ai_insights
 from climateview.charts import (
     HIGHLIGHT_COLOR,
+    apply_standard_layout,
+    calculate_linear_trend,
     insert_gap_breaks,
     select_referenced_periods,
 )
@@ -17,6 +18,31 @@ from climateview.statistics import (
     DataSchema,
     analyze_series,
 )
+
+POLLUTANTS = {
+    "pm25": {
+        "label": "PM2.5",
+        "value_column": "value",
+        "unit": "µg/m³",
+        "display_scale": 1.0,
+        "axis_titles": {
+            "Day": "Daily PM2.5 (µg/m³)",
+            "Month": "Monthly average PM2.5 (µg/m³)",
+            "Year": "Annual average PM2.5 (µg/m³)",
+        },
+    },
+    "ozone": {
+        "label": "ozone",
+        "value_column": "daily_max",
+        "unit": "ppb",
+        "display_scale": 1000.0,
+        "axis_titles": {
+            "Day": "Daily maximum ozone (ppb)",
+            "Month": "Monthly average daily max ozone (ppb)",
+            "Year": "Annual average daily max ozone (ppb)",
+        },
+    },
+}
 
 
 def _empty_dataset(dataset: Dict) -> bool:
@@ -27,21 +53,13 @@ def _empty_dataset(dataset: Dict) -> bool:
     return data is None or data.empty
 
 
-def _value_column_and_unit(
-    pollutant: str,
-) -> Tuple[str, str]:
-    if pollutant == "pm25":
-        return "value", "µg/m³"
-
-    return "daily_max", "ppb"
-
-
 @st.cache_data(show_spinner=False)
 def _prepare_daily_data(
     df: pd.DataFrame,
     pollutant: str,
 ) -> pd.DataFrame:
-    value_column, _ = _value_column_and_unit(pollutant)
+    config = POLLUTANTS[pollutant]
+    value_column = config["value_column"]
 
     valid = df.copy()
     valid["date"] = pd.to_datetime(
@@ -59,18 +77,14 @@ def _prepare_daily_data(
     if valid.empty:
         return pd.DataFrame()
 
-    if pollutant == "ozone":
-        valid["display_value"] = valid[value_column] * 1000.0
-    else:
-        valid["display_value"] = valid[value_column]
+    valid["display_value"] = (
+        valid[value_column] * config["display_scale"]
+    )
 
     # Keep one value per date in case the processed file contains duplicates.
     daily = (
         valid.groupby("date", as_index=False)
-        .agg(
-            display_value=("display_value", "mean"),
-            observation_days=("display_value", "count"),
-        )
+        .agg(display_value=("display_value", "mean"))
         .sort_values("date")
     )
 
@@ -86,9 +100,7 @@ def _aggregate_air_quality(
         return pd.DataFrame(), "date", "Date"
 
     if aggregation == "Day":
-        aggregated = daily[
-            ["date", "display_value", "observation_days"]
-        ].copy()
+        aggregated = daily[["date", "display_value"]].copy()
         x_column = "date"
         x_title = "Date"
 
@@ -96,87 +108,22 @@ def _aggregate_air_quality(
         aggregated = (
             daily.set_index("date")
             .resample("MS")
-            .agg(
-                display_value=("display_value", "mean"),
-                observation_days=("display_value", "count"),
-            )
+            .agg(display_value=("display_value", "mean"))
             .reset_index()
         )
-        aggregated = aggregated[
-            aggregated["observation_days"] > 0
-        ].copy()
+        aggregated = aggregated.dropna(subset=["display_value"])
         x_column = "date"
         x_title = "Month"
 
     else:
         aggregated = (
             daily.groupby("year", as_index=False)
-            .agg(
-                display_value=("display_value", "mean"),
-                observation_days=("display_value", "count"),
-            )
+            .agg(display_value=("display_value", "mean"))
         )
         x_column = "year"
         x_title = "Year"
 
     return aggregated, x_column, x_title
-
-
-def _trend_values(
-    aggregated: pd.DataFrame,
-    x_column: str,
-) -> Tuple[Optional[float], Optional[pd.Series]]:
-    if len(aggregated) < 2:
-        return None, None
-
-    if x_column == "year":
-        trend_x = aggregated["year"].astype(float)
-    else:
-        dates = pd.to_datetime(
-            aggregated["date"],
-            errors="coerce",
-        )
-        trend_x = (
-            dates.dt.year
-            + (dates.dt.dayofyear - 1) / 365.25
-        )
-
-    trend_data = pd.DataFrame(
-        {
-            "x": trend_x,
-            "y": aggregated["display_value"],
-        }
-    ).dropna()
-
-    if len(trend_data) < 2:
-        return None, None
-
-    slope, intercept = np.polyfit(
-        trend_data["x"],
-        trend_data["y"],
-        1,
-    )
-
-    fitted = slope * trend_x + intercept
-    return float(slope), fitted
-
-
-def _y_axis_title(
-    pollutant: str,
-    aggregation: str,
-) -> str:
-    if pollutant == "pm25":
-        if aggregation == "Day":
-            return "Daily PM2.5 (µg/m³)"
-        if aggregation == "Month":
-            return "Monthly average PM2.5 (µg/m³)"
-        return "Annual average PM2.5 (µg/m³)"
-
-    if aggregation == "Day":
-        return "Daily maximum ozone (ppb)"
-    if aggregation == "Month":
-        return "Monthly average daily max ozone (ppb)"
-    return "Annual average daily max ozone (ppb)"
 
 
 def _unhealthy_days(
@@ -236,15 +183,25 @@ def _build_air_quality_figure(
     x_title: str,
     unhealthy_days: Optional[pd.DataFrame] = None,
 ) -> Tuple[go.Figure, Optional[float]]:
-    _, unit = _value_column_and_unit(pollutant)
-    y_title = _y_axis_title(
-        pollutant,
-        aggregation,
-    )
+    config = POLLUTANTS[pollutant]
+    unit = config["unit"]
+    y_title = config["axis_titles"][aggregation]
 
-    trend, fitted = _trend_values(
-        aggregated,
-        x_column,
+    if x_column == "year":
+        trend_x = aggregated["year"].astype(float)
+    else:
+        dates = pd.to_datetime(
+            aggregated["date"],
+            errors="coerce",
+        )
+        trend_x = (
+            dates.dt.year
+            + (dates.dt.dayofyear - 1) / 365.25
+        )
+
+    trend, fitted = calculate_linear_trend(
+        trend_x,
+        aggregated["display_value"],
     )
 
     if aggregation == "Day":
@@ -357,27 +314,18 @@ def _build_air_quality_figure(
             zeroline=False,
         )
 
-    figure.update_layout(
-        xaxis_title=x_title,
+    apply_standard_layout(
+        figure,
+        x_title=x_title,
         height=460,
-        margin={
+        margins={
             "l": 40,
             "r": 55 if show_unhealthy_days else 30,
             "t": 20,
             "b": 90,
         },
-        hovermode="x unified",
-        legend={
-            "orientation": "h",
-            "yanchor": "top",
-            "y": -0.20,
-            "xanchor": "center",
-            "x": 0.5,
-        },
         barmode="overlay",
     )
-
-    figure.update_xaxes(showgrid=False)
 
     return figure, trend
 
@@ -400,11 +348,8 @@ def _render_pollutant_section(
             key="air_quality_pollutant",
         )
 
-    pollutant = (
-        "ozone"
-        if pollutant_label == "Ozone"
-        else "pm25"
-    )
+    pollutant = "ozone" if pollutant_label == "Ozone" else "pm25"
+    config = POLLUTANTS[pollutant]
 
     dataset = (
         ozone_data
@@ -413,8 +358,7 @@ def _render_pollutant_section(
     )
 
     if _empty_dataset(dataset):
-        label = "PM2.5" if pollutant == "pm25" else "ozone"
-        st.info(f"No processed {label} data is available.")
+        st.info(f"No processed {config['label']} data is available.")
         return
 
     metadata = dataset["metadata"]
@@ -471,21 +415,22 @@ def _render_pollutant_section(
         )
         return
 
-    source_dates = pd.to_datetime(
-        source_df["date"],
-        errors="coerce",
-    )
-    filtered_source_df = source_df[
-        source_dates.dt.year.between(
-            selected_years[0],
-            selected_years[1],
+    unhealthy_days = None
+    if aggregation != "Day":
+        source_dates = pd.to_datetime(
+            source_df["date"],
+            errors="coerce",
         )
-    ].copy()
-
-    unhealthy_days = _unhealthy_days(
-        filtered_source_df,
-        aggregation,
-    )
+        filtered_source_df = source_df[
+            source_dates.dt.year.between(
+                selected_years[0],
+                selected_years[1],
+            )
+        ].copy()
+        unhealthy_days = _unhealthy_days(
+            filtered_source_df,
+            aggregation,
+        )
 
     figure, trend = _build_air_quality_figure(
         aggregated=aggregated,
@@ -497,7 +442,7 @@ def _render_pollutant_section(
     )
     uses_secondary_axis = "yaxis2" in figure.layout
 
-    _, unit = _value_column_and_unit(pollutant)
+    unit = config["unit"]
     average_value = float(
         aggregated["display_value"].mean()
     )
@@ -535,7 +480,7 @@ def _render_pollutant_section(
             f"{len(filtered_daily):,}",
         )
 
-    pollutant_name = "PM2.5" if pollutant == "pm25" else "ozone"
+    pollutant_name = config["label"]
 
     analysis = analyze_series(
         dataframe=aggregated,

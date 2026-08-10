@@ -71,9 +71,6 @@ df_stations = pd.DataFrame(
 
 # Keep the selected location in both the URL and session state. The URL makes
 # location pages bookmarkable, shareable, and resilient to browser refreshes.
-if "selected_station" not in st.session_state:
-    st.session_state.selected_station = None
-
 url_location = st.query_params.get("location")
 
 if url_location in STATIONS:

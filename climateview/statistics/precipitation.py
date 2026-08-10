@@ -36,24 +36,6 @@ def calculate_precipitation_statistics(
 
     result: dict[str, Any] = {
         "directionality": "context_dependent",
-        "wettest_period": _extreme_period(
-            prepared,
-            period_column,
-            value_column,
-            find_maximum=True,
-        ),
-        "driest_period": _extreme_period(
-            prepared,
-            period_column,
-            value_column,
-            find_maximum=False,
-        ),
-        "dry_wet_periods": calculate_dry_wet_periods(
-            dataframe=prepared,
-            period_column=period_column,
-            value_column=value_column,
-            baseline_mean=mean_value,
-        ),
         "consecutive_runs": calculate_precipitation_runs(
             dataframe=prepared,
             value_column=value_column,
@@ -88,70 +70,6 @@ def calculate_precipitation_statistics(
         )
 
     return result
-
-
-def calculate_dry_wet_periods(
-    dataframe: pd.DataFrame,
-    period_column: str,
-    value_column: str,
-    baseline_mean: float | None = None,
-    dry_threshold_ratio: float = DEFAULT_DRY_THRESHOLD_RATIO,
-    wet_threshold_ratio: float = DEFAULT_WET_THRESHOLD_RATIO,
-) -> dict[str, Any]:
-    """
-    Count unusually dry and wet periods relative to the selected-period mean.
-
-    A dry period is below 75% of the mean by default.
-    A wet period is above 125% of the mean by default.
-    """
-
-    prepared = prepare_series(
-        dataframe=dataframe,
-        period_column=period_column,
-        value_column=value_column,
-    )
-
-    if baseline_mean is None:
-        baseline_mean = float(prepared[value_column].mean())
-
-    if baseline_mean <= 0:
-        return {
-            "baseline_mean": baseline_mean,
-            "dry_threshold": None,
-            "wet_threshold": None,
-            "dry_period_count": 0,
-            "wet_period_count": 0,
-            "dry_periods": [],
-            "wet_periods": [],
-        }
-
-    dry_threshold = baseline_mean * dry_threshold_ratio
-    wet_threshold = baseline_mean * wet_threshold_ratio
-
-    dry_rows = prepared[prepared[value_column] < dry_threshold]
-    wet_rows = prepared[prepared[value_column] > wet_threshold]
-
-    return {
-        "baseline_mean": float(baseline_mean),
-        "dry_threshold": float(dry_threshold),
-        "wet_threshold": float(wet_threshold),
-        "dry_period_count": int(len(dry_rows)),
-        "wet_period_count": int(len(wet_rows)),
-        "dry_periods": [
-            {
-                "period": _to_python_scalar(row[period_column]),
-                "value": float(row[value_column]),
-            }
-            for _, row in dry_rows.iterrows()
-        ],
-        "wet_periods": [
-            {
-                "period": _to_python_scalar(row[period_column]),
-                "value": float(row[value_column]),
-            }
-            for _, row in wet_rows.iterrows()
-        ],
-    }
 
 
 def calculate_precipitation_runs(
@@ -374,26 +292,6 @@ def calculate_monthly_seasonality(
     }
 
 
-def _extreme_period(
-    dataframe: pd.DataFrame,
-    period_column: str,
-    value_column: str,
-    find_maximum: bool,
-) -> dict[str, Any]:
-    index = (
-        dataframe[value_column].idxmax()
-        if find_maximum
-        else dataframe[value_column].idxmin()
-    )
-
-    row = dataframe.loc[index]
-
-    return {
-        "period": _to_python_scalar(row[period_column]),
-        "value": float(row[value_column]),
-    }
-
-
 def _recent_decadal_pattern(
     complete_decades: list[dict[str, Any]],
 ) -> dict[str, Any]:
@@ -544,16 +442,3 @@ def _trailing_boolean_run(mask: np.ndarray) -> int:
             break
 
     return count
-
-
-def _to_python_scalar(value: Any) -> Any:
-    if isinstance(value, np.generic):
-        value = value.item()
-
-    if isinstance(value, float) and value.is_integer():
-        return int(value)
-
-    if isinstance(value, pd.Timestamp):
-        return value.isoformat()
-
-    return value

@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -6,6 +5,8 @@ import streamlit as st
 from climateview.ai_insights import render_ai_insights
 from climateview.charts import (
     HIGHLIGHT_COLOR,
+    apply_standard_layout,
+    calculate_linear_trend,
     insert_gap_breaks,
     select_referenced_periods,
 )
@@ -83,37 +84,10 @@ def build_temperature_aggregation(data, aggregation):
     return grouped, x_col, x_title
 
 
-def calculate_linear_trend(data, value_column):
-    """
-    Return the linear trend in degrees Fahrenheit per year.
-
-    The function returns None when there are fewer than two valid points.
-    """
-    trend_data = data[
-        ["trend_year", value_column]
-    ].dropna()
-
-    if len(trend_data) < 2:
-        return None, None
-
-    slope, intercept = np.polyfit(
-        trend_data["trend_year"],
-        trend_data[value_column],
-        1,
-    )
-
-    trend_values = (
-        slope * data["trend_year"] + intercept
-    )
-
-    return float(slope), trend_values
-
-
 def build_temperature_figure(
     aggregated_data,
     x_col,
     x_title,
-    station_name,
 ):
     if x_col == "month":
         maximum_gap = pd.Timedelta(days=45)
@@ -130,13 +104,13 @@ def build_temperature_figure(
     )
 
     max_trend, max_trend_values = calculate_linear_trend(
-        aggregated_data,
-        "avg_tmax_f",
+        aggregated_data["trend_year"],
+        aggregated_data["avg_tmax_f"],
     )
 
     min_trend, min_trend_values = calculate_linear_trend(
-        aggregated_data,
-        "avg_tmin_f",
+        aggregated_data["trend_year"],
+        aggregated_data["avg_tmin_f"],
     )
 
     figure = go.Figure()
@@ -195,28 +169,17 @@ def build_temperature_figure(
             )
         )
 
-    figure.update_layout(
-        xaxis_title=x_title,
-        yaxis_title="Temperature (°F)",
+    apply_standard_layout(
+        figure,
+        x_title=x_title,
         height=520,
-        margin={
+        margins={
             "l": 40,
             "r": 30,
             "t": 70,
             "b": 100,
         },
-        hovermode="x unified",
-        legend={
-            "orientation": "h",
-            "yanchor": "top",
-            "y": -0.20,
-            "xanchor": "center",
-            "x": 0.5,
-        },
-    )
-
-    figure.update_xaxes(
-        showgrid=False,
+        yaxis_title="Temperature (°F)",
     )
 
     figure.update_yaxes(
@@ -403,7 +366,6 @@ def render_temperature_tab(data, station_name):
         aggregated_data=aggregated_data,
         x_col=x_col,
         x_title=x_title,
-        station_name=station_name,
     )
 
     years_included = filtered_data["year"].nunique()

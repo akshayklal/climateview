@@ -19,7 +19,6 @@ class AnalysisContext:
     aggregation: str
     start_period: PeriodValue
     end_period: PeriodValue
-    period_label: str | None = None
 
 @dataclass(frozen=True)
 class DataSchema:
@@ -57,7 +56,6 @@ class DescriptiveStatistics:
     minimum: float
     maximum: float
     standard_deviation: float
-    sum: float | None = None
 
 
 @dataclass(frozen=True)

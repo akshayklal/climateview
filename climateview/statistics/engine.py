@@ -64,7 +64,7 @@ def analyze_series(
     # ------------------------------------------------------------------
 
     data_quality = calculate_data_quality(
-        dataframe=prepared,
+        dataframe=dataframe,
         period_column=period_column,
         value_column=value_column,
     )

@@ -200,6 +200,9 @@ def test_rows_with_missing_values_are_removed(
     )
 
     assert result.data_quality.observation_count == 3
+    assert result.data_quality.missing_count == 1
+    assert result.data_quality.completeness_percent == pytest.approx(75.0)
+    assert result.data_quality.expected_observation_count == 4
     assert result.minimum.period == 2000
     assert result.maximum.period == 2003
 

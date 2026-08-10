@@ -3,7 +3,12 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from climateview.ai_insights import render_ai_insights
-from climateview.charts import HIGHLIGHT_COLOR, select_referenced_periods
+from climateview.charts import (
+    HIGHLIGHT_COLOR,
+    apply_standard_layout,
+    calculate_linear_trend,
+    select_referenced_periods,
+)
 from climateview.statistics import (
     AnalysisContext,
     DataSchema,
@@ -25,6 +30,59 @@ MONTH_NAME_TO_NUMBER = {
     "December": 12,
 }
 
+PRECIPITATION_TABLES = {
+    "Month": {
+        "period_column": "month",
+        "period_label": "Month",
+        "precipitation_label": "Total precipitation (in)",
+        "rainy_days_label": "Rainy days",
+        "coverage_column": "days_with_data",
+        "coverage_label": "Days with observations",
+    },
+    "Calendar Year": {
+        "period_column": "year",
+        "period_label": "Year",
+        "precipitation_label": "Total precipitation (in)",
+        "rainy_days_label": "Rainy days",
+        "coverage_column": "days_with_data",
+        "coverage_label": "Days with observations",
+    },
+    "Rain Year": {
+        "period_column": "rain_year",
+        "period_label": "Rain year",
+        "precipitation_label": "Total precipitation (in)",
+        "rainy_days_label": "Rainy days",
+        "coverage_column": "days_with_data",
+        "coverage_label": "Days with observations",
+    },
+    "Decade": {
+        "period_column": "decade",
+        "period_label": "Decade",
+        "precipitation_label": "Average annual precipitation (in)",
+        "rainy_days_label": "Average rainy days",
+        "coverage_column": "years_in_decade",
+        "coverage_label": "Years included",
+    },
+}
+
+
+def _aggregate_precipitation(data, period_column):
+    """Aggregate daily precipitation records by one period column."""
+    return (
+        data.groupby(period_column)
+        .agg(
+            total_prcp_in=("prcp_in", "sum"),
+            days_with_data=("prcp_in", "count"),
+            rainy_days=("prcp_in", lambda values: (values > 0).sum()),
+        )
+        .reset_index()
+    )
+
+
+def _complete_annual_precipitation(data):
+    annual = _aggregate_precipitation(data, "year")
+    return annual[annual["days_with_data"] >= 300].copy()
+
 
 
 def build_precipitation_aggregation(
@@ -33,15 +91,7 @@ def build_precipitation_aggregation(
     rain_year_start_month,
 ):
     if precipitation_view == "Month":
-        grouped = (
-            data.groupby("month")
-            .agg(
-                total_prcp_in=("prcp_in", "sum"),
-                days_with_data=("prcp_in", "count"),
-                rainy_days=("prcp_in", lambda values: (values > 0).sum()),
-            )
-            .reset_index()
-        )
+        grouped = _aggregate_precipitation(data, "month")
 
         grouped["month"] = pd.to_datetime(grouped["month"])
         grouped["year"] = grouped["month"].dt.year
@@ -52,28 +102,14 @@ def build_precipitation_aggregation(
 
         x_col = "month"
         x_title = "Month"
-        chart_title = "Monthly Precipitation"
 
     elif precipitation_view == "Calendar Year":
-        grouped = (
-            data.groupby("year")
-            .agg(
-                total_prcp_in=("prcp_in", "sum"),
-                days_with_data=("prcp_in", "count"),
-                rainy_days=("prcp_in", lambda values: (values > 0).sum()),
-            )
-            .reset_index()
-        )
-
-        grouped = grouped[
-            grouped["days_with_data"] >= 300
-        ].copy()
+        grouped = _complete_annual_precipitation(data)
 
         grouped["trend_year"] = grouped["year"]
 
         x_col = "year"
         x_title = "Year"
-        chart_title = "Calendar-Year Precipitation"
 
     elif precipitation_view == "Rain Year":
         rain_data = data.copy()
@@ -84,15 +120,7 @@ def build_precipitation_aggregation(
             rain_data["year"],
         )
 
-        grouped = (
-            rain_data.groupby("rain_year")
-            .agg(
-                total_prcp_in=("prcp_in", "sum"),
-                days_with_data=("prcp_in", "count"),
-                rainy_days=("prcp_in", lambda values: (values > 0).sum()),
-            )
-            .reset_index()
-        )
+        grouped = _aggregate_precipitation(rain_data, "rain_year")
 
         grouped = grouped[
             grouped["days_with_data"] >= 300
@@ -103,22 +131,9 @@ def build_precipitation_aggregation(
 
         x_col = "rain_year"
         x_title = "Rain Year"
-        chart_title = "Rain-Year Precipitation"
 
     else:
-        annual = (
-            data.groupby("year")
-            .agg(
-                total_prcp_in=("prcp_in", "sum"),
-                days_with_data=("prcp_in", "count"),
-                rainy_days=("prcp_in", lambda values: (values > 0).sum()),
-            )
-            .reset_index()
-        )
-
-        annual = annual[
-            annual["days_with_data"] >= 300
-        ].copy()
+        annual = _complete_annual_precipitation(data)
 
         annual["decade"] = (
             annual["year"] // 10
@@ -139,43 +154,18 @@ def build_precipitation_aggregation(
 
         x_col = "decade"
         x_title = "Decade"
-        chart_title = "Average Annual Precipitation by Decade"
 
-    return grouped, x_col, x_title, chart_title
-
-
-def calculate_precipitation_trend(data):
-    trend_data = data[
-        ["trend_year", "total_prcp_in"]
-    ].dropna()
-
-    if len(trend_data) < 2:
-        return None, None
-
-    slope, intercept = np.polyfit(
-        trend_data["trend_year"],
-        trend_data["total_prcp_in"],
-        1,
-    )
-
-    trend_values = (
-        slope * data["trend_year"] + intercept
-    )
-
-    return float(slope), trend_values
+    return grouped, x_col, x_title
 
 
 def build_precipitation_figure(
     aggregated_data,
     x_col,
     x_title,
-    chart_title,
-    station_name,
 ):
-    precipitation_trend, trend_values = (
-        calculate_precipitation_trend(
-            aggregated_data
-        )
+    precipitation_trend, trend_values = calculate_linear_trend(
+        aggregated_data["trend_year"],
+        aggregated_data["total_prcp_in"],
     )
 
     figure = go.Figure()
@@ -207,29 +197,18 @@ def build_precipitation_figure(
             )
         )
 
-    figure.update_layout(
-        xaxis_title=x_title,
-        yaxis_title="Precipitation (inches)",
+    apply_standard_layout(
+        figure,
+        x_title=x_title,
         height=520,
-        margin={
+        margins={
             "l": 40,
             "r": 30,
             "t": 12,
             "b": 100,
         },
-        hovermode="x unified",
-        legend={
-            "orientation": "h",
-            "yanchor": "top",
-            "y": -0.20,
-            "xanchor": "center",
-            "x": 0.5,
-        },
+        yaxis_title="Precipitation (inches)",
         bargap=0.15,
-    )
-
-    figure.update_xaxes(
-        showgrid=False,
     )
 
     figure.update_yaxes(
@@ -241,22 +220,10 @@ def build_precipitation_figure(
 
 
 def calculate_annual_statistics(filtered_data):
-    annual_data = (
-        filtered_data.groupby("year")
-        .agg(
-            total_prcp_in=("prcp_in", "sum"),
-            days_with_data=("prcp_in", "count"),
-            rainy_days=("prcp_in", lambda values: (values > 0).sum()),
-        )
-        .reset_index()
-    )
-
-    annual_data = annual_data[
-        annual_data["days_with_data"] >= 300
-    ].copy()
+    annual_data = _complete_annual_precipitation(filtered_data)
 
     if annual_data.empty:
-        return None, None, None, annual_data
+        return None, None, None
 
     average_annual_precipitation = float(
         annual_data["total_prcp_in"].mean()
@@ -288,7 +255,6 @@ def calculate_annual_statistics(filtered_data):
         average_annual_precipitation,
         wettest_year,
         driest_year,
-        annual_data,
     )
 
 
@@ -296,98 +262,34 @@ def render_precipitation_table(
     aggregated_data,
     precipitation_view,
 ):
-    if precipitation_view == "Month":
-        display_data = aggregated_data.rename(
-            columns={
-                "month": "Month",
-                "total_prcp_in": "Total precipitation (in)",
-                "rainy_days": "Rainy days",
-                "days_with_data": "Days with observations",
-            }
-        )
+    config = PRECIPITATION_TABLES[precipitation_view]
+    display_columns = [
+        config["period_label"],
+        config["precipitation_label"],
+        config["rainy_days_label"],
+        config["coverage_label"],
+    ]
+    display_data = aggregated_data.rename(
+        columns={
+            config["period_column"]: config["period_label"],
+            "total_prcp_in": config["precipitation_label"],
+            "rainy_days": config["rainy_days_label"],
+            config["coverage_column"]: config["coverage_label"],
+        }
+    )[display_columns].copy()
 
-        display_data["Month"] = display_data[
-            "Month"
+    if precipitation_view == "Month":
+        display_data[config["period_label"]] = display_data[
+            config["period_label"]
         ].dt.strftime("%B %Y")
 
-        display_columns = [
-            "Month",
-            "Total precipitation (in)",
-            "Rainy days",
-            "Days with observations",
-        ]
+    display_data[config["precipitation_label"]] = display_data[
+        config["precipitation_label"]
+    ].round(2)
 
-    elif precipitation_view == "Calendar Year":
-        display_data = aggregated_data.rename(
-            columns={
-                "year": "Year",
-                "total_prcp_in": "Total precipitation (in)",
-                "rainy_days": "Rainy days",
-                "days_with_data": "Days with observations",
-            }
-        )
-
-        display_columns = [
-            "Year",
-            "Total precipitation (in)",
-            "Rainy days",
-            "Days with observations",
-        ]
-
-    elif precipitation_view == "Rain Year":
-        display_data = aggregated_data.rename(
-            columns={
-                "rain_year": "Rain year",
-                "total_prcp_in": "Total precipitation (in)",
-                "rainy_days": "Rainy days",
-                "days_with_data": "Days with observations",
-            }
-        )
-
-        display_columns = [
-            "Rain year",
-            "Total precipitation (in)",
-            "Rainy days",
-            "Days with observations",
-        ]
-
-    else:
-        display_data = aggregated_data.rename(
-            columns={
-                "decade": "Decade",
-                "total_prcp_in": (
-                    "Average annual precipitation (in)"
-                ),
-                "rainy_days": "Average rainy days",
-                "years_in_decade": "Years included",
-            }
-        )
-
-        display_columns = [
-            "Decade",
-            "Average annual precipitation (in)",
-            "Average rainy days",
-            "Years included",
-        ]
-
-    display_data = display_data[
-        display_columns
-    ].copy()
-
-    precipitation_columns = [
-        "Total precipitation (in)",
-        "Average annual precipitation (in)",
-    ]
-
-    for column in precipitation_columns:
-        if column in display_data.columns:
-            display_data[column] = display_data[
-                column
-            ].round(2)
-
-    if "Average rainy days" in display_data.columns:
-        display_data["Average rainy days"] = display_data[
-            "Average rainy days"
+    if precipitation_view == "Decade":
+        display_data[config["rainy_days_label"]] = display_data[
+            config["rainy_days_label"]
         ].round(1)
 
     st.dataframe(
@@ -422,17 +324,7 @@ def render_precipitation_tab(data, station_name):
         )
         return
 
-    annual_counts = (
-        data.groupby("year")
-        .agg(
-            days_with_data=("prcp_in", "count"),
-        )
-        .reset_index()
-    )
-
-    complete_years = annual_counts[
-        annual_counts["days_with_data"] >= 300
-    ]["year"]
+    complete_years = _complete_annual_precipitation(data)["year"]
 
     if complete_years.empty:
         min_year = int(data["year"].min())
@@ -491,7 +383,7 @@ def render_precipitation_tab(data, station_name):
         )
     ].copy()
 
-    aggregated_data, x_col, x_title, chart_title = (
+    aggregated_data, x_col, x_title = (
         build_precipitation_aggregation(
             filtered_data,
             precipitation_view,
@@ -511,8 +403,6 @@ def render_precipitation_tab(data, station_name):
             aggregated_data=aggregated_data,
             x_col=x_col,
             x_title=x_title,
-            chart_title=chart_title,
-            station_name=station_name,
         )
     )
 
@@ -520,7 +410,6 @@ def render_precipitation_tab(data, station_name):
         average_annual_precipitation,
         wettest_year,
         driest_year,
-        annual_data,
     ) = calculate_annual_statistics(filtered_data)
 
     metric1, metric2, metric3, metric4 = st.columns(4)

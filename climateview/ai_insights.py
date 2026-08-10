@@ -80,7 +80,6 @@ def render_ai_insights(
 
     signature_key = f"{state_prefix}_ai_signature"
     text_key = f"{state_prefix}_ai_text"
-    mode_key = f"{state_prefix}_ai_mode"
     question_key = f"{state_prefix}_ai_question"
     references_key = f"{state_prefix}_ai_referenced_periods"
     series_key = f"{state_prefix}_ai_referenced_series"
@@ -88,13 +87,11 @@ def render_ai_insights(
     if st.session_state.get(signature_key) != signature:
         st.session_state[signature_key] = signature
         st.session_state[text_key] = None
-        st.session_state[mode_key] = "summary"
         st.session_state[question_key] = ""
         st.session_state[references_key] = ()
         st.session_state[series_key] = ()
 
     def reset_ai() -> None:
-        st.session_state[mode_key] = "summary"
         st.session_state[text_key] = None
         st.session_state[question_key] = ""
         st.session_state[references_key] = ()
@@ -164,7 +161,6 @@ def render_ai_insights(
                     )
 
             st.session_state[text_key] = answer_response.text
-            st.session_state[mode_key] = "answer"
             st.session_state[references_key] = answer_response.referenced_periods
             st.session_state[series_key] = answer_response.referenced_series
             _render_response(insight_placeholder, answer_response.text)
@@ -182,7 +178,6 @@ def render_ai_insights(
                     summary_response = summarize_analysis(analysis)
 
             st.session_state[text_key] = summary_response.text
-            st.session_state[mode_key] = "summary"
             # The automatic insight summarizes the chart as a whole. Only a
             # direct answer to a user's question should highlight chart data.
             st.session_state[references_key] = ()

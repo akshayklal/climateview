@@ -55,6 +55,69 @@ class _ChartResponse(BaseModel):
     )
 
 
+def _generate_response(
+    *,
+    prompt: str,
+    instructions: str,
+    response_label: str,
+    error_label: str,
+    model: str | None,
+    api_key: str | None,
+    max_output_tokens: int,
+) -> SummaryResponse:
+    """Send one structured chart-analysis request to OpenAI."""
+    resolved_api_key = api_key or os.getenv("OPENAI_API_KEY")
+
+    if not resolved_api_key:
+        raise SummaryGenerationError(
+            "OPENAI_API_KEY is not configured."
+        )
+
+    resolved_model = (
+        model
+        or os.getenv("CLIMATEVIEW_OPENAI_MODEL")
+        or DEFAULT_MODEL
+    )
+
+    if max_output_tokens < 1:
+        raise ValueError("max_output_tokens must be at least 1.")
+
+    client = OpenAI(api_key=resolved_api_key)
+
+    try:
+        response = client.responses.parse(
+            model=resolved_model,
+            instructions=instructions,
+            input=prompt,
+            reasoning={"effort": "low"},
+            max_output_tokens=max_output_tokens,
+            text_format=_ChartResponse,
+        )
+    except (OpenAIError, ValidationError) as exc:
+        raise SummaryGenerationError(
+            f"OpenAI {error_label} failed: {exc}"
+        ) from exc
+
+    parsed = response.output_parsed
+    text = parsed.text.strip() if parsed is not None else ""
+
+    if not text:
+        status = getattr(response, "status", None)
+        incomplete_details = getattr(response, "incomplete_details", None)
+
+        raise SummaryGenerationError(
+            f"OpenAI returned no visible {response_label}. "
+            f"status={status}, incomplete_details={incomplete_details}"
+        )
+
+    return SummaryResponse(
+        text=text,
+        model=resolved_model,
+        referenced_periods=tuple(parsed.referenced_periods),
+        referenced_series=tuple(parsed.referenced_series),
+    )
+
+
 def summarize_analysis(
     result: AnalysisResult,
     *,
@@ -77,56 +140,15 @@ def summarize_analysis(
     3. DEFAULT_MODEL.
     """
 
-    resolved_api_key = api_key or os.getenv("OPENAI_API_KEY")
-
-    if not resolved_api_key:
-        raise SummaryGenerationError(
-            "OPENAI_API_KEY is not configured."
-        )
-
-    resolved_model = (
-        model
-        or os.getenv("CLIMATEVIEW_OPENAI_MODEL")
-        or DEFAULT_MODEL
-    )
-
-    if max_output_tokens < 1:
-        raise ValueError("max_output_tokens must be at least 1.")
-
     prompt = build_summary_prompt(result)
-    client = OpenAI(api_key=resolved_api_key)
-
-    try:
-        response = client.responses.parse(
-            model=resolved_model,
-            instructions=SYSTEM_INSTRUCTIONS,
-            input=prompt,
-            reasoning={"effort": "low"},
-            max_output_tokens=max_output_tokens,
-            text_format=_ChartResponse,
-        )
-    except (OpenAIError, ValidationError) as exc:
-        raise SummaryGenerationError(
-            f"OpenAI summary generation failed: {exc}"
-        ) from exc
-
-    parsed = response.output_parsed
-    summary = parsed.text.strip() if parsed is not None else ""
-
-    if not summary:
-        status = getattr(response, "status", None)
-        incomplete_details = getattr(response, "incomplete_details", None)
-
-        raise SummaryGenerationError(
-            "OpenAI returned no visible summary. "
-            f"status={status}, incomplete_details={incomplete_details}"
-        )
-
-    return SummaryResponse(
-        text=summary,
-        model=resolved_model,
-        referenced_periods=tuple(parsed.referenced_periods),
-        referenced_series=tuple(parsed.referenced_series),
+    return _generate_response(
+        prompt=prompt,
+        instructions=SYSTEM_INSTRUCTIONS,
+        response_label="summary",
+        error_label="summary generation",
+        model=model,
+        api_key=api_key,
+        max_output_tokens=max_output_tokens,
     )
 
 def answer_analysis_question(
@@ -141,61 +163,13 @@ def answer_analysis_question(
     Answer a user question using the verified chart analysis.
     """
 
-    cleaned_question = question.strip()
-
-    if not cleaned_question:
-        raise ValueError("Question must not be empty.")
-
-    resolved_api_key = api_key or os.getenv("OPENAI_API_KEY")
-
-    if not resolved_api_key:
-        raise SummaryGenerationError(
-            "OPENAI_API_KEY is not configured."
-        )
-
-    resolved_model = (
-        model
-        or os.getenv("CLIMATEVIEW_OPENAI_MODEL")
-        or DEFAULT_MODEL
-    )
-
-    prompt = build_question_prompt(result, cleaned_question)
-    client = OpenAI(api_key=resolved_api_key)
-
-    try:
-        response = client.responses.parse(
-            model=resolved_model,
-            instructions=QUESTION_SYSTEM_INSTRUCTIONS,
-            input=prompt,
-            reasoning={"effort": "low"},
-            max_output_tokens=max_output_tokens,
-            text_format=_ChartResponse,
-        )
-    except (OpenAIError, ValidationError) as exc:
-        raise SummaryGenerationError(
-            f"OpenAI question answering failed: {exc}"
-        ) from exc
-
-    parsed = response.output_parsed
-    answer = parsed.text.strip() if parsed is not None else ""
-
-    if not answer:
-        status = getattr(response, "status", None)
-        incomplete_details = getattr(
-            response,
-            "incomplete_details",
-            None,
-        )
-
-        raise SummaryGenerationError(
-            "OpenAI returned no visible answer. "
-            f"status={status}, "
-            f"incomplete_details={incomplete_details}"
-        )
-
-    return SummaryResponse(
-        text=answer,
-        model=resolved_model,
-        referenced_periods=tuple(parsed.referenced_periods),
-        referenced_series=tuple(parsed.referenced_series),
+    prompt = build_question_prompt(result, question)
+    return _generate_response(
+        prompt=prompt,
+        instructions=QUESTION_SYSTEM_INSTRUCTIONS,
+        response_label="answer",
+        error_label="question answering",
+        model=model,
+        api_key=api_key,
+        max_output_tokens=max_output_tokens,
     )

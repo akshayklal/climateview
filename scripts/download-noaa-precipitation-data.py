@@ -22,10 +22,7 @@ def load_stations() -> Dict[str, Dict]:
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
 
-    try:
-        from climateview.stations import STATIONS
-    except ModuleNotFoundError:
-        from stations import STATIONS
+    from climateview.stations import STATIONS
 
     return STATIONS
 

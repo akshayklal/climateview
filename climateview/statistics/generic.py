@@ -155,7 +155,6 @@ def calculate_data_quality(
 
 def calculate_descriptive_statistics(
     values: pd.Series | Sequence[float],
-    include_sum: bool = False,
 ) -> DescriptiveStatistics:
     """
     Calculate basic descriptive statistics for a numeric series.
@@ -178,7 +177,6 @@ def calculate_descriptive_statistics(
         minimum=float(np.min(numeric)),
         maximum=float(np.max(numeric)),
         standard_deviation=standard_deviation,
-        sum=float(np.sum(numeric)) if include_sum else None,
     )
 
 
@@ -545,71 +543,6 @@ def calculate_recent_change_statistics(
     )
 
 
-def calculate_standardized_anomalies(
-    dataframe: pd.DataFrame,
-    period_column: str,
-    value_column: str,
-) -> pd.DataFrame:
-    """
-    Return the cleaned series with a z_score column.
-
-    When the series has zero standard deviation, every z-score is set to 0.
-    """
-
-    prepared = prepare_series(
-        dataframe=dataframe,
-        period_column=period_column,
-        value_column=value_column,
-    )
-
-    values = prepared[value_column].to_numpy(dtype=float)
-    mean = float(np.mean(values))
-
-    standard_deviation = (
-        float(np.std(values, ddof=1))
-        if values.size > 1
-        else 0.0
-    )
-
-    if np.isclose(standard_deviation, 0.0):
-        prepared["z_score"] = 0.0
-    else:
-        prepared["z_score"] = (
-            prepared[value_column] - mean
-        ) / standard_deviation
-
-    return prepared
-
-
-def calculate_consecutive_direction_runs(
-    values: pd.Series | Sequence[float],
-) -> dict[str, int]:
-    """
-    Calculate the longest consecutive increasing and decreasing runs.
-
-    Run lengths represent the number of transitions, not the number of data
-    points. For example, values [1, 2, 3] contain two increasing transitions.
-    """
-
-    numeric = _clean_numeric_values(values)
-
-    if numeric.size < 2:
-        return {
-            "longest_increasing_run": 0,
-            "longest_decreasing_run": 0,
-        }
-
-    differences = np.diff(numeric)
-
-    longest_increasing = _longest_boolean_run(differences > 0)
-    longest_decreasing = _longest_boolean_run(differences < 0)
-
-    return {
-        "longest_increasing_run": longest_increasing,
-        "longest_decreasing_run": longest_decreasing,
-    }
-
-
 def _clean_numeric_values(
     values: pd.Series | Sequence[float],
 ) -> np.ndarray:
@@ -671,20 +604,6 @@ def _format_period_range(
         return str(first)
 
     return f"{first}–{last}"
-
-
-def _longest_boolean_run(mask: np.ndarray) -> int:
-    longest = 0
-    current = 0
-
-    for value in mask:
-        if bool(value):
-            current += 1
-            longest = max(longest, current)
-        else:
-            current = 0
-
-    return longest
 
 
 def _to_python_scalar(value: Any) -> Any:
