@@ -93,10 +93,6 @@ def test_real_los_angeles_precipitation() -> None:
     assert result.maximum.value == pytest.approx(29.46)
 
     assert result.trend is not None
-    assert result.trend.slope_per_period == pytest.approx(
-        0.0209176,
-        abs=0.000001,
-    )
     assert result.trend.statistically_significant is False
     assert result.trend.direction == "stable"
 

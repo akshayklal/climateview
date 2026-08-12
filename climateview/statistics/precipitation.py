@@ -124,12 +124,6 @@ def calculate_decadal_statistics(
 
     years = _extract_years(prepared[period_column])
 
-    if years is None:
-        return {
-            "available": False,
-            "reason": "Period values could not be converted to years.",
-        }
-
     working = prepared.copy()
     working["_year"] = years
     working["_decade_start"] = (working["_year"] // 10) * 10
@@ -139,8 +133,6 @@ def calculate_decadal_statistics(
         .agg(
             mean_value=(value_column, "mean"),
             observation_count=(value_column, "count"),
-            first_year=("_year", "min"),
-            last_year=("_year", "max"),
         )
         .sort_values("_decade_start")
         .reset_index(drop=True)
@@ -158,37 +150,7 @@ def calculate_decadal_statistics(
                 "decade_start": decade_start,
                 "label": f"{decade_start}s",
                 "mean": float(row["mean_value"]),
-                "observation_count": observation_count,
-                "expected_observation_count": expected_count,
                 "complete": observation_count == expected_count,
-                "first_year": int(row["first_year"]),
-                "last_year": int(row["last_year"]),
-            }
-        )
-
-    changes: list[dict[str, Any]] = []
-
-    for previous, current in zip(decades, decades[1:]):
-        absolute_change = current["mean"] - previous["mean"]
-
-        percent_change = (
-            absolute_change / abs(previous["mean"]) * 100.0
-            if not np.isclose(previous["mean"], 0.0)
-            else None
-        )
-
-        changes.append(
-            {
-                "from_decade": previous["label"],
-                "to_decade": current["label"],
-                "absolute_change": float(absolute_change),
-                "percent_change": (
-                    float(percent_change)
-                    if percent_change is not None
-                    else None
-                ),
-                "direction": _change_direction(absolute_change),
-                "to_decade_complete": current["complete"],
             }
         )
 
@@ -201,7 +163,6 @@ def calculate_decadal_statistics(
     return {
         "available": True,
         "decades": decades,
-        "changes": changes,
         "recent_pattern": recent_pattern,
         "current_decade_incomplete": bool(
             decades and not decades[-1]["complete"]
@@ -227,12 +188,6 @@ def calculate_monthly_seasonality(
     )
 
     month_numbers = _extract_month_numbers(prepared[period_column])
-
-    if month_numbers is None:
-        return {
-            "available": False,
-            "reason": "Period values could not be converted to months.",
-        }
 
     working = prepared.copy()
     working["_month"] = month_numbers
@@ -328,72 +283,17 @@ def _recent_decadal_pattern(
     }
 
 
-def _extract_years(periods: pd.Series) -> np.ndarray | None:
-    numeric = pd.to_numeric(periods, errors="coerce")
-
-    if numeric.notna().all():
-        years = numeric.astype(int).to_numpy()
-
-        if np.all((years >= 1000) & (years <= 3000)):
-            return years
-
-    datetimes = pd.to_datetime(periods, errors="coerce")
-
-    if datetimes.notna().all():
-        return datetimes.dt.year.to_numpy(dtype=int)
-
-    return None
+def _extract_years(periods: pd.Series) -> np.ndarray:
+    years = pd.to_numeric(periods, errors="raise").astype(int).to_numpy()
+    if not np.all((years >= 1000) & (years <= 3000)):
+        raise ValueError("Annual precipitation periods must be years.")
+    return years
 
 
 def _extract_month_numbers(
     periods: pd.Series,
-) -> np.ndarray | None:
-    numeric = pd.to_numeric(periods, errors="coerce")
-
-    if numeric.notna().all():
-        months = numeric.astype(int).to_numpy()
-
-        if np.all((months >= 1) & (months <= 12)):
-            return months
-
-    datetimes = pd.to_datetime(periods, errors="coerce")
-
-    if datetimes.notna().all():
-        return datetimes.dt.month.to_numpy(dtype=int)
-
-    month_names = {
-        "jan": 1,
-        "january": 1,
-        "feb": 2,
-        "february": 2,
-        "mar": 3,
-        "march": 3,
-        "apr": 4,
-        "april": 4,
-        "may": 5,
-        "jun": 6,
-        "june": 6,
-        "jul": 7,
-        "july": 7,
-        "aug": 8,
-        "august": 8,
-        "sep": 9,
-        "sept": 9,
-        "september": 9,
-        "oct": 10,
-        "october": 10,
-        "nov": 11,
-        "november": 11,
-        "dec": 12,
-        "december": 12,
-    }
-
-    mapped = periods.astype(str).str.strip().str.lower().map(month_names)
-
-    if mapped.notna().all():
-        return mapped.to_numpy(dtype=int)
-
-    return None
+) -> np.ndarray:
+    return pd.to_datetime(periods, errors="raise").dt.month.to_numpy(dtype=int)
 
 
 def _classify_seasonality(
@@ -409,13 +309,6 @@ def _classify_seasonality(
         return "moderate"
 
     return "low"
-
-
-def _change_direction(change: float) -> str:
-    if np.isclose(change, 0.0):
-        return "stable"
-
-    return "increasing" if change > 0 else "decreasing"
 
 
 def _longest_boolean_run(mask: np.ndarray) -> int:

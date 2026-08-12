@@ -87,16 +87,10 @@ def test_analyze_precipitation_series(
     assert result.context == analysis_context
 
     assert result.data_quality.observation_count == 20
-    assert result.data_quality.missing_count == 0
-    assert result.data_quality.completeness_percent == pytest.approx(100.0)
     assert result.data_quality.first_period == 2000
     assert result.data_quality.last_period == 2019
-    assert result.data_quality.duplicate_period_count == 0
 
     assert result.descriptive.mean == pytest.approx(14.75)
-    assert result.descriptive.median == pytest.approx(14.75)
-    assert result.descriptive.minimum == pytest.approx(10.0)
-    assert result.descriptive.maximum == pytest.approx(19.5)
 
     assert result.minimum.period == 2000
     assert result.minimum.value == pytest.approx(10.0)
@@ -114,11 +108,8 @@ def test_analyze_precipitation_series(
     ] == [2000, 2001, 2002]
 
     assert result.trend is not None
-    assert result.trend.slope_per_period == pytest.approx(0.5)
-    assert result.trend.total_fitted_change == pytest.approx(9.5)
     assert result.trend.direction == "increasing"
     assert result.trend.statistically_significant is True
-    assert result.trend.r_squared == pytest.approx(1.0)
 
     assert result.recent_change is not None
     assert result.recent_change.recent_mean > (
@@ -195,9 +186,6 @@ def test_rows_with_missing_values_are_removed(
     )
 
     assert result.data_quality.observation_count == 3
-    assert result.data_quality.missing_count == 1
-    assert result.data_quality.completeness_percent == pytest.approx(75.0)
-    assert result.data_quality.expected_observation_count == 4
     assert result.minimum.period == 2000
     assert result.maximum.period == 2003
 

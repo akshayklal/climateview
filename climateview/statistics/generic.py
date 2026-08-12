@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from math import isfinite
 from typing import Any
 
 import numpy as np
@@ -77,15 +76,8 @@ def calculate_data_quality(
     dataframe: pd.DataFrame,
     period_column: str,
     value_column: str,
-    expected_periods: Sequence[Any] | None = None,
 ) -> DataQualityStatistics:
-    """
-    Calculate observation counts, missing periods, completeness, and duplicates.
-
-    When expected_periods is supplied, missing_count and completeness_percent
-    are calculated against that sequence. Otherwise, completeness is based on
-    the rows provided to the function.
-    """
+    """Count valid chart periods and identify the first and last period."""
 
     if period_column not in dataframe.columns:
         raise ValueError(f"Period column not found: {period_column}")
@@ -108,48 +100,16 @@ def calculate_data_quality(
     if valid.empty:
         raise ValueError("No valid observations are available.")
 
-    observation_count = len(valid)
-    duplicate_period_count = int(valid[period_column].duplicated().sum())
-
-    if expected_periods is not None:
-        expected = list(expected_periods)
-        expected_observation_count = len(expected)
-
-        observed_periods = set(valid[period_column].tolist())
-        missing_count = sum(
-            1 for period in expected if period not in observed_periods
-        )
-
-        completeness_percent = (
-            100.0 * (expected_observation_count - missing_count)
-            / expected_observation_count
-            if expected_observation_count > 0
-            else 0.0
-        )
-    else:
-        expected_observation_count = len(working)
-        missing_count = int(len(working) - observation_count)
-
-        completeness_percent = (
-            100.0 * observation_count / expected_observation_count
-            if expected_observation_count > 0
-            else 0.0
-        )
-
     sorted_valid = valid.sort_values(period_column)
 
     return DataQualityStatistics(
-        observation_count=observation_count,
-        missing_count=missing_count,
-        completeness_percent=float(completeness_percent),
+        observation_count=len(valid),
         first_period=_to_python_scalar(
             sorted_valid.iloc[0][period_column]
         ),
         last_period=_to_python_scalar(
             sorted_valid.iloc[-1][period_column]
         ),
-        expected_observation_count=expected_observation_count,
-        duplicate_period_count=duplicate_period_count,
     )
 
 
@@ -165,19 +125,7 @@ def calculate_descriptive_statistics(
     if numeric.size == 0:
         raise ValueError("At least one valid numeric value is required.")
 
-    standard_deviation = (
-        float(np.std(numeric, ddof=1))
-        if numeric.size > 1
-        else 0.0
-    )
-
-    return DescriptiveStatistics(
-        mean=float(np.mean(numeric)),
-        median=float(np.median(numeric)),
-        minimum=float(np.min(numeric)),
-        maximum=float(np.max(numeric)),
-        standard_deviation=standard_deviation,
-    )
+    return DescriptiveStatistics(mean=float(np.mean(numeric)))
 
 
 def calculate_extremes(
@@ -280,16 +228,7 @@ def calculate_variability_statistics(
         else 0.0
     )
 
-    range_value = float(np.max(numeric) - np.min(numeric))
-
-    interquartile_range = (
-        float(stats.iqr(numeric, rng=(25, 75)))
-        if numeric.size > 1
-        else 0.0
-    )
-
     if np.isclose(mean, 0.0):
-        coefficient_of_variation = None
         variability_level = _classify_variability_without_cv(
             numeric=numeric,
             standard_deviation=standard_deviation,
@@ -300,17 +239,7 @@ def calculate_variability_statistics(
             coefficient_of_variation
         )
 
-    return VariabilityStatistics(
-        standard_deviation=standard_deviation,
-        coefficient_of_variation=(
-            float(coefficient_of_variation)
-            if coefficient_of_variation is not None
-            else None
-        ),
-        variability_level=variability_level,
-        range_value=range_value,
-        interquartile_range=interquartile_range,
-    )
+    return VariabilityStatistics(variability_level=variability_level)
 
 
 def classify_variability(
@@ -346,9 +275,8 @@ def calculate_trend_statistics(
     """
     Calculate a least-squares linear trend.
 
-    The period column may contain numeric values, datetimes, or labels.
     Numeric periods are used directly. Datetimes are converted to elapsed
-    years. Other labels are converted to sequential positions.
+    years.
 
     Returns None when fewer than three valid observations are available or
     when the x-axis has no variation.
@@ -377,90 +305,15 @@ def calculate_trend_statistics(
     regression = stats.linregress(x, y)
 
     slope = float(regression.slope)
-    p_value = float(regression.pvalue)
-    standard_error = float(regression.stderr)
-
-    degrees_of_freedom = len(x) - 2
-
-    if degrees_of_freedom > 0 and isfinite(standard_error):
-        critical_value = float(
-            stats.t.ppf(
-                1.0 - significance_level / 2.0,
-                degrees_of_freedom,
-            )
-        )
-
-        margin = critical_value * standard_error
-        confidence_interval_low = slope - margin
-        confidence_interval_high = slope + margin
-    else:
-        confidence_interval_low = None
-        confidence_interval_high = None
-
-    x_span = float(np.max(x) - np.min(x))
-    total_fitted_change = slope * x_span
-
-    statistically_significant = (
-        isfinite(p_value) and p_value < significance_level
-    )
-
-    direction = classify_trend_direction(
-        slope=slope,
-        confidence_interval_low=confidence_interval_low,
-        confidence_interval_high=confidence_interval_high,
-        statistically_significant=statistically_significant,
-    )
+    statistically_significant = bool(regression.pvalue < significance_level)
+    direction = "stable"
+    if statistically_significant:
+        direction = "increasing" if slope > 0 else "decreasing"
 
     return TrendStatistics(
-        slope_per_period=slope,
-        total_fitted_change=float(total_fitted_change),
         direction=direction,
         statistically_significant=statistically_significant,
-        p_value=p_value if isfinite(p_value) else None,
-        confidence_interval_low=(
-            float(confidence_interval_low)
-            if confidence_interval_low is not None
-            else None
-        ),
-        confidence_interval_high=(
-            float(confidence_interval_high)
-            if confidence_interval_high is not None
-            else None
-        ),
-        r_squared=float(regression.rvalue**2),
     )
-
-
-def classify_trend_direction(
-    slope: float,
-    confidence_interval_low: float | None,
-    confidence_interval_high: float | None,
-    statistically_significant: bool,
-) -> str:
-    """
-    Classify a regression trend as increasing, decreasing, or stable.
-
-    A non-significant slope is labeled stable because the engine should avoid
-    presenting weak evidence as a meaningful directional trend.
-    """
-
-    if not statistically_significant:
-        return "stable"
-
-    if (
-        confidence_interval_low is not None
-        and confidence_interval_high is not None
-        and confidence_interval_low <= 0.0 <= confidence_interval_high
-    ):
-        return "stable"
-
-    if slope > 0:
-        return "increasing"
-
-    if slope < 0:
-        return "decreasing"
-
-    return "stable"
 
 
 def calculate_recent_change_statistics(
@@ -565,16 +418,7 @@ def _periods_to_numeric(periods: pd.Series) -> np.ndarray:
 
         return elapsed_days.to_numpy(dtype=float) / 365.2425
 
-    parsed_datetimes = pd.to_datetime(periods, errors="coerce")
-
-    if parsed_datetimes.notna().all():
-        elapsed_days = (
-            parsed_datetimes - parsed_datetimes.iloc[0]
-        ).dt.total_seconds() / 86_400.0
-
-        return elapsed_days.to_numpy(dtype=float) / 365.2425
-
-    return np.arange(len(periods), dtype=float)
+    raise ValueError("Period values must be numeric or datetimes.")
 
 
 def _classify_variability_without_cv(

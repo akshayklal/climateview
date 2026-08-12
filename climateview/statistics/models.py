@@ -32,30 +32,18 @@ class DataSchema:
 
 @dataclass(frozen=True)
 class DataQualityStatistics:
-    """
-    Describes the quantity and completeness of the selected data.
-    """
+    """Describes the valid periods in the selected chart data."""
 
     observation_count: int
-    missing_count: int
-    completeness_percent: float
     first_period: PeriodValue
     last_period: PeriodValue
-    expected_observation_count: int | None = None
-    duplicate_period_count: int = 0
 
 
 @dataclass(frozen=True)
 class DescriptiveStatistics:
-    """
-    Basic descriptive statistics for the selected numerical series.
-    """
+    """Describes the average value of the selected series."""
 
     mean: float
-    median: float
-    minimum: float
-    maximum: float
-    standard_deviation: float
 
 
 @dataclass(frozen=True)
@@ -70,31 +58,17 @@ class ExtremeValue:
 
 @dataclass(frozen=True)
 class TrendStatistics:
-    """
-    Regression-based trend statistics for the selected period.
-    """
+    """Describes the direction and significance of a linear trend."""
 
-    slope_per_period: float
-    total_fitted_change: float
     direction: str
     statistically_significant: bool
-    p_value: float | None = None
-    confidence_interval_low: float | None = None
-    confidence_interval_high: float | None = None
-    r_squared: float | None = None
 
 
 @dataclass(frozen=True)
 class VariabilityStatistics:
-    """
-    Describes how much values fluctuate around the mean.
-    """
+    """Broadly classifies how much values fluctuate around the mean."""
 
-    standard_deviation: float
-    coefficient_of_variation: float | None
     variability_level: str
-    range_value: float
-    interquartile_range: float | None = None
 
 
 @dataclass(frozen=True)
