@@ -110,19 +110,6 @@ def test_real_los_angeles_precipitation() -> None:
     assert decadal["available"] is True
     assert decadal["current_decade_incomplete"] is True
 
-    assert len(result.insights) > 0
-
-    assert any(
-        insight.insight_type == "high_variability"
-        for insight in result.insights
-    )
-
-    assert any(
-        insight.insight_type == "recent_decadal_decline"
-        for insight in result.insights
-    )
-
-
 def test_print_real_los_angeles_analysis() -> None:
     """
     Diagnostic test used to inspect the complete statistics-engine output.

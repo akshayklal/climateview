@@ -20,6 +20,9 @@ Follow these rules:
 - Describe statistical significance in plain language.
 - Do not mention p-values, R-squared values, standard deviations, or coefficients of variation.
 - Mention record minimum and maximum periods only when they help explain the overall pattern.
+- Treat chart_context.period_semantics as authoritative.
+- An observation count is the number of plotted periods with values, not proof that those periods or the record are complete. Never describe completeness unless an explicit within-period completeness measurement is supplied.
+- For decade aggregation, values such as 2020s are decade bucket labels, not source-record endpoints. Do not infer missing years or record completeness from them.
 - Prefer rounded values appropriate for a general audience.
 - Write one concise paragraph of approximately 90 to 140 words.
 - Do not use headings, bullet points, markdown, or technical notation.
@@ -36,6 +39,9 @@ Follow these rules:
 - Distinguish observed patterns from statistically significant trends.
 - Do not claim causation from correlation or time-series patterns.
 - For precipitation, higher or lower values are not inherently better.
+- Treat chart_context.period_semantics as authoritative.
+- An observation count is the number of plotted periods with values, not proof that those periods or the record are complete. Never describe completeness unless an explicit within-period completeness measurement is supplied.
+- For decade aggregation, values such as 2020s are decade bucket labels, not source-record endpoints. Do not infer missing years or record completeness from them.
 - Use plain, friendly language.
 - Keep the answer concise, usually 60 to 130 words.
 - Do not use headings, bullet points, markdown, or technical notation.
@@ -66,6 +72,7 @@ def build_summary_payload(result: AnalysisResult) -> dict[str, Any]:
     """
 
     context = result.context
+    aggregation = context.aggregation
 
     payload: dict[str, Any] = {
         "chart_context": {
@@ -75,24 +82,37 @@ def build_summary_payload(result: AnalysisResult) -> dict[str, Any]:
             "aggregation": context.aggregation,
             "start_period": context.start_period,
             "end_period": context.end_period,
+            "period_semantics": _period_semantics(context.aggregation),
         },
         "data_quality": {
             "observation_count": result.data_quality.observation_count,
-            "completeness_percent": _round_optional(
-                result.data_quality.completeness_percent,
-                1,
+            "observation_count_scope": (
+                "Number of aggregated chart periods with valid values; "
+                "this does not establish that each period is complete."
             ),
-            "first_period": result.data_quality.first_period,
-            "last_period": result.data_quality.last_period,
+            "first_period": _format_period_for_prompt(
+                result.data_quality.first_period,
+                aggregation,
+            ),
+            "last_period": _format_period_for_prompt(
+                result.data_quality.last_period,
+                aggregation,
+            ),
         },
         "descriptive_statistics": {
             "mean": _round_optional(result.descriptive.mean, 1),
             "minimum": {
-                "period": result.minimum.period,
+                "period": _format_period_for_prompt(
+                    result.minimum.period,
+                    aggregation,
+                ),
                 "value": _round_optional(result.minimum.value, 1),
             },
             "maximum": {
-                "period": result.maximum.period,
+                "period": _format_period_for_prompt(
+                    result.maximum.period,
+                    aggregation,
+                ),
                 "value": _round_optional(result.maximum.value, 1),
             },
         },
@@ -100,7 +120,10 @@ def build_summary_payload(result: AnalysisResult) -> dict[str, Any]:
             label: {
                 direction: [
                     {
-                        "period": item.period,
+                        "period": _format_period_for_prompt(
+                            item.period,
+                            aggregation,
+                        ),
                         "value": _round_optional(item.value, 1),
                     }
                     for item in items
@@ -112,11 +135,6 @@ def build_summary_payload(result: AnalysisResult) -> dict[str, Any]:
         "variability": {
             "level": result.variability.variability_level,
         },
-        "priority_insights": [
-            _serialize_insight(insight)
-            for insight in result.insights
-            if insight.llm_priority
-        ],
     }
 
     if result.trend is not None:
@@ -128,8 +146,14 @@ def build_summary_payload(result: AnalysisResult) -> dict[str, Any]:
         }
     if result.recent_change is not None:
         payload["recent_change"] = {
-            "baseline_period": result.recent_change.baseline_period,
-            "recent_period": result.recent_change.recent_period,
+            "baseline_period": _format_period_for_prompt(
+                result.recent_change.baseline_period,
+                aggregation,
+            ),
+            "recent_period": _format_period_for_prompt(
+                result.recent_change.recent_period,
+                aggregation,
+            ),
             "baseline_mean": _round_optional(
                 result.recent_change.baseline_mean,
                 1,
@@ -176,14 +200,38 @@ def build_question_prompt(
         f"User question:\n{cleaned_question}"
     )
 
-def _serialize_insight(insight: Any) -> dict[str, Any]:
-    value: dict[str, Any] = {
-        "type": insight.insight_type,
-        "statement": insight.statement,
+def _period_semantics(aggregation: str) -> dict[str, Any]:
+    normalized = aggregation.strip().lower().replace(" ", "_")
+
+    if normalized in {"decade", "decadal"}:
+        return {
+            "period_type": "decade_bucket",
+            "label_meaning": (
+                "A value such as 2020s labels the decade bucket beginning "
+                "in 2020; it is not the final source-data year."
+            ),
+            "within_bucket_completeness_known": False,
+        }
+
+    return {
+        "period_type": "aggregated_chart_period",
+        "within_period_completeness_known": False,
     }
 
-    if insight.caveat:
-        value["caveat"] = insight.caveat
+
+def _format_period_for_prompt(value: Any, aggregation: str) -> Any:
+    normalized = aggregation.strip().lower().replace(" ", "_")
+
+    if normalized not in {"decade", "decadal"}:
+        return value
+
+    if isinstance(value, (int, float)) and float(value).is_integer():
+        return f"{int(value)}s"
+
+    text = str(value)
+    parts = text.split("–")
+    if all(part.isdigit() for part in parts):
+        return "–".join(f"{part}s" for part in parts)
 
     return value
 

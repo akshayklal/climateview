@@ -112,20 +112,6 @@ class RecentChangeStatistics:
 
 
 @dataclass(frozen=True)
-class Insight:
-    """
-    One verified finding selected for display or LLM summarization.
-    """
-
-    insight_type: str
-    importance: float
-    statement: str
-    llm_priority: bool = True
-    supporting_values: dict[str, Any] = field(default_factory=dict)
-    caveat: str | None = None
-
-
-@dataclass(frozen=True)
 class AnalysisResult:
     """
     Complete output produced by the statistics engine.
@@ -143,7 +129,6 @@ class AnalysisResult:
         default_factory=dict
     )
     metric_specific: dict[str, Any] = field(default_factory=dict)
-    insights: list[Insight] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         """

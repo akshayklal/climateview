@@ -137,11 +137,6 @@ def test_analyze_precipitation_series(
     assert decadal["decades"][1]["complete"] is True
     assert decadal["current_decade_incomplete"] is False
 
-    assert len(result.insights) > 0
-    assert any(
-        insight.insight_type == "significant_trend"
-        for insight in result.insights
-    )
 
 
 def test_result_can_be_converted_to_dictionary(
@@ -162,7 +157,7 @@ def test_result_can_be_converted_to_dictionary(
     assert result_dict["context"]["location"] == "Test Location"
     assert result_dict["descriptive"]["mean"] == pytest.approx(14.75)
     assert result_dict["trend"]["direction"] == "increasing"
-    assert isinstance(result_dict["insights"], list)
+    assert "insights" not in result_dict
 
 
 def test_invalid_value_column_raises_error(

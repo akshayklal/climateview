@@ -14,7 +14,6 @@ from .generic import (
     calculate_variability_statistics,
     prepare_series,
 )
-from .insight_selector import select_insights
 from .models import (
     AnalysisContext,
     AnalysisResult,
@@ -119,22 +118,6 @@ def analyze_series(
     )
 
     # ------------------------------------------------------------------
-    # Select important findings
-    # ------------------------------------------------------------------
-
-    insights = select_insights(
-        context=context,
-        data_quality=data_quality,
-        descriptive=descriptive,
-        trend=trend,
-        variability=variability,
-        minimum=minimum,
-        maximum=maximum,
-        recent_change=recent_change,
-        metric_specific=metric_specific,
-    )
-
-    # ------------------------------------------------------------------
     # Final result
     # ------------------------------------------------------------------
 
@@ -149,7 +132,6 @@ def analyze_series(
         recent_change=recent_change,
         rankings=rankings,
         metric_specific=metric_specific,
-        insights=insights,
     )
 
 
