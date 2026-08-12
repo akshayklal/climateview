@@ -17,6 +17,13 @@ from climateview.statistics import (
 )
 
 
+TEMPERATURE_TABLE_PERIODS = {
+    "Month": ("month", "Month"),
+    "Year": ("year", "Year"),
+    "Decade": ("decade", "Decade"),
+}
+
+
 def build_temperature_aggregation(data, aggregation):
     if aggregation == "Month":
         grouped = (
@@ -191,68 +198,28 @@ def build_temperature_figure(
 
 
 def render_temperature_table(aggregated_data, aggregation):
+    period_column, period_label = TEMPERATURE_TABLE_PERIODS[aggregation]
+    display_columns = [
+        period_label,
+        "Average maximum (°F)",
+        "Average minimum (°F)",
+        "Maximum observations",
+        "Minimum observations",
+    ]
+    display_data = aggregated_data.rename(
+        columns={
+            period_column: period_label,
+            "avg_tmax_f": "Average maximum (°F)",
+            "avg_tmin_f": "Average minimum (°F)",
+            "days_with_tmax": "Maximum observations",
+            "days_with_tmin": "Minimum observations",
+        }
+    )[display_columns].copy()
+
     if aggregation == "Month":
-        display_data = aggregated_data.rename(
-            columns={
-                "month": "Month",
-                "avg_tmax_f": "Average maximum (°F)",
-                "avg_tmin_f": "Average minimum (°F)",
-                "days_with_tmax": "Maximum observations",
-                "days_with_tmin": "Minimum observations",
-            }
-        )
-
-        display_data["Month"] = display_data["Month"].dt.strftime(
-            "%B %Y"
-        )
-
-        display_columns = [
-            "Month",
-            "Average maximum (°F)",
-            "Average minimum (°F)",
-            "Maximum observations",
-            "Minimum observations",
-        ]
-
-    elif aggregation == "Year":
-        display_data = aggregated_data.rename(
-            columns={
-                "year": "Year",
-                "avg_tmax_f": "Average maximum (°F)",
-                "avg_tmin_f": "Average minimum (°F)",
-                "days_with_tmax": "Maximum observations",
-                "days_with_tmin": "Minimum observations",
-            }
-        )
-
-        display_columns = [
-            "Year",
-            "Average maximum (°F)",
-            "Average minimum (°F)",
-            "Maximum observations",
-            "Minimum observations",
-        ]
-
-    else:
-        display_data = aggregated_data.rename(
-            columns={
-                "decade": "Decade",
-                "avg_tmax_f": "Average maximum (°F)",
-                "avg_tmin_f": "Average minimum (°F)",
-                "days_with_tmax": "Maximum observations",
-                "days_with_tmin": "Minimum observations",
-            }
-        )
-
-        display_columns = [
-            "Decade",
-            "Average maximum (°F)",
-            "Average minimum (°F)",
-            "Maximum observations",
-            "Minimum observations",
-        ]
-
-    display_data = display_data[display_columns].copy()
+        display_data[period_label] = display_data[
+            period_label
+        ].dt.strftime("%B %Y")
 
     display_data["Average maximum (°F)"] = display_data[
         "Average maximum (°F)"

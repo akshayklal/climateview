@@ -5,8 +5,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from .generic import prepare_series
-
 
 DEFAULT_DRY_THRESHOLD_RATIO = 0.75
 DEFAULT_WET_THRESHOLD_RATIO = 1.25
@@ -25,19 +23,13 @@ def calculate_precipitation_statistics(
     used to render the visible chart.
     """
 
-    prepared = prepare_series(
-        dataframe=dataframe,
-        period_column=period_column,
-        value_column=value_column,
-    )
-
-    values = prepared[value_column].to_numpy(dtype=float)
+    values = dataframe[value_column].to_numpy(dtype=float)
     mean_value = float(np.mean(values))
 
     result: dict[str, Any] = {
         "directionality": "context_dependent",
         "consecutive_runs": calculate_precipitation_runs(
-            dataframe=prepared,
+            dataframe=dataframe,
             value_column=value_column,
             baseline_mean=mean_value,
         ),
@@ -53,7 +45,7 @@ def calculate_precipitation_statistics(
         "year",
     }:
         result["decadal_analysis"] = calculate_decadal_statistics(
-            dataframe=prepared,
+            dataframe=dataframe,
             period_column=period_column,
             value_column=value_column,
         )
@@ -64,7 +56,7 @@ def calculate_precipitation_statistics(
         "calendar_month",
     }:
         result["seasonality"] = calculate_monthly_seasonality(
-            dataframe=prepared,
+            dataframe=dataframe,
             period_column=period_column,
             value_column=value_column,
         )
@@ -116,15 +108,9 @@ def calculate_decadal_statistics(
     This expects the period column to contain years or year-like values.
     """
 
-    prepared = prepare_series(
-        dataframe=dataframe,
-        period_column=period_column,
-        value_column=value_column,
-    )
+    years = _extract_years(dataframe[period_column])
 
-    years = _extract_years(prepared[period_column])
-
-    working = prepared.copy()
+    working = dataframe.copy()
     working["_year"] = years
     working["_decade_start"] = (working["_year"] // 10) * 10
 
@@ -181,15 +167,9 @@ def calculate_monthly_seasonality(
     The period column may contain month numbers, month names, or dates.
     """
 
-    prepared = prepare_series(
-        dataframe=dataframe,
-        period_column=period_column,
-        value_column=value_column,
-    )
+    month_numbers = _extract_month_numbers(dataframe[period_column])
 
-    month_numbers = _extract_month_numbers(prepared[period_column])
-
-    working = prepared.copy()
+    working = dataframe.copy()
     working["_month"] = month_numbers
 
     monthly = (

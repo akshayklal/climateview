@@ -1,11 +1,11 @@
 import argparse
 import math
-import sys
 from collections import defaultdict
 from datetime import date, datetime
-from pathlib import Path
 
 import requests
+
+from station_utils import load_stations
 
 
 # AQS architecture:
@@ -15,12 +15,7 @@ import requests
 # - build-processed-aqs-data.py will later stitch POCs chronologically.
 # - On each date, the oldest POC that is still active is used.
 # - Processing switches to the next-oldest POC when the older monitor closes.
-#
-# Allow imports from the project root when this script is run from scripts/.
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PROJECT_ROOT))
-
-from climateview.stations import STATIONS
+STATIONS = load_stations()
 
 
 AQS_API_BASE_URL = "https://aqs.epa.gov/data/api"

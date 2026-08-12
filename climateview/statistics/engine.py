@@ -63,9 +63,8 @@ def analyze_series(
     # ------------------------------------------------------------------
 
     data_quality = calculate_data_quality(
-        dataframe=dataframe,
+        dataframe=prepared,
         period_column=period_column,
-        value_column=value_column,
     )
 
     descriptive = calculate_descriptive_statistics(
@@ -94,18 +93,24 @@ def analyze_series(
         value_column=value_column,
     )
 
-    ranking_columns = {
-        context.metric: value_column,
-        **schema.ranked_value_columns,
-    }
     rankings = {
-        label: calculate_ranked_extremes(
+        context.metric: calculate_ranked_extremes(
+            dataframe=prepared,
+            period_column=period_column,
+            value_column=value_column,
+        )
+    }
+    for label, ranking_value_column in schema.ranked_value_columns.items():
+        ranking_series = prepare_series(
             dataframe=dataframe,
             period_column=period_column,
             value_column=ranking_value_column,
         )
-        for label, ranking_value_column in ranking_columns.items()
-    }
+        rankings[label] = calculate_ranked_extremes(
+            dataframe=ranking_series,
+            period_column=period_column,
+            value_column=ranking_value_column,
+        )
 
     # ------------------------------------------------------------------
     # Metric-specific statistics

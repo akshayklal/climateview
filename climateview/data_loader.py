@@ -21,18 +21,7 @@ def load_temperature_data(station_id: str):
         TEMPERATURE_DIR
         / f"{station_id}_daily_temperature.csv"
     )
-
-    if not file_path.exists():
-        return pd.DataFrame()
-
-    df = pd.read_csv(file_path)
-
-    df["date"] = pd.to_datetime(df["date"])
-    df["year"] = df["date"].dt.year
-    df["month"] = df["date"].dt.to_period("M").astype(str)
-    df["decade"] = (df["year"] // 10) * 10
-
-    return df
+    return _load_noaa_csv(file_path)
 
 
 @st.cache_data
@@ -42,16 +31,25 @@ def load_precipitation_data(station_id: str):
         / f"{station_id}_daily_precipitation.csv"
     )
 
+    return _load_noaa_csv(file_path, include_month_number=True)
+
+
+def _load_noaa_csv(
+    file_path: Path,
+    *,
+    include_month_number: bool = False,
+) -> pd.DataFrame:
+    """Load a daily NOAA file and add its shared period columns."""
     if not file_path.exists():
         return pd.DataFrame()
 
-    df = pd.read_csv(file_path)
-
-    df["date"] = pd.to_datetime(df["date"])
+    df = pd.read_csv(file_path, parse_dates=["date"])
     df["year"] = df["date"].dt.year
-    df["month_number"] = df["date"].dt.month
     df["month"] = df["date"].dt.to_period("M").astype(str)
     df["decade"] = (df["year"] // 10) * 10
+
+    if include_month_number:
+        df["month_number"] = df["date"].dt.month
 
     return df
 
@@ -158,4 +156,3 @@ def load_air_quality_data(
         "metadata": metadata,
         "data": df,
     }
-

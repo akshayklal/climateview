@@ -2,11 +2,12 @@
 
 import argparse
 import json
-import sys
 from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
+
+from station_utils import select_stations
 
 
 # AQS processing architecture:
@@ -59,44 +60,6 @@ POLLUTANTS_BY_CODE = {
     config["parameter_code"]: name
     for name, config in POLLUTANTS.items()
 }
-
-
-def load_stations() -> Dict[str, Dict]:
-    """Load the project station registry."""
-    project_root = Path(__file__).resolve().parent.parent
-
-    if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))
-
-    from climateview.stations import STATIONS
-
-    return STATIONS
-
-
-def resolve_station(
-    stations: Dict[str, Dict],
-    station_value: str,
-) -> Tuple[str, Dict]:
-    """Resolve a NOAA station ID to its stations.py entry."""
-    normalized_noaa = station_value.replace("GHCND:", "")
-
-    for station_key, station in stations.items():
-        noaa_station_id = str(station.get("noaa_station_id", "")).replace(
-            "GHCND:",
-            "",
-        )
-        if normalized_noaa == noaa_station_id:
-            return station_key, station
-
-    valid_ids = ", ".join(
-        station["noaa_station_id"] for station in stations.values()
-    )
-    raise ValueError(
-        "Unknown NOAA station ID '{}'. Valid IDs: {}".format(
-            station_value,
-            valid_ids,
-        )
-    )
 
 
 def parse_date(value: object) -> Optional[date]:
@@ -508,20 +471,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    stations = load_stations()
-
-    if args.station:
-        station_key, station = resolve_station(stations, args.station)
-        selected_stations = [(station_key, station)]
-    else:
-        selected_stations = list(stations.items())
-
-    if not selected_stations:
-        raise ValueError("No stations found in stations.py")
-
     pollutant = POLLUTANTS_BY_CODE[args.pollutant]
 
-    for station_key, station in selected_stations:
+    for station_key, station in select_stations(args.station):
         try:
             process_pollutant(
                 station_key=station_key,

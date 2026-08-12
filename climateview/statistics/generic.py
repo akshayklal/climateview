@@ -41,9 +41,8 @@ def prepare_series(
     - sorts rows by period;
     - resets the index.
 
-    Duplicate periods are preserved so that data-quality checks can report
-    them. The engine or calling code should decide whether duplicates are
-    expected for the selected aggregation.
+    Duplicate periods are preserved because they may be valid for the
+    selected aggregation.
     """
 
     if period_column not in dataframe.columns:
@@ -75,41 +74,13 @@ def prepare_series(
 def calculate_data_quality(
     dataframe: pd.DataFrame,
     period_column: str,
-    value_column: str,
 ) -> DataQualityStatistics:
-    """Count valid chart periods and identify the first and last period."""
-
-    if period_column not in dataframe.columns:
-        raise ValueError(f"Period column not found: {period_column}")
-
-    if value_column not in dataframe.columns:
-        raise ValueError(f"Value column not found: {value_column}")
-
-    working = dataframe[[period_column, value_column]].copy()
-    numeric_values = pd.to_numeric(working[value_column], errors="coerce")
-
-    valid_mask = (
-        working[period_column].notna()
-        & numeric_values.notna()
-        & np.isfinite(numeric_values.fillna(np.nan).to_numpy(dtype=float))
-    )
-
-    valid = working.loc[valid_mask].copy()
-    valid[value_column] = numeric_values.loc[valid_mask]
-
-    if valid.empty:
-        raise ValueError("No valid observations are available.")
-
-    sorted_valid = valid.sort_values(period_column)
+    """Describe the valid, sorted periods in a prepared dataframe."""
 
     return DataQualityStatistics(
-        observation_count=len(valid),
-        first_period=_to_python_scalar(
-            sorted_valid.iloc[0][period_column]
-        ),
-        last_period=_to_python_scalar(
-            sorted_valid.iloc[-1][period_column]
-        ),
+        observation_count=len(dataframe),
+        first_period=_to_python_scalar(dataframe.iloc[0][period_column]),
+        last_period=_to_python_scalar(dataframe.iloc[-1][period_column]),
     )
 
 
@@ -140,17 +111,11 @@ def calculate_extremes(
     returned because the dataframe is sorted by period first.
     """
 
-    prepared = prepare_series(
-        dataframe=dataframe,
-        period_column=period_column,
-        value_column=value_column,
-    )
+    minimum_index = dataframe[value_column].idxmin()
+    maximum_index = dataframe[value_column].idxmax()
 
-    minimum_index = prepared[value_column].idxmin()
-    maximum_index = prepared[value_column].idxmax()
-
-    minimum_row = prepared.loc[minimum_index]
-    maximum_row = prepared.loc[maximum_index]
+    minimum_row = dataframe.loc[minimum_index]
+    maximum_row = dataframe.loc[maximum_index]
 
     minimum = ExtremeValue(
         period=_to_python_scalar(minimum_row[period_column]),
@@ -175,12 +140,6 @@ def calculate_ranked_extremes(
     if limit < 1:
         raise ValueError("Ranking limit must be at least 1.")
 
-    prepared = prepare_series(
-        dataframe=dataframe,
-        period_column=period_column,
-        value_column=value_column,
-    )
-
     def serialize(rows: pd.DataFrame) -> list[ExtremeValue]:
         return [
             ExtremeValue(
@@ -190,11 +149,11 @@ def calculate_ranked_extremes(
             for _, row in rows.iterrows()
         ]
 
-    highest = prepared.sort_values(
+    highest = dataframe.sort_values(
         [value_column, period_column],
         ascending=[False, True],
     ).head(limit)
-    lowest = prepared.sort_values(
+    lowest = dataframe.sort_values(
         [value_column, period_column],
         ascending=[True, True],
     ).head(limit)
@@ -287,17 +246,11 @@ def calculate_trend_statistics(
             "significance_level must be between 0 and 1."
         )
 
-    prepared = prepare_series(
-        dataframe=dataframe,
-        period_column=period_column,
-        value_column=value_column,
-    )
-
-    if len(prepared) < MIN_TREND_OBSERVATIONS:
+    if len(dataframe) < MIN_TREND_OBSERVATIONS:
         return None
 
-    x = _periods_to_numeric(prepared[period_column])
-    y = prepared[value_column].to_numpy(dtype=float)
+    x = _periods_to_numeric(dataframe[period_column])
+    y = dataframe[value_column].to_numpy(dtype=float)
 
     if np.allclose(x, x[0]):
         return None
@@ -340,13 +293,7 @@ def calculate_recent_change_statistics(
             "minimum_recent_observations must be at least 1."
         )
 
-    prepared = prepare_series(
-        dataframe=dataframe,
-        period_column=period_column,
-        value_column=value_column,
-    )
-
-    observation_count = len(prepared)
+    observation_count = len(dataframe)
 
     recent_count = max(
         minimum_recent_observations,
@@ -356,8 +303,8 @@ def calculate_recent_change_statistics(
     if recent_count >= observation_count:
         return None
 
-    baseline = prepared.iloc[:-recent_count]
-    recent = prepared.iloc[-recent_count:]
+    baseline = dataframe.iloc[:-recent_count]
+    recent = dataframe.iloc[-recent_count:]
 
     if baseline.empty or recent.empty:
         return None
