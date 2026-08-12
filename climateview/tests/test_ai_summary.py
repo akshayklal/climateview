@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from climateview.ai import summarize_analysis
+from climateview.ai.summarizer import generate_analysis_response
 from climateview.statistics import (
     AnalysisContext,
     DataSchema,
@@ -85,7 +85,7 @@ def test_generate_real_precipitation_summary() -> None:
         ),
     )
 
-    response = summarize_analysis(analysis)
+    response = generate_analysis_response(analysis)
 
     assert response.text.strip()
     assert response.model.strip()

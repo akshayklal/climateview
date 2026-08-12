@@ -1,7 +1,9 @@
 import pandas as pd
 
 from climateview.ai.prompt_builder import (
-    SYSTEM_INSTRUCTIONS,
+    QUESTION_INSTRUCTIONS,
+    SUMMARY_INSTRUCTIONS,
+    build_ai_request,
     build_summary_payload,
 )
 from climateview.charts import select_referenced_periods
@@ -49,8 +51,19 @@ def test_decade_payload_explains_period_semantics() -> None:
     assert payload["descriptive_statistics"]["maximum"]["period"] == "2020s"
     assert payload["recent_change"]["baseline_period"] == "1940s–1990s"
     assert payload["recent_change"]["recent_period"] == "2000s–2020s"
-    assert "Never describe completeness" in SYSTEM_INSTRUCTIONS
-    assert "not source-record endpoints" in SYSTEM_INSTRUCTIONS
+    instructions, prompt = build_ai_request(analysis)
+    assert instructions == SUMMARY_INSTRUCTIONS
+    assert "Never describe completeness" in instructions
+    assert "not record endpoints" in instructions
+    assert '"last_period": "2020s"' in prompt
+
+    instructions, prompt = build_ai_request(
+        analysis,
+        "Which decade was warmest?",
+    )
+    assert instructions == QUESTION_INSTRUCTIONS
+    assert "Which decade was warmest?" in prompt
+    assert "referenced_periods" in instructions
 
     highlighted = select_referenced_periods(
         dataframe,

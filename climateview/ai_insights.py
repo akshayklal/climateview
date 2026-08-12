@@ -3,10 +3,9 @@ from collections.abc import Callable, Hashable
 
 import streamlit as st
 
-from climateview.ai import (
-    SummaryGenerationError,
-    answer_analysis_question,
-    summarize_analysis,
+from climateview.ai.summarizer import (
+    AIGenerationError,
+    generate_analysis_response,
 )
 
 
@@ -151,42 +150,41 @@ def render_ai_insights(
         tuple(st.session_state.get(series_key, ())),
     )
 
-    if question_submitted and question.strip():
-        try:
-            with insight_placeholder.container():
-                with st.spinner(answer_spinner_text):
-                    answer_response = answer_analysis_question(
-                        analysis,
-                        question,
-                    )
+    submitted_question = question.strip() if question_submitted else None
+    should_generate = bool(submitted_question) or (
+        st.session_state.get(text_key) is None
+    )
 
-            st.session_state[text_key] = answer_response.text
-            st.session_state[references_key] = answer_response.referenced_periods
-            st.session_state[series_key] = answer_response.referenced_series
-            _render_response(insight_placeholder, answer_response.text)
-            st.rerun()
-
-        except SummaryGenerationError:
-            insight_placeholder.info(
-                "The AI answer is temporarily unavailable."
-            )
-
-    elif st.session_state.get(text_key) is None:
-        try:
-            with insight_placeholder.container():
-                with st.spinner(summary_spinner_text):
-                    summary_response = summarize_analysis(analysis)
-
-            st.session_state[text_key] = summary_response.text
-            # The automatic insight summarizes the chart as a whole. Only a
-            # direct answer to a user's question should highlight chart data.
-            st.session_state[references_key] = ()
-            st.session_state[series_key] = ()
-            _render_response(insight_placeholder, summary_response.text)
-            st.rerun()
-
-        except SummaryGenerationError:
-            insight_placeholder.info(
+    if should_generate:
+        spinner_text = (
+            answer_spinner_text if submitted_question else summary_spinner_text
+        )
+        error_text = (
+            "The AI answer is temporarily unavailable."
+            if submitted_question
+            else (
                 "AI Insights are temporarily unavailable. "
                 "The chart and statistics are still available."
             )
+        )
+
+        try:
+            with insight_placeholder.container():
+                with st.spinner(spinner_text):
+                    response = generate_analysis_response(
+                        analysis,
+                        submitted_question,
+                    )
+
+            st.session_state[text_key] = response.text
+            st.session_state[references_key] = (
+                response.referenced_periods if submitted_question else ()
+            )
+            st.session_state[series_key] = (
+                response.referenced_series if submitted_question else ()
+            )
+            _render_response(insight_placeholder, response.text)
+            st.rerun()
+
+        except AIGenerationError:
+            insight_placeholder.info(error_text)
