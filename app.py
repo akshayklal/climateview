@@ -13,7 +13,7 @@ from climateview.stations import STATIONS
 
 # Page configuration
 st.set_page_config(
-    page_title="ClimateView",
+    page_title="Climate Patterns",
     page_icon="🌎",
     layout="wide",
 )
@@ -182,7 +182,7 @@ else:
     )
 
     with title_col:
-        st.title("ClimateView")
+        st.title("Climate Patterns")
         st.subheader(
             "Explore long-term climate trends across the United States"
         )
