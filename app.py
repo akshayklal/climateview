@@ -183,11 +183,8 @@ else:
 
     with title_col:
         st.title("Climate Patterns")
-        st.subheader(
-            "Explore long-term climate trends across the United States"
-        )
         st.caption(
-            "Historical temperature, precipitation, and air-quality records."
+            "Historical temperature, precipitation, and air-quality patterns."
         )
 
     with metric_col:
@@ -198,7 +195,7 @@ else:
 
     st.divider()
 
-    st.subheader("Select an orange marker to explore a location")
+    st.subheader("Select an orange marker to explore long-term trends")
 
     # Station marker layer
     station_layer = pdk.Layer(
