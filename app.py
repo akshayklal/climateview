@@ -251,6 +251,7 @@ else:
         on_select="rerun",
         selection_mode="single-object",
         width="stretch",
+        height=700,
     )
 
     # Handle map selection
