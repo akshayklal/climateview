@@ -176,26 +176,27 @@ if st.session_state.selected_station in STATIONS:
 # SCREEN 1: Landing page and station map
 else:
     # Hero section
-    title_col, metric_col = st.columns(
-        [4, 1],
-        vertical_alignment="bottom",
+    st.title("Climate Patterns")
+    st.markdown(
+        '<p style="font-size: 1.2rem; font-weight: 600;">'
+        "Historical temperature, precipitation, and air-quality patterns.</p>",
+        unsafe_allow_html=True,
     )
-
-    with title_col:
-        st.title("Climate Patterns")
-        st.caption(
-            "Historical temperature, precipitation, and air-quality patterns."
-        )
-
-    with metric_col:
-        st.metric(
-            "Locations",
-            len(df_stations),
-        )
 
     st.divider()
 
-    st.subheader("Select an orange marker to explore long-term trends")
+    instruction_col, locations_col = st.columns(
+        [4, 1],
+        vertical_alignment="center",
+    )
+    with instruction_col:
+        st.subheader("Select an orange marker to explore long-term trends")
+    with locations_col:
+        st.markdown(
+            f'<h3 style="text-align: right; margin: 0;">'
+            f'Locations: {len(df_stations)}</h3>',
+            unsafe_allow_html=True,
+        )
 
     # Station marker layer
     station_layer = pdk.Layer(
