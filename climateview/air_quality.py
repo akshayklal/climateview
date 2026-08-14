@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import streamlit as st
 
+from climateview.aqs_config import AQS_POLLUTANTS as POLLUTANTS
 from climateview.ai_insights import render_ai_insights
 from climateview.charts import (
     HIGHLIGHT_COLOR,
@@ -18,32 +19,6 @@ from climateview.statistics import (
     DataSchema,
     analyze_series,
 )
-
-POLLUTANTS = {
-    "pm25": {
-        "label": "PM2.5",
-        "value_column": "value",
-        "unit": "µg/m³",
-        "display_scale": 1.0,
-        "axis_titles": {
-            "Day": "Daily PM2.5 (µg/m³)",
-            "Month": "Monthly average PM2.5 (µg/m³)",
-            "Year": "Annual average PM2.5 (µg/m³)",
-        },
-    },
-    "ozone": {
-        "label": "ozone",
-        "value_column": "daily_max",
-        "unit": "ppb",
-        "display_scale": 1000.0,
-        "axis_titles": {
-            "Day": "Daily maximum ozone (ppb)",
-            "Month": "Monthly average daily max ozone (ppb)",
-            "Year": "Annual average daily max ozone (ppb)",
-        },
-    },
-}
-
 
 def _empty_dataset(dataset: Dict) -> bool:
     if not dataset:
@@ -375,7 +350,7 @@ def _render_pollutant_section(
 
     min_year = int(daily["year"].min())
     max_year = int(daily["year"].max())
-    pollutant_key = "pm25" if pollutant == "pm25" else "ozone"
+    pollutant_key = pollutant
 
     with control_columns[1]:
         aggregation = st.segmented_control(
@@ -417,12 +392,8 @@ def _render_pollutant_section(
 
     unhealthy_days = None
     if aggregation != "Day":
-        source_dates = pd.to_datetime(
-            source_df["date"],
-            errors="coerce",
-        )
         filtered_source_df = source_df[
-            source_dates.dt.year.between(
+            source_df["date"].dt.year.between(
                 selected_years[0],
                 selected_years[1],
             )
@@ -566,14 +537,6 @@ def _render_pollutant_section(
         st.write(
             "Parameter code:",
             metadata.get("parameter_code") or "Unavailable",
-        )
-        st.write(
-            "Fallback POC dates:",
-            metadata.get("dates_using_fallback_poc", 0) or 0,
-        )
-        st.write(
-            "Dates without an active monitor:",
-            metadata.get("dates_without_active_monitor", 0) or 0,
         )
 
 

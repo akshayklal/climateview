@@ -1,10 +1,15 @@
 import argparse
 import math
+import sys
 from collections import defaultdict
 from datetime import date, datetime
+from pathlib import Path
 
 import requests
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from climateview.aqs_config import AQS_POLLUTANTS
 from station_utils import load_stations
 
 
@@ -32,21 +37,20 @@ PARAMETERS = {
         "code": "42602",
         "display_name": "Nitrogen dioxide",
     },
-    "pm25": {
-        "code": "88101",
-        "display_name": "PM2.5",
-    },
     "pm10": {
         "code": "81102",
         "display_name": "PM10",
     },
-    "ozone": {
-        "code": "44201",
-        "display_name": "Ozone",
-    },
     "sulfur_dioxide": {
         "code": "42401",
         "display_name": "Sulfur dioxide",
+    },
+    **{
+        name: {
+            "code": config["parameter_code"],
+            "display_name": config["label"],
+        }
+        for name, config in AQS_POLLUTANTS.items()
     },
 }
 PARAMETER_KEYS_BY_CODE = {

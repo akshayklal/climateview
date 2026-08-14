@@ -3,6 +3,8 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from climateview.aqs_config import AQS_POLLUTANTS
+from climateview.stations import STATIONS
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -72,14 +74,14 @@ def load_air_quality_data(
 
     Supported pollutants are "pm25" and "ozone".
     """
-    if pollutant not in {"pm25", "ozone"}:
+    if pollutant not in AQS_POLLUTANTS:
         raise ValueError(
             "pollutant must be either 'pm25' or 'ozone'"
         )
 
     file_path = (
         AIR_QUALITY_DIR
-        / f"aqs-{pollutant}-{aqs_site_id}.json"
+        / f"aqs-{pollutant}-{aqs_site_id}.csv"
     )
 
     if not file_path.exists():
@@ -88,50 +90,26 @@ def load_air_quality_data(
             "data": pd.DataFrame(),
         }
 
-    payload = pd.read_json(file_path, typ="series")
-
-    records = payload.get("records", [])
+    config = AQS_POLLUTANTS[pollutant]
+    station = next(
+        (
+            value
+            for value in STATIONS.values()
+            if value.get("aqs_site_id") == aqs_site_id
+        ),
+        {},
+    )
     metadata = {
-        key: payload.get(key)
-        for key in (
-            "station_key",
-            "station_name",
-            "aqs_site_id",
-            "aqs_site_name",
-            "pollutant",
-            "pollutant_label",
-            "parameter_code",
-            "record_count",
-            "first_date",
-            "last_date",
-            "source_file_count",
-            "dates_without_active_monitor",
-            "dates_without_any_active_poc_data",
-            "dates_using_fallback_poc",
-        )
+        "aqs_site_id": aqs_site_id,
+        "aqs_site_name": station.get("aqs_site_name"),
+        "parameter_code": config["parameter_code"],
     }
 
-    if not records:
-        return {
-            "metadata": metadata,
-            "data": pd.DataFrame(),
-        }
-
-    df = pd.DataFrame(records)
-
-    df["date"] = pd.to_datetime(
-        df["date"],
-        errors="coerce",
-    )
+    df = pd.read_csv(file_path, parse_dates=["date"])
 
     numeric_columns = (
-        "value",
-        "daily_max",
-        "daily_max_hour",
+        config["value_column"],
         "aqi",
-        "observation_count",
-        "observation_percent",
-        "poc",
     )
 
     for column in numeric_columns:
@@ -146,11 +124,6 @@ def load_air_quality_data(
         .sort_values("date")
         .reset_index(drop=True)
     )
-
-    df["year"] = df["date"].dt.year
-    df["month_number"] = df["date"].dt.month
-    df["month"] = df["date"].dt.to_period("M").astype(str)
-    df["decade"] = (df["year"] // 10) * 10
 
     return {
         "metadata": metadata,

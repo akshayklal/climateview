@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
 import argparse
+import csv
 import json
+import sys
 from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from climateview.aqs_config import AQS_POLLUTANTS as POLLUTANTS
+from climateview.aqs_config import AQS_POLLUTANTS_BY_CODE as POLLUTANTS_BY_CODE
 from station_utils import select_stations
 
 
@@ -22,45 +28,6 @@ from station_utils import select_stations
 
 RAW_DATA_DIR = Path("data/raw/aqs")
 PROCESSED_DATA_DIR = Path("data/processed/aqs")
-
-POLLUTANTS = {
-    "pm25": {
-        "label": "PM2.5",
-        "parameter_code": "88101",
-        "preferred_sample_durations": (
-            "24-HR BLK AVG",
-            "24 HOUR",
-            "24-HOUR",
-            "1 HOUR",
-        ),
-        "preferred_standard_terms": (
-            "24-hour 2024",
-            "24-hour 2012",
-            "24-hour 2006",
-            "24-hour 1997",
-        ),
-    },
-    "ozone": {
-        "label": "Ozone",
-        "parameter_code": "44201",
-        "preferred_sample_durations": (
-            "8-HR RUN AVG BEGIN HOUR",
-            "8 HOUR",
-            "1 HOUR",
-        ),
-        "preferred_standard_terms": (
-            "8-hour 2015",
-            "8-Hour 2008",
-            "8-Hour 1997",
-            "1-hour 1979",
-        ),
-    },
-}
-POLLUTANTS_BY_CODE = {
-    config["parameter_code"]: name
-    for name, config in POLLUTANTS.items()
-}
-
 
 def parse_date(value: object) -> Optional[date]:
     if value in (None, ""):
@@ -145,7 +112,7 @@ def raw_file_pattern(pollutant: str, aqs_site_id: str) -> str:
 
 
 def processed_file_path(pollutant: str, aqs_site_id: str) -> Path:
-    return PROCESSED_DATA_DIR / f"aqs-{pollutant}-{aqs_site_id}.json"
+    return PROCESSED_DATA_DIR / f"aqs-{pollutant}-{aqs_site_id}.csv"
 
 
 def load_json_list(path: Path) -> List[Dict]:
@@ -186,7 +153,7 @@ def load_monitor_metadata(
 def load_raw_rows(
     pollutant: str,
     aqs_site_id: str,
-) -> Tuple[List[Dict], List[Path]]:
+) -> List[Dict]:
     pattern = raw_file_pattern(pollutant, aqs_site_id)
     station_directory = RAW_DATA_DIR / aqs_site_id
     files = sorted(station_directory.glob(pattern))
@@ -205,7 +172,7 @@ def load_raw_rows(
     for path in files:
         rows.extend(load_json_list(path))
 
-    return rows, files
+    return rows
 
 
 def normalize_text(value: object) -> str:
@@ -284,24 +251,19 @@ def choose_daily_row(pollutant: str, rows: List[Dict]) -> Dict:
     )
 
 
-def compact_output_row(row: Dict) -> Dict:
-    """Keep the fields needed by ClimateView and retain audit metadata."""
-    return {
+def compact_output_row(row: Dict, pollutant: str) -> Dict:
+    """Keep only the daily fields used by the ClimateView application."""
+    output = {
         "date": row.get("date_local"),
-        "value": row.get("arithmetic_mean"),
-        "daily_max": row.get("first_max_value"),
-        "daily_max_hour": row.get("first_max_hour"),
         "aqi": row.get("aqi"),
-        "units": row.get("units_of_measure"),
-        "poc": row.get("poc"),
-        "sample_duration": row.get("sample_duration"),
-        "pollutant_standard": row.get("pollutant_standard"),
-        "validity_indicator": row.get("validity_indicator"),
-        "observation_count": row.get("observation_count"),
-        "observation_percent": row.get("observation_percent"),
-        "method_code": row.get("method_code"),
-        "method": row.get("method"),
     }
+
+    if pollutant == "ozone":
+        output["daily_max"] = row.get("first_max_value")
+    else:
+        output["value"] = row.get("arithmetic_mean")
+
+    return output
 
 
 def process_pollutant(
@@ -320,7 +282,7 @@ def process_pollutant(
     output_path = processed_file_path(pollutant, aqs_site_id)
 
     monitors = load_monitor_metadata(pollutant, aqs_site_id)
-    raw_rows, raw_files = load_raw_rows(pollutant, aqs_site_id)
+    raw_rows = load_raw_rows(pollutant, aqs_site_id)
 
     # Group rows by local date, but retain all POCs and all standards initially.
     rows_by_date: Dict[date, List[Dict]] = defaultdict(list)
@@ -372,45 +334,27 @@ def process_pollutant(
             dates_without_any_active_poc_data += 1
             continue
 
-        if selected_rank and selected_rank > 0:
+        if selected_rank:
             dates_using_fallback_poc += 1
 
         selected_row = choose_daily_row(
             pollutant,
             selected_rows,
         )
-        processed_rows.append(compact_output_row(selected_row))
+        processed_rows.append(
+            compact_output_row(selected_row, pollutant)
+        )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    payload = {
-        "station_key": station_key,
-        "station_name": station.get("name", station_key),
-        "aqs_site_id": aqs_site_id,
-        "aqs_site_name": station.get("aqs_site_name"),
-        "pollutant": pollutant,
-        "pollutant_label": config["label"],
-        "parameter_code": str(parameter_code),
-        "record_count": len(processed_rows),
-        "first_date": (
-            processed_rows[0]["date"]
-            if processed_rows
-            else None
-        ),
-        "last_date": (
-            processed_rows[-1]["date"]
-            if processed_rows
-            else None
-        ),
-        "source_file_count": len(raw_files),
-        "dates_without_active_monitor": dates_without_active_monitor,
-        "dates_without_any_active_poc_data": dates_without_any_active_poc_data,
-        "dates_using_fallback_poc": dates_using_fallback_poc,
-        "records": processed_rows,
-    }
-
-    with output_path.open("w", encoding="utf-8") as file:
-        json.dump(payload, file, indent=2)
+    value_column = config["value_column"]
+    with output_path.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.DictWriter(
+            file,
+            fieldnames=("date", "aqi", value_column),
+        )
+        writer.writeheader()
+        writer.writerows(processed_rows)
 
     print(
         "Wrote {} daily {} records for {} to {}".format(

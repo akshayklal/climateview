@@ -2,7 +2,7 @@
 
 import argparse
 import json
-import os
+import sys
 import time
 from datetime import date, datetime
 from pathlib import Path
@@ -10,6 +10,9 @@ from typing import Dict, List, Tuple
 
 import requests
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from climateview.aqs_config import AQS_POLLUTANTS
 from station_utils import select_stations
 
 
@@ -38,10 +41,12 @@ PARAMETERS = {
     "42101": ("carbon_monoxide", "Carbon monoxide"),
     "14129": ("lead", "Lead"),
     "42602": ("nitrogen_dioxide", "Nitrogen dioxide"),
-    "88101": ("pm25", "PM2.5"),
     "81102": ("pm10", "PM10"),
-    "44201": ("ozone", "Ozone"),
     "42401": ("sulfur_dioxide", "Sulfur dioxide"),
+    **{
+        config["parameter_code"]: (name, config["label"])
+        for name, config in AQS_POLLUTANTS.items()
+    },
 }
 
 
