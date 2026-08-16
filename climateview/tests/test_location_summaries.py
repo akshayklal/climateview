@@ -76,7 +76,7 @@ def test_temperature_support_requires_matching_trend_direction(
     _write_temperature(path)
 
     with patch(
-        "climateview.statistics.temperature.calculate_trend_statistics",
+        "climateview.statistics.preprocessing.calculate_trend_statistics",
         return_value=TrendStatistics(
             direction="decreasing",
             statistically_significant=True,
@@ -186,8 +186,8 @@ def test_map_metrics_include_only_supported_changes() -> None:
     )
 
     assert metrics == {
-        "temperature": {"change": 3.2, "baseline": "1980–1989"},
-        "pm25": {"change": -30.0, "baseline": "2000–2009"},
+        "temperature": {"change": 3.2},
+        "pm25": {"change": -30.0},
     }
 
 

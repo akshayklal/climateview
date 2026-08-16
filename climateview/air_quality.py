@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Tuple
+from typing import Optional
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -20,7 +20,7 @@ from climateview.statistics import (
     analyze_series,
 )
 
-def _empty_dataset(dataset: Dict) -> bool:
+def _empty_dataset(dataset: dict) -> bool:
     if not dataset:
         return True
 
@@ -70,7 +70,7 @@ def _prepare_daily_data(
 def _aggregate_air_quality(
     daily: pd.DataFrame,
     aggregation: str,
-) -> Tuple[pd.DataFrame, str, str]:
+) -> tuple[pd.DataFrame, str, str]:
     if daily.empty:
         return pd.DataFrame(), "date", "Date"
 
@@ -157,7 +157,7 @@ def _build_air_quality_figure(
     x_column: str,
     x_title: str,
     unhealthy_days: Optional[pd.DataFrame] = None,
-) -> Tuple[go.Figure, Optional[float]]:
+) -> tuple[go.Figure, Optional[float]]:
     config = POLLUTANTS[pollutant]
     pollutant_name = config["label"]
     unit = config["unit"]
@@ -307,13 +307,12 @@ def _build_air_quality_figure(
 
 
 def _render_pollutant_section(
-    pm25_data: Dict,
-    ozone_data: Dict,
+    pm25_data: dict,
+    ozone_data: dict,
     station_name: str,
 ) -> None:
     control_columns = st.columns(
-        [2.5, 1.5, 5.0],
-        vertical_alignment="bottom",
+        [2.5, 1.5, 5.0], vertical_alignment="bottom"
     )
 
     with control_columns[0]:
@@ -335,11 +334,7 @@ def _render_pollutant_section(
     pollutant = pollutant_options.get(pollutant_label, "pm25")
     config = POLLUTANTS[pollutant]
 
-    dataset = (
-        ozone_data
-        if pollutant == "ozone"
-        else pm25_data
-    )
+    dataset = ozone_data if pollutant == "ozone" else pm25_data
 
     if _empty_dataset(dataset):
         st.info(f"No processed {config['label']} data is available.")
@@ -348,10 +343,7 @@ def _render_pollutant_section(
     metadata = dataset["metadata"]
     source_df = dataset["data"]
 
-    daily = _prepare_daily_data(
-        source_df,
-        pollutant,
-    )
+    daily = _prepare_daily_data(source_df, pollutant)
 
     if daily.empty:
         st.info("No valid air-quality records are available.")
@@ -374,19 +366,11 @@ def _render_pollutant_section(
 
     with control_columns[2]:
         selected_years = st.slider(
-            "Date Range",
-            min_value=min_year,
-            max_value=max_year,
-            value=(min_year, max_year),
+            "Date Range", min_year, max_year, (min_year, max_year),
             key=f"{pollutant_key}_period",
         )
 
-    filtered_daily = daily[
-        daily["year"].between(
-            selected_years[0],
-            selected_years[1],
-        )
-    ].copy()
+    filtered_daily = daily[daily["year"].between(*selected_years)].copy()
 
     aggregated, x_column, x_title = _aggregate_air_quality(
         filtered_daily,
@@ -407,10 +391,7 @@ def _render_pollutant_section(
                 selected_years[1],
             )
         ].copy()
-        unhealthy_days = _unhealthy_days(
-            filtered_source_df,
-            aggregation,
-        )
+        unhealthy_days = _unhealthy_days(filtered_source_df, aggregation)
 
     figure, trend = _build_air_quality_figure(
         aggregated=aggregated,
@@ -423,12 +404,8 @@ def _render_pollutant_section(
     uses_secondary_axis = "yaxis2" in figure.layout
 
     unit = config["unit"]
-    average_value = float(
-        aggregated["display_value"].mean()
-    )
-    highest_value = float(
-        aggregated["display_value"].max()
-    )
+    average_value = float(aggregated["display_value"].mean())
+    highest_value = float(aggregated["display_value"].max())
 
     metric_columns = st.columns(4)
 
@@ -443,22 +420,13 @@ def _render_pollutant_section(
         )
 
     with metric_columns[1]:
-        st.metric(
-            "Average",
-            f"{average_value:.1f} {unit}",
-        )
+        st.metric("Average", f"{average_value:.1f} {unit}")
 
     with metric_columns[2]:
-        st.metric(
-            "Highest value",
-            f"{highest_value:.1f} {unit}",
-        )
+        st.metric("Highest value", f"{highest_value:.1f} {unit}")
 
     with metric_columns[3]:
-        st.metric(
-            "Daily observations",
-            f"{len(filtered_daily):,}",
-        )
+        st.metric("Daily observations", f"{len(filtered_daily):,}")
 
     pollutant_name = config["label"]
 
@@ -526,10 +494,7 @@ def _render_pollutant_section(
         st.plotly_chart(
             figure,
             width="stretch",
-            config={
-                "displayModeBar": False,
-                "responsive": True,
-            },
+            config={"displayModeBar": False, "responsive": True},
         )
 
     render_ai_insights(
@@ -565,13 +530,7 @@ def _render_pollutant_section(
 
 
 def render_air_quality_tab(
-    pm25_data: Dict,
-    ozone_data: Dict,
-    station_name: str,
+    pm25_data: dict, ozone_data: dict, station_name: str
 ) -> None:
     """Render the Air Quality tab for one ClimateView station."""
-    _render_pollutant_section(
-        pm25_data,
-        ozone_data,
-        station_name,
-    )
+    _render_pollutant_section(pm25_data, ozone_data, station_name)

@@ -31,10 +31,7 @@ TEMPERATURE_SEASON_MONTHS = {
 }
 
 
-def filter_temperature_season(
-    data: pd.DataFrame,
-    season: str,
-) -> pd.DataFrame:
+def filter_temperature_season(data: pd.DataFrame, season: str) -> pd.DataFrame:
     if season == "All year":
         return data.copy()
 
@@ -43,10 +40,9 @@ def filter_temperature_season(
 
     # Treat December as part of the winter ending the following year.
     if season == "Winter":
-        filtered["year"] = (
-            filtered["date"].dt.year
-            + (filtered["date"].dt.month == 12).astype(int)
-        )
+        filtered["year"] = filtered["date"].dt.year + (
+            filtered["date"].dt.month == 12
+        ).astype(int)
         filtered["decade"] = (filtered["year"] // 10) * 10
 
     return filtered
@@ -124,11 +120,7 @@ def build_temperature_aggregation(
     return grouped, x_col, x_title
 
 
-def build_temperature_figure(
-    aggregated_data,
-    x_col,
-    x_title,
-):
+def build_temperature_figure(aggregated_data, x_col, x_title):
     if x_col == "month":
         maximum_gap = pd.Timedelta(days=45)
     elif x_col == "year":
@@ -262,18 +254,12 @@ def render_temperature_table(aggregated_data, aggregation):
         "Average minimum (°F)"
     ].round(1)
 
-    st.dataframe(
-        display_data,
-        width="stretch",
-        hide_index=True,
-    )
+    st.dataframe(display_data, width="stretch", hide_index=True)
 
 
 def render_temperature_tab(data, station_name):
     if data is None or data.empty:
-        st.warning(
-            "No temperature data is available for this station."
-        )
+        st.warning("No temperature data is available for this station.")
         return
 
     required_columns = {
@@ -285,7 +271,7 @@ def render_temperature_tab(data, station_name):
         "tmin_f",
     }
 
-    missing_columns = required_columns.difference(data.columns)
+    missing_columns = required_columns - set(data.columns)
 
     if missing_columns:
         st.error(
@@ -317,8 +303,7 @@ def render_temperature_tab(data, station_name):
         max_year = int(complete_years.max())
 
     aggregation_col, season_col, range_col = st.columns(
-        [1.4, 2.6, 4.0],
-        vertical_alignment="bottom",
+        [1.4, 2.6, 4.0], vertical_alignment="bottom"
     )
 
     with aggregation_col:
@@ -354,42 +339,30 @@ def render_temperature_tab(data, station_name):
 
     with range_col:
         selected_years = st.slider(
-            "Date Range",
-            min_value=min_year,
-            max_value=max_year,
-            value=(min_year, max_year),
+            "Date Range", min_year, max_year, (min_year, max_year),
             key="temperature_period",
         )
 
     seasonal_data = filter_temperature_season(data, season)
     filtered_data = seasonal_data[
-        seasonal_data["year"].between(
-            selected_years[0],
-            selected_years[1],
-        )
+        seasonal_data["year"].between(*selected_years)
     ].copy()
 
-    aggregated_data, x_col, x_title = (
-        build_temperature_aggregation(
-            filtered_data,
-            aggregation,
-            minimum_days_per_year=(
-                300 if season == "All year" else 60
-            ),
-        )
+    aggregated_data, x_col, x_title = build_temperature_aggregation(
+        filtered_data,
+        aggregation,
+        minimum_days_per_year=300 if season == "All year" else 60,
     )
 
     if aggregated_data.empty:
         st.info(
-            "No sufficiently complete temperature records are "
-            "available for the selected period."
+            "No sufficiently complete temperature records are available "
+            "for the selected period."
         )
         return
 
     figure, max_trend, min_trend = build_temperature_figure(
-        aggregated_data=aggregated_data,
-        x_col=x_col,
-        x_title=x_title,
+        aggregated_data, x_col, x_title
     )
 
     years_included = filtered_data["year"].nunique()
@@ -414,15 +387,8 @@ def render_temperature_tab(data, station_name):
         ),
     )
 
-    metric3.metric(
-        "Selected Date Range",
-        f"{selected_years[0]}–{selected_years[1]}",
-    )
-
-    metric4.metric(
-        "Years included",
-        f"{years_included}",
-    )
+    metric3.metric("Selected Date Range", f"{selected_years[0]}–{selected_years[1]}")
+    metric4.metric("Years included", f"{years_included}")
 
     analysis_data = aggregated_data.copy()
     analysis_data["avg_temperature_f"] = (
@@ -512,10 +478,7 @@ def render_temperature_tab(data, station_name):
         st.plotly_chart(
             figure,
             width="stretch",
-            config={
-                "displayModeBar": False,
-                "responsive": True,
-            },
+            config={"displayModeBar": False, "responsive": True},
         )
 
     render_ai_insights(
@@ -534,11 +497,5 @@ def render_temperature_tab(data, station_name):
         ),
     )
 
-    with st.expander(
-        "View underlying temperature data",
-        expanded=False,
-    ):
-        render_temperature_table(
-            aggregated_data,
-            aggregation,
-        )
+    with st.expander("View underlying temperature data", expanded=False):
+        render_temperature_table(aggregated_data, aggregation)

@@ -109,10 +109,7 @@ def render_ai_insights(
         if insight_text:
             _render_response(insight_placeholder, insight_text)
 
-    form_col, reset_col = st.columns(
-        [9.1, 0.9],
-        vertical_alignment="center",
-    )
+    form_col, reset_col = st.columns([9.1, 0.9], vertical_alignment="center")
 
     with form_col:
         with st.form(
@@ -121,8 +118,7 @@ def render_ai_insights(
             border=False,
         ):
             question_col, ask_col = st.columns(
-                [8.0, 1.0],
-                vertical_alignment="center",
+                [8.0, 1.0], vertical_alignment="center"
             )
 
             with question_col:

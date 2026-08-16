@@ -34,10 +34,8 @@ def analyze_precipitation(path: Path) -> dict[str, Any]:
 def analyze_air_quality(path: Path, pollutant: str) -> dict[str, Any]:
     config = AQS_POLLUTANTS[pollutant]
     return calculate_air_quality_period_statistics(
-        _read_csv(path),
-        value_column=config["value_column"],
-        display_scale=config["display_scale"],
-        unit=config["unit"],
+        _read_csv(path), value_column=config["value_column"],
+        display_scale=config["display_scale"], unit=config["unit"]
     )
 
 
@@ -70,27 +68,18 @@ def build_map_metrics(
     metrics = {}
     if temperature.get("available") and temperature.get("trend_supported"):
         change, _ = _changes_from_means(temperature)
-        metrics["temperature"] = {
-            "change": round(change, 1),
-            "baseline": temperature["baseline_period"],
-        }
+        metrics["temperature"] = {"change": round(change, 1)}
     if precipitation.get("available") and precipitation.get(
         "significant_change"
     ):
         _, change = _changes_from_means(precipitation)
-        metrics["precipitation"] = {
-            "change": round(change, 1),
-            "baseline": precipitation["baseline_period"],
-        }
+        metrics["precipitation"] = {"change": round(change, 1)}
     for pollutant in ("pm25", "ozone"):
         result = air_quality.get(pollutant, {})
         if not result.get("significant_change"):
             continue
         _, change = _changes_from_means(result)
-        metrics[pollutant] = {
-            "change": round(change, 1),
-            "baseline": result["baseline_period"],
-        }
+        metrics[pollutant] = {"change": round(change, 1)}
     return metrics
 
 
@@ -131,12 +120,7 @@ def build_explorable_patterns(
             pattern["pollutant"] = pollutant
         if season:
             pattern["season"] = season
-        candidates.setdefault(category, []).append(
-            (
-                score,
-                pattern,
-            )
-        )
+        candidates.setdefault(category, []).append((score, pattern))
 
     for station_key, results in summaries.items():
         station = stations.get(station_key)
@@ -304,16 +288,14 @@ def build_location_summary(
     )
     air_quality = {}
     for pollutant in ("pm25", "ozone"):
-        air_quality[pollutant] = analyze_air_quality(
-            processed_dir / "aqs" / f"aqs-{pollutant}-{aqs_id}.csv",
-            pollutant,
-        ) if aqs_id else {"available": False}
+        air_quality[pollutant] = (
+            analyze_air_quality(
+                processed_dir / "aqs" / f"aqs-{pollutant}-{aqs_id}.csv", pollutant
+            )
+            if aqs_id else {"available": False}
+        )
 
-    summary = _build_summary_sentence(
-        temperature,
-        precipitation,
-        air_quality,
-    )
+    summary = _build_summary_sentence(temperature, precipitation, air_quality)
     supported_air_quality = {
         pollutant: _without_derived_changes(result)
         for pollutant, result in air_quality.items()
@@ -321,11 +303,7 @@ def build_location_summary(
     }
     return {
         "summary": summary,
-        "map_metrics": build_map_metrics(
-            temperature,
-            precipitation,
-            air_quality,
-        ),
+        "map_metrics": build_map_metrics(temperature, precipitation, air_quality),
         "temperature": _without_derived_changes(temperature),
         "precipitation": _without_derived_changes(precipitation),
         "air_quality": supported_air_quality,

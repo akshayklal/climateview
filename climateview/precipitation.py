@@ -158,11 +158,7 @@ def build_precipitation_aggregation(
     return grouped, x_col, x_title
 
 
-def build_precipitation_figure(
-    aggregated_data,
-    x_col,
-    x_title,
-):
+def build_precipitation_figure(aggregated_data, x_col, x_title):
     precipitation_trend, trend_values = calculate_linear_trend(
         aggregated_data["trend_year"],
         aggregated_data["total_prcp_in"],
@@ -292,18 +288,12 @@ def render_precipitation_table(
             config["rainy_days_label"]
         ].round(1)
 
-    st.dataframe(
-        display_data,
-        width="stretch",
-        hide_index=True,
-    )
+    st.dataframe(display_data, width="stretch", hide_index=True)
 
 
 def render_precipitation_tab(data, station_name):
     if data is None or data.empty:
-        st.warning(
-            "No precipitation data is available for this station."
-        )
+        st.warning("No precipitation data is available for this station.")
         return
 
     required_columns = {
@@ -313,9 +303,7 @@ def render_precipitation_tab(data, station_name):
         "prcp_in",
     }
 
-    missing_columns = required_columns.difference(
-        data.columns
-    )
+    missing_columns = required_columns - set(data.columns)
 
     if missing_columns:
         st.error(
@@ -334,8 +322,7 @@ def render_precipitation_tab(data, station_name):
         max_year = int(complete_years.max())
 
     view_col, rain_year_col, range_col = st.columns(
-        [2.4, 1.4, 3.2],
-        vertical_alignment="bottom",
+        [2.4, 1.4, 3.2], vertical_alignment="bottom"
     )
 
     with view_col:
@@ -369,26 +356,14 @@ def render_precipitation_tab(data, station_name):
 
     with range_col:
         selected_years = st.slider(
-            "Date Range",
-            min_value=min_year,
-            max_value=max_year,
-            value=(min_year, max_year),
+            "Date Range", min_year, max_year, (min_year, max_year),
             key="precipitation_year_range",
         )
 
-    filtered_data = data[
-        data["year"].between(
-            selected_years[0],
-            selected_years[1],
-        )
-    ].copy()
+    filtered_data = data[data["year"].between(*selected_years)].copy()
 
-    aggregated_data, x_col, x_title = (
-        build_precipitation_aggregation(
-            filtered_data,
-            precipitation_view,
-            rain_year_start_month,
-        )
+    aggregated_data, x_col, x_title = build_precipitation_aggregation(
+        filtered_data, precipitation_view, rain_year_start_month
     )
 
     if aggregated_data.empty:
@@ -398,12 +373,8 @@ def render_precipitation_tab(data, station_name):
         )
         return
 
-    figure, precipitation_trend = (
-        build_precipitation_figure(
-            aggregated_data=aggregated_data,
-            x_col=x_col,
-            x_title=x_title,
-        )
+    figure, precipitation_trend = build_precipitation_figure(
+        aggregated_data, x_col, x_title
     )
 
     (
@@ -499,10 +470,7 @@ def render_precipitation_tab(data, station_name):
         st.plotly_chart(
             figure,
             width="stretch",
-            config={
-                "displayModeBar": False,
-                "responsive": True,
-            },
+            config={"displayModeBar": False, "responsive": True},
         )
 
     render_ai_insights(
@@ -521,11 +489,5 @@ def render_precipitation_tab(data, station_name):
         ),
     )
 
-    with st.expander(
-        "View underlying precipitation data",
-        expanded=False,
-    ):
-        render_precipitation_table(
-            aggregated_data,
-            precipitation_view,
-        )
+    with st.expander("View underlying precipitation data", expanded=False):
+        render_precipitation_table(aggregated_data, precipitation_view)

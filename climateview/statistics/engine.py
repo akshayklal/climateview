@@ -16,11 +16,7 @@ from .generic import (
     prepare_series,
     to_python_scalar,
 )
-from .models import (
-    AnalysisContext,
-    AnalysisResult,
-    DataSchema,
-)
+from .models import AnalysisContext, AnalysisResult, DataSchema
 from .precipitation import calculate_precipitation_statistics
 
 
@@ -50,28 +46,18 @@ def analyze_series(
     period_column = schema.period_column
     value_column = schema.value_column
 
-    # ------------------------------------------------------------------
-    # Normalize / clean
-    # ------------------------------------------------------------------
-
     prepared = prepare_series(
         dataframe=dataframe,
         period_column=period_column,
         value_column=value_column,
     )
 
-    # ------------------------------------------------------------------
-    # Generic statistics
-    # ------------------------------------------------------------------
-
     data_quality = calculate_data_quality(
         dataframe=prepared,
         period_column=period_column,
     )
 
-    descriptive = calculate_descriptive_statistics(
-        prepared[value_column]
-    )
+    descriptive = calculate_descriptive_statistics(prepared[value_column])
 
     minimum, maximum = calculate_extremes(
         dataframe=prepared,
@@ -79,9 +65,7 @@ def analyze_series(
         value_column=value_column,
     )
 
-    variability = calculate_variability_statistics(
-        prepared[value_column]
-    )
+    variability = calculate_variability_statistics(prepared[value_column])
 
     trend = calculate_trend_statistics(
         dataframe=prepared,
@@ -114,10 +98,6 @@ def analyze_series(
             value_column=ranking_value_column,
         )
 
-    # ------------------------------------------------------------------
-    # Metric-specific statistics
-    # ------------------------------------------------------------------
-
     metric_specific = _calculate_metric_statistics(
         dataframe=prepared,
         context=context,
@@ -129,10 +109,6 @@ def analyze_series(
         schema=schema,
         primary_trend=trend,
     )
-
-    # ------------------------------------------------------------------
-    # Final result
-    # ------------------------------------------------------------------
 
     return AnalysisResult(
         context=context,
@@ -161,11 +137,7 @@ def _calculate_noteworthy_findings(
     slopes: dict[str, float] = {}
 
     for label, value_column in series.items():
-        prepared = prepare_series(
-            dataframe,
-            schema.period_column,
-            value_column,
-        )
+        prepared = prepare_series(dataframe, schema.period_column, value_column)
         trend = primary_trend
         if label != context.metric:
             trend = calculate_trend_statistics(

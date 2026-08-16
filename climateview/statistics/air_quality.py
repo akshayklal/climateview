@@ -4,7 +4,12 @@ from typing import Any
 
 import pandas as pd
 
-from .generic import calculate_period_comparison, calculate_trend_statistics
+from .generic import calculate_period_comparison
+from .preprocessing import (
+    aggregate_complete_years,
+    prepare_daily_data,
+    trend_supports_change,
+)
 
 
 def calculate_air_quality_period_statistics(
@@ -17,22 +22,13 @@ def calculate_air_quality_period_statistics(
     minimum_days_per_year: int = 90,
 ) -> dict[str, Any]:
     """Compare a pollutant's first/latest qualifying annual periods."""
-    if data.empty or not {"date", value_column}.issubset(data.columns):
+    working = prepare_daily_data(data, [value_column])
+    if working.empty:
         return {"available": False}
-
-    working = data.copy()
-    working["date"] = pd.to_datetime(working["date"], errors="coerce")
-    working[value_column] = pd.to_numeric(
-        working[value_column], errors="coerce"
-    )
-    working = working.dropna(subset=["date", value_column])
-    working["year"] = working["date"].dt.year
     working["display_value"] = working[value_column] * display_scale
-    annual = (
-        working.groupby("year", as_index=False)
-        .agg(value=("display_value", "mean"), days=("display_value", "count"))
+    annual = aggregate_complete_years(
+        working, "display_value", "mean", minimum_days_per_year
     )
-    annual = annual[annual["days"] >= minimum_days_per_year]
     comparison = calculate_period_comparison(
         annual,
         period_column="year",
@@ -42,22 +38,11 @@ def calculate_air_quality_period_statistics(
     if comparison is None:
         return {"available": False, "qualifying_years": int(len(annual))}
 
-    trend = calculate_trend_statistics(annual, "year", "value")
-    direction_matches = bool(
-        trend
-        and (
-            (comparison.absolute_change > 0 and trend.direction == "increasing")
-            or (
-                comparison.absolute_change < 0
-                and trend.direction == "decreasing"
-            )
-        )
-    )
     return {
         "available": True,
         **comparison.__dict__,
         "unit": unit,
-        "significant_change": bool(
-            trend and trend.statistically_significant and direction_matches
+        "significant_change": trend_supports_change(
+            annual, comparison.absolute_change
         ),
     }

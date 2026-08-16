@@ -5,7 +5,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from .generic import calculate_period_comparison, calculate_trend_statistics
+from .generic import calculate_period_comparison
+from .preprocessing import (
+    aggregate_complete_years,
+    prepare_daily_data,
+    trend_supports_change,
+)
 
 
 DEFAULT_DRY_THRESHOLD_RATIO = 0.75
@@ -19,19 +24,12 @@ def calculate_precipitation_period_statistics(
     minimum_days_per_year: int = 300,
 ) -> dict[str, Any]:
     """Compare annual precipitation in the first/latest complete periods."""
-    if data.empty or not {"date", "prcp_in"}.issubset(data.columns):
+    working = prepare_daily_data(data, ["prcp_in"])
+    if working.empty:
         return {"available": False}
-
-    working = data.copy()
-    working["date"] = pd.to_datetime(working["date"], errors="coerce")
-    working["prcp_in"] = pd.to_numeric(working["prcp_in"], errors="coerce")
-    working = working.dropna(subset=["date", "prcp_in"])
-    working["year"] = working["date"].dt.year
-    annual = (
-        working.groupby("year", as_index=False)
-        .agg(value=("prcp_in", "sum"), days=("prcp_in", "count"))
+    annual = aggregate_complete_years(
+        working, "prcp_in", "sum", minimum_days_per_year
     )
-    annual = annual[annual["days"] >= minimum_days_per_year]
     comparison = calculate_period_comparison(
         annual,
         period_column="year",
@@ -42,22 +40,11 @@ def calculate_precipitation_period_statistics(
     if comparison is None:
         return {"available": False}
 
-    trend = calculate_trend_statistics(annual, "year", "value")
-    direction_matches = bool(
-        trend
-        and (
-            (comparison.absolute_change > 0 and trend.direction == "increasing")
-            or (
-                comparison.absolute_change < 0
-                and trend.direction == "decreasing"
-            )
-        )
-    )
     return {
         "available": True,
         **comparison.__dict__,
-        "significant_change": bool(
-            trend and trend.statistically_significant and direction_matches
+        "significant_change": trend_supports_change(
+            annual, comparison.absolute_change
         ),
     }
 

@@ -4,7 +4,12 @@ from typing import Any
 
 import pandas as pd
 
-from .generic import calculate_period_comparison, calculate_trend_statistics
+from .generic import calculate_period_comparison
+from .preprocessing import (
+    aggregate_complete_years,
+    prepare_daily_data,
+    trend_supports_change,
+)
 
 
 SEASONS = {
@@ -30,27 +35,14 @@ def calculate_temperature_period_statistics(
     minimum_days_per_year: int = 300,
 ) -> dict[str, Any]:
     """Compare annual and seasonal temperature in the first/latest periods."""
-    required = {"date", "tmax_f", "tmin_f"}
-    if data.empty or not required.issubset(data.columns):
-        return {"available": False}
-
-    working = data.copy()
-    working["date"] = pd.to_datetime(working["date"], errors="coerce")
-    for column in ("tmax_f", "tmin_f"):
-        working[column] = pd.to_numeric(working[column], errors="coerce")
-    working = working.dropna(subset=["date", "tmax_f", "tmin_f"])
+    working = prepare_daily_data(data, ["tmax_f", "tmin_f"])
     if working.empty:
         return {"available": False}
 
-    working["year"] = working["date"].dt.year
-    working["daily_mean_f"] = (
-        working["tmax_f"] + working["tmin_f"]
-    ) / 2.0
-    annual = (
-        working.groupby("year", as_index=False)
-        .agg(value=("daily_mean_f", "mean"), days=("daily_mean_f", "count"))
+    working["daily_mean_f"] = (working["tmax_f"] + working["tmin_f"]) / 2.0
+    annual = aggregate_complete_years(
+        working, "daily_mean_f", "mean", minimum_days_per_year
     )
-    annual = annual[annual["days"] >= minimum_days_per_year]
     comparison = calculate_period_comparison(
         annual,
         period_column="year",
@@ -69,25 +61,11 @@ def calculate_temperature_period_statistics(
         recent_years=set(range(recent_start, recent_start + period_size)),
         overall_change=comparison.absolute_change,
     )
-    trend = calculate_trend_statistics(annual, "year", "value")
-    direction_matches = bool(
-        trend
-        and (
-            (
-                comparison.absolute_change > 0
-                and trend.direction == "increasing"
-            )
-            or (
-                comparison.absolute_change < 0
-                and trend.direction == "decreasing"
-            )
-        )
-    )
     result = {
         "available": True,
         **comparison.__dict__,
-        "trend_supported": bool(
-            trend and trend.statistically_significant and direction_matches
+        "trend_supported": trend_supports_change(
+            annual, comparison.absolute_change
         ),
     }
     if strongest:
@@ -127,23 +105,13 @@ def calculate_strongest_seasonal_temperature_change(
             ("nighttime", "nights"),
         ):
             change = float(recent[column].mean() - baseline[column].mean())
-            trend = calculate_trend_statistics(rows, "year", column)
-            direction_matches = bool(
-                trend
-                and (
-                    (change > 0 and trend.direction == "increasing")
-                    or (change < 0 and trend.direction == "decreasing")
-                )
-            )
             candidates.append(
                 {
                     "season": season,
                     "time_of_day": time_of_day,
                     "change_f": change,
-                    "trend_supported": bool(
-                        trend
-                        and trend.statistically_significant
-                        and direction_matches
+                    "trend_supported": trend_supports_change(
+                        rows, change, "year", column
                     ),
                 }
             )
