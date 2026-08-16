@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -58,6 +59,31 @@ def _load_noaa_csv(
 AIR_QUALITY_DIR = (
     BASE_DIR / "data" / "processed" / "aqs"
 )
+
+LOCATION_SUMMARIES_FILE = (
+    BASE_DIR / "data" / "processed" / "location-summaries.json"
+)
+EXPLORABLE_PATTERNS_FILE = (
+    BASE_DIR / "data" / "processed" / "patterns-worth-exploring.json"
+)
+
+
+@st.cache_data
+def load_location_summaries() -> dict:
+    if not LOCATION_SUMMARIES_FILE.exists():
+        return {}
+    with LOCATION_SUMMARIES_FILE.open(encoding="utf-8") as file:
+        value = json.load(file)
+    return value if isinstance(value, dict) else {}
+
+
+@st.cache_data
+def load_explorable_patterns() -> list[dict]:
+    if not EXPLORABLE_PATTERNS_FILE.exists():
+        return []
+    with EXPLORABLE_PATTERNS_FILE.open(encoding="utf-8") as file:
+        value = json.load(file)
+    return value if isinstance(value, list) else []
 
 
 @st.cache_data

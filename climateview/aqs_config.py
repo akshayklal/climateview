@@ -3,15 +3,15 @@
 
 AQS_POLLUTANTS = {
     "pm25": {
-        "label": "PM2.5",
+        "label": "Fine-particle pollution",
         "parameter_code": "88101",
         "value_column": "value",
         "unit": "µg/m³",
         "display_scale": 1.0,
         "axis_titles": {
-            "Day": "Daily PM2.5 (µg/m³)",
-            "Month": "Monthly average PM2.5 (µg/m³)",
-            "Year": "Annual average PM2.5 (µg/m³)",
+            "Day": "Daily fine-particle pollution (µg/m³)",
+            "Month": "Monthly average fine-particle pollution (µg/m³)",
+            "Year": "Annual average fine-particle pollution (µg/m³)",
         },
         "preferred_sample_durations": (
             "24-HR BLK AVG",
@@ -27,15 +27,15 @@ AQS_POLLUTANTS = {
         ),
     },
     "ozone": {
-        "label": "Ozone",
+        "label": "Ground-level ozone pollution",
         "parameter_code": "44201",
         "value_column": "daily_max",
         "unit": "ppb",
         "display_scale": 1000.0,
         "axis_titles": {
-            "Day": "Daily maximum ozone (ppb)",
-            "Month": "Monthly average daily max ozone (ppb)",
-            "Year": "Annual average daily max ozone (ppb)",
+            "Day": "Daily maximum ground-level ozone pollution (ppb)",
+            "Month": "Monthly average daily max ground-level ozone pollution (ppb)",
+            "Year": "Annual average daily max ground-level ozone pollution (ppb)",
         },
         "preferred_sample_durations": (
             "8-HR RUN AVG BEGIN HOUR",

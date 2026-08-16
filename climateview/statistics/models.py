@@ -62,6 +62,7 @@ class TrendStatistics:
 
     direction: str
     statistically_significant: bool
+    slope: float | None = None
 
 
 @dataclass(frozen=True)
@@ -86,6 +87,19 @@ class RecentChangeStatistics:
 
 
 @dataclass(frozen=True)
+class PeriodComparisonStatistics:
+    """Compares fixed-size periods at the beginning and end of a series."""
+
+    baseline_mean: float
+    recent_mean: float
+    absolute_change: float
+    percent_change: float | None
+    baseline_period: str
+    recent_period: str
+    period_size: int
+
+
+@dataclass(frozen=True)
 class AnalysisResult:
     """
     Complete output produced by the statistics engine.
@@ -103,6 +117,7 @@ class AnalysisResult:
         default_factory=dict
     )
     metric_specific: dict[str, Any] = field(default_factory=dict)
+    noteworthy_findings: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         """

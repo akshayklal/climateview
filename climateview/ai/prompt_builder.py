@@ -12,23 +12,27 @@ Use only the supplied climate or environmental statistics.
 - Distinguish observed patterns from statistically significant trends.
 - Do not claim causation from correlation or time-series patterns.
 - For precipitation, use neutral wording; higher or lower is not inherently better.
-- Describe statistical significance in plain language without mentioning p-values, R-squared values, standard deviations, or coefficients of variation.
+- Translate statistical significance into ordinary wording such as "a clear long-term rise" or "no clear long-term change." Never mention p-values, R-squared values, standard deviations, coefficients of variation, or that a result "is reported as statistically significant."
 - Treat chart_context.period_semantics as authoritative.
-- An observation count is the number of plotted periods with values, not proof that the periods or record are complete. Never describe completeness unless an explicit within-period measurement is supplied.
+- An observation count is the number of plotted periods with values, not proof that the periods or record are complete. Do not mention observation counts, "aggregated periods," unknown completeness, or generic sampling caveats unless the supplied analysis identifies a concrete missing-data problem that affects the interpretation.
 - Decade values such as 2020s are bucket labels, not record endpoints. Do not infer missing years or completeness from them.
 - Use plain language without headings, bullets, markdown, or technical notation.
+- Use the audience-friendly metric name supplied in chart_context.metric; do not replace it with a technical acronym.
+- Avoid analysis jargon such as "baseline," "variability," "descriptive statistics," and "absolute change." State what changed and identify the years being compared.
+- For temperature, describe changes in degrees Fahrenheit and never as a percentage.
+- chart_findings contains verified observations about the current chart selection. Use at most one when it adds useful context. Explain it naturally; do not list findings or imitate a discovery-card headline.
 """.strip()
 
 SUMMARY_INSTRUCTIONS = COMMON_INSTRUCTIONS + """
 
-Write one concise paragraph of approximately 90 to 140 words for a general audience.
-Mention extremes only when they help explain the overall pattern, and include important caveats.
-Return empty referenced_periods and referenced_series lists.
+Write three or four short sentences totaling approximately 70 to 110 words for a general audience.
+Lead with the clearest long-term takeaway for the location. Then give one concrete comparison in familiar language. Mention an extreme, seasonal feature, or recent pattern only when it makes the takeaway more useful. Omit secondary statistics and generic caveats.
+In referenced_periods, include up to three exact individual chart periods explicitly mentioned in the summary, copied from the analysis. Do not include ranges. In referenced_series, include exact ranked_periods series names associated with those periods.
 """
 
 QUESTION_INSTRUCTIONS = COMMON_INSTRUCTIONS + """
 
-Answer the user's question concisely, usually in 60 to 130 words. If the supplied data cannot answer it, say so clearly.
+Answer the user's question directly in plain language, usually in 40 to 100 words. If the supplied data cannot answer it, say so clearly.
 In referenced_periods, include only exact individual chart periods explicitly mentioned in the answer, copied from the analysis. Do not include ranges.
 In referenced_series, include exact ranked_periods series names used in the answer.
 """
@@ -117,18 +121,26 @@ def build_summary_payload(result: AnalysisResult) -> dict[str, Any]:
 
     if result.recent_change:
         change = result.recent_change
-        payload["recent_change"] = {
+        recent_change = {
             "baseline_period": period(change.baseline_period),
             "recent_period": period(change.recent_period),
             "baseline_mean": _round(change.baseline_mean, 1),
             "recent_mean": _round(change.recent_mean, 1),
             "absolute_change": _round(change.absolute_change, 1),
-            "percent_change": _round(change.percent_change, 1),
         }
+        if "temperature" not in context.metric.lower():
+            recent_change["percent_change"] = _round(
+                change.percent_change,
+                1,
+            )
+        payload["recent_change"] = recent_change
 
     metric_specific = _compact_metric_specific(result.metric_specific)
     if metric_specific:
         payload["metric_specific"] = metric_specific
+
+    if result.noteworthy_findings:
+        payload["chart_findings"] = result.noteworthy_findings
 
     return payload
 

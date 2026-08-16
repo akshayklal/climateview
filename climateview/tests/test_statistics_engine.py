@@ -7,6 +7,7 @@ from climateview.statistics import (
     AnalysisContext,
     DataSchema,
     analyze_series,
+    calculate_period_comparison,
 )
 
 
@@ -117,6 +118,11 @@ def test_analyze_precipitation_series(
     )
 
     assert result.metric_specific["directionality"] == "context_dependent"
+    assert any(
+        finding["type"] == "recent_extremes_cluster"
+        and finding["direction"] == "highest"
+        for finding in result.noteworthy_findings
+    )
 
     decadal = result.metric_specific["decadal_analysis"]
 
@@ -209,3 +215,87 @@ def test_additional_series_can_be_ranked(
 
     assert result.rankings["secondary metric"]["highest"][0].period == 2000
     assert result.rankings["secondary metric"]["lowest"][0].period == 2019
+
+
+def test_temperature_findings_compare_daytime_and_nighttime_trends() -> None:
+    years = list(range(2000, 2020))
+    dataframe = pd.DataFrame(
+        {
+            "year": years,
+            "average": [50.0 + 0.3 * index for index in range(20)],
+            "maximum": [70.0 + 0.1 * index for index in range(20)],
+            "minimum": [30.0 + 0.5 * index for index in range(20)],
+        }
+    )
+
+    result = analyze_series(
+        dataframe=dataframe,
+        context=AnalysisContext(
+            location="Example",
+            metric="temperature",
+            unit="degrees Fahrenheit",
+            aggregation="year",
+            start_period=2000,
+            end_period=2019,
+        ),
+        schema=DataSchema(
+            period_column="year",
+            value_column="average",
+            ranked_value_columns={
+                "average maximum temperature": "maximum",
+                "average minimum temperature": "minimum",
+            },
+        ),
+    )
+
+    comparison = next(
+        finding
+        for finding in result.noteworthy_findings
+        if finding["type"] == "series_trend_difference"
+    )
+    assert comparison["faster_series"] == "average minimum temperature"
+    assert comparison["slower_series"] == "average maximum temperature"
+
+
+def test_fixed_period_comparison_uses_first_and_latest_ten_years() -> None:
+    dataframe = pd.DataFrame(
+        {
+            "year": range(1980, 2010),
+            "value": [10.0] * 10 + [20.0] * 10 + [13.0] * 10,
+        }
+    )
+
+    comparison = calculate_period_comparison(
+        dataframe,
+        period_column="year",
+        value_column="value",
+        period_size=10,
+        require_consecutive=True,
+    )
+
+    assert comparison is not None
+    assert comparison.baseline_period == "1980–1989"
+    assert comparison.recent_period == "2000–2009"
+    assert comparison.absolute_change == pytest.approx(3.0)
+    assert comparison.percent_change == pytest.approx(30.0)
+
+
+def test_fixed_period_comparison_finds_consecutive_windows() -> None:
+    dataframe = pd.DataFrame(
+        {
+            "year": [1980, 1982, *range(1990, 2010)],
+            "value": range(22),
+        }
+    )
+
+    comparison = calculate_period_comparison(
+        dataframe,
+        period_column="year",
+        value_column="value",
+        period_size=10,
+        require_consecutive=True,
+    )
+
+    assert comparison is not None
+    assert comparison.baseline_period == "1990–1999"
+    assert comparison.recent_period == "2000–2009"

@@ -53,9 +53,15 @@ def test_decade_payload_explains_period_semantics() -> None:
     assert payload["recent_change"]["recent_period"] == "2000s–2020s"
     instructions, prompt = build_ai_request(analysis)
     assert instructions == SUMMARY_INSTRUCTIONS
-    assert "Never describe completeness" in instructions
+    assert "Do not mention observation counts" in instructions
     assert "not record endpoints" in instructions
+    assert "70 to 110 words" in instructions
+    assert "up to three exact individual chart periods" in instructions
+    assert "never as a percentage" in instructions
     assert '"last_period": "2020s"' in prompt
+    assert "percent_change" not in payload["recent_change"]
+    assert "chart_findings" in payload
+    assert "Use at most one" in instructions
 
     instructions, prompt = build_ai_request(
         analysis,

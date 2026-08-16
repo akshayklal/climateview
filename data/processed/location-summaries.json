@@ -1,0 +1,443 @@
+{
+  "san_francisco_sfo": {
+    "summary": "4.0°F warmer than 1946–1955, led by warmer winter nights; fine-particle pollution down 34% since 1999; ground-level ozone pollution up 37% since 1986.",
+    "map_metrics": {
+      "temperature": {
+        "change": 4.0,
+        "baseline": "1946–1955"
+      },
+      "pm25": {
+        "change": -33.6,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": 37.2,
+        "baseline": "1986–1995"
+      }
+    }
+  },
+  "new_york_central_park": {
+    "summary": "4.8°F warmer than 1870–1879, led by warmer winter nights; annual precipitation up 15%; fine-particle pollution down 43% since 2000; ground-level ozone pollution up 30% since 2000.",
+    "map_metrics": {
+      "temperature": {
+        "change": 4.8,
+        "baseline": "1870–1879"
+      },
+      "precipitation": {
+        "change": 14.9,
+        "baseline": "1870–1879"
+      },
+      "pm25": {
+        "change": -43.2,
+        "baseline": "2000–2009"
+      },
+      "ozone": {
+        "change": 30.0,
+        "baseline": "2000–2009"
+      }
+    }
+  },
+  "chicago_midway": {
+    "summary": "3.8°F warmer than 1942–1951, led by warmer winter nights; annual precipitation up 19%; fine-particle pollution down 34% since 2000.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.8,
+        "baseline": "1942–1951"
+      },
+      "precipitation": {
+        "change": 19.2,
+        "baseline": "1942–1951"
+      },
+      "pm25": {
+        "change": -34.2,
+        "baseline": "2000–2009"
+      }
+    }
+  },
+  "seattle_tacoma": {
+    "summary": "3.8°F warmer than 1949–1958, led by warmer summer nights; fine-particle pollution down 29% since 1999; ground-level ozone pollution up 12% since 1997.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.8,
+        "baseline": "1949–1958"
+      },
+      "pm25": {
+        "change": -29.3,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": 11.9,
+        "baseline": "1997–2006"
+      }
+    }
+  },
+  "los_angeles_usc": {
+    "summary": "3.3°F warmer than 1945–1954, led by warmer winter nights; fine-particle pollution down 39% since 1999; ground-level ozone pollution down 14% since 1979.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.3,
+        "baseline": "1945–1954"
+      },
+      "pm25": {
+        "change": -38.8,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": -14.2,
+        "baseline": "1979–1988"
+      }
+    }
+  },
+  "phoenix_sky_harbor": {
+    "summary": "6.5°F warmer than 1948–1957, led by warmer summer nights; fine-particle pollution down 20% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 6.5,
+        "baseline": "1948–1957"
+      },
+      "pm25": {
+        "change": -20.2,
+        "baseline": "1999–2008"
+      }
+    }
+  },
+  "denver": {
+    "summary": "1.2°F warmer than 1949–1958, led by warmer summer days; fine-particle pollution down 28% since 1999; ground-level ozone pollution up 39% since 1972.",
+    "map_metrics": {
+      "temperature": {
+        "change": 1.2,
+        "baseline": "1949–1958"
+      },
+      "pm25": {
+        "change": -27.8,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": 39.0,
+        "baseline": "1972–1981"
+      }
+    }
+  },
+  "houston_intercontinental": {
+    "summary": "4.3°F warmer than 1970–1979, led by warmer winter nights; ground-level ozone pollution down 19% since 1974.",
+    "map_metrics": {
+      "temperature": {
+        "change": 4.3,
+        "baseline": "1970–1979"
+      },
+      "ozone": {
+        "change": -19.5,
+        "baseline": "1974–1983"
+      }
+    }
+  },
+  "st_louis_st_charles": {
+    "summary": "1.6°F warmer than 1894–1903, led by warmer winter days; annual precipitation up 30%; fine-particle pollution down 37% since 2000; ground-level ozone pollution up 16% since 1976.",
+    "map_metrics": {
+      "precipitation": {
+        "change": 29.8,
+        "baseline": "1916–1925"
+      },
+      "pm25": {
+        "change": -37.0,
+        "baseline": "2000–2009"
+      },
+      "ozone": {
+        "change": 16.0,
+        "baseline": "1976–1985"
+      }
+    }
+  },
+  "washington_reagan": {
+    "summary": "3.2°F warmer than 1942–1951, led by warmer summer nights; fine-particle pollution down 48% since 1999; ground-level ozone pollution down 23% since 1978.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.2,
+        "baseline": "1942–1951"
+      },
+      "pm25": {
+        "change": -47.8,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": -23.2,
+        "baseline": "1978–1987"
+      }
+    }
+  },
+  "atlanta_hartsfield": {
+    "summary": "3.2°F warmer than 1931–1940, led by warmer spring nights; fine-particle pollution down 46% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.2,
+        "baseline": "1931–1940"
+      },
+      "pm25": {
+        "change": -46.2,
+        "baseline": "1999–2008"
+      }
+    }
+  },
+  "miami_international": {
+    "summary": "3.1°F warmer than 1949–1958, led by warmer winter nights; annual precipitation up 29%.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.1,
+        "baseline": "1949–1958"
+      },
+      "precipitation": {
+        "change": 29.2,
+        "baseline": "1949–1958"
+      }
+    }
+  },
+  "new_orleans_audubon": {
+    "summary": "3.5°F warmer than 1894–1903, led by warmer winter nights; fine-particle pollution down 29% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.5,
+        "baseline": "1894–1903"
+      },
+      "pm25": {
+        "change": -28.6,
+        "baseline": "1999–2008"
+      }
+    }
+  },
+  "minneapolis_st_paul": {
+    "summary": "2.6°F warmer than 1939–1948, led by warmer winter nights; annual precipitation up 26%; fine-particle pollution down 22% since 2001; ground-level ozone pollution down 13% since 2002.",
+    "map_metrics": {
+      "temperature": {
+        "change": 2.6,
+        "baseline": "1939–1948"
+      },
+      "precipitation": {
+        "change": 26.3,
+        "baseline": "1939–1948"
+      },
+      "pm25": {
+        "change": -21.6,
+        "baseline": "2001–2010"
+      },
+      "ozone": {
+        "change": -13.3,
+        "baseline": "2002–2011"
+      }
+    }
+  },
+  "boise_air_terminal": {
+    "summary": "3.6°F warmer than 1941–1950, led by warmer summer nights.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.6,
+        "baseline": "1941–1950"
+      }
+    }
+  },
+  "albuquerque_international": {
+    "summary": "3.6°F warmer than 1932–1941, led by warmer fall nights; fine-particle pollution down 15% since 1999; ground-level ozone pollution up 30% since 1986.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.6,
+        "baseline": "1932–1941"
+      },
+      "pm25": {
+        "change": -15.5,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": 29.5,
+        "baseline": "1986–1995"
+      }
+    }
+  },
+  "dallas_faa": {
+    "summary": "3.4°F warmer than 1940–1949, led by warmer fall nights; fine-particle pollution down 27% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.4,
+        "baseline": "1940–1949"
+      },
+      "pm25": {
+        "change": -26.6,
+        "baseline": "1999–2008"
+      }
+    }
+  },
+  "nashville_international": {
+    "summary": "2.4°F warmer than 1949–1958, led by warmer fall nights; fine-particle pollution down 46% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 2.4,
+        "baseline": "1949–1958"
+      },
+      "pm25": {
+        "change": -45.5,
+        "baseline": "1999–2013"
+      }
+    }
+  },
+  "charlotte_douglas": {
+    "summary": "2.1°F warmer than 1944–1953, led by warmer fall days; fine-particle pollution down 45% since 1999; ground-level ozone pollution down 18% since 2000.",
+    "map_metrics": {
+      "temperature": {
+        "change": 2.1,
+        "baseline": "1944–1953"
+      },
+      "pm25": {
+        "change": -44.7,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": -17.6,
+        "baseline": "2000–2009"
+      }
+    }
+  },
+  "boston_logan": {
+    "summary": "2.8°F warmer than 1937–1946, led by warmer winter nights; fine-particle pollution down 43% since 1999; ground-level ozone pollution up 22% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 2.8,
+        "baseline": "1937–1946"
+      },
+      "pm25": {
+        "change": -42.8,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": 22.1,
+        "baseline": "1999–2008"
+      }
+    }
+  },
+  "oklahoma_city_will_rogers": {
+    "summary": "1.2°F warmer than 1949–1958, led by warmer spring days; annual precipitation up 22%; fine-particle pollution down 16% since 2000.",
+    "map_metrics": {
+      "temperature": {
+        "change": 1.2,
+        "baseline": "1949–1958"
+      },
+      "precipitation": {
+        "change": 22.4,
+        "baseline": "1949–1958"
+      },
+      "pm25": {
+        "change": -15.6,
+        "baseline": "2000–2009"
+      }
+    }
+  },
+  "wichita_eisenhower": {
+    "summary": "1.9°F warmer than 1954–1963, led by warmer winter days; annual precipitation up 19%; fine-particle pollution down 23% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 1.9,
+        "baseline": "1954–1963"
+      },
+      "precipitation": {
+        "change": 19.5,
+        "baseline": "1954–1963"
+      },
+      "pm25": {
+        "change": -22.6,
+        "baseline": "1999–2008"
+      }
+    }
+  },
+  "reno_airport": {
+    "summary": "5.7°F warmer than 1938–1947, led by warmer summer nights; ground-level ozone pollution up 11% since 1980.",
+    "map_metrics": {
+      "temperature": {
+        "change": 5.7,
+        "baseline": "1938–1947"
+      },
+      "ozone": {
+        "change": 10.9,
+        "baseline": "1980–1989"
+      }
+    }
+  },
+  "salt_lake_city": {
+    "summary": "4.5°F warmer than 1949–1958, led by warmer summer nights; fine-particle pollution down 35% since 1999; ground-level ozone pollution down 16% since 1997.",
+    "map_metrics": {
+      "temperature": {
+        "change": 4.5,
+        "baseline": "1949–1958"
+      },
+      "pm25": {
+        "change": -35.4,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": -16.1,
+        "baseline": "1997–2006"
+      }
+    }
+  },
+  "omaha_eppley": {
+    "summary": "1.9°F warmer than 1949–1958, led by warmer spring days; fine-particle pollution down 27% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 1.9,
+        "baseline": "1949–1958"
+      },
+      "pm25": {
+        "change": -26.6,
+        "baseline": "1999–2008"
+      }
+    }
+  },
+  "las_vegas_mccarran": {
+    "summary": "5.4°F warmer than 1949–1958, led by warmer summer nights; ground-level ozone pollution down 7% since 1998.",
+    "map_metrics": {
+      "temperature": {
+        "change": 5.4,
+        "baseline": "1949–1958"
+      },
+      "ozone": {
+        "change": -6.6,
+        "baseline": "1998–2007"
+      }
+    }
+  },
+  "midland_odessa": {
+    "summary": "3.3°F warmer than 1931–1940, led by warmer spring nights; ground-level ozone pollution up 11% since 2004.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.3,
+        "baseline": "1931–1940"
+      },
+      "ozone": {
+        "change": 10.7,
+        "baseline": "2004–2013"
+      }
+    }
+  },
+  "jackson_international": {
+    "summary": "2.7°F warmer than 1964–1973, led by warmer winter nights.",
+    "map_metrics": {
+      "temperature": {
+        "change": 2.7,
+        "baseline": "1964–1973"
+      }
+    }
+  },
+  "little_rock_adams": {
+    "summary": "1.9°F warmer than 1939–1948, led by warmer winter days; fine-particle pollution down 31% since 1999; ground-level ozone pollution down 8% since 1986.",
+    "map_metrics": {
+      "temperature": {
+        "change": 1.9,
+        "baseline": "1939–1948"
+      },
+      "pm25": {
+        "change": -31.1,
+        "baseline": "1999–2008"
+      },
+      "ozone": {
+        "change": -8.1,
+        "baseline": "1986–1995"
+      }
+    }
+  }
+}

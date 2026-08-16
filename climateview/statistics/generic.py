@@ -11,6 +11,7 @@ from .models import (
     DataQualityStatistics,
     DescriptiveStatistics,
     ExtremeValue,
+    PeriodComparisonStatistics,
     RecentChangeStatistics,
     TrendStatistics,
     VariabilityStatistics,
@@ -79,8 +80,8 @@ def calculate_data_quality(
 
     return DataQualityStatistics(
         observation_count=len(dataframe),
-        first_period=_to_python_scalar(dataframe.iloc[0][period_column]),
-        last_period=_to_python_scalar(dataframe.iloc[-1][period_column]),
+        first_period=to_python_scalar(dataframe.iloc[0][period_column]),
+        last_period=to_python_scalar(dataframe.iloc[-1][period_column]),
     )
 
 
@@ -118,12 +119,12 @@ def calculate_extremes(
     maximum_row = dataframe.loc[maximum_index]
 
     minimum = ExtremeValue(
-        period=_to_python_scalar(minimum_row[period_column]),
+        period=to_python_scalar(minimum_row[period_column]),
         value=float(minimum_row[value_column]),
     )
 
     maximum = ExtremeValue(
-        period=_to_python_scalar(maximum_row[period_column]),
+        period=to_python_scalar(maximum_row[period_column]),
         value=float(maximum_row[value_column]),
     )
 
@@ -143,7 +144,7 @@ def calculate_ranked_extremes(
     def serialize(rows: pd.DataFrame) -> list[ExtremeValue]:
         return [
             ExtremeValue(
-                period=_to_python_scalar(row[period_column]),
+                period=to_python_scalar(row[period_column]),
                 value=float(row[value_column]),
             )
             for _, row in rows.iterrows()
@@ -266,6 +267,7 @@ def calculate_trend_statistics(
     return TrendStatistics(
         direction=direction,
         statistically_significant=statistically_significant,
+        slope=slope,
     )
 
 
@@ -343,6 +345,81 @@ def calculate_recent_change_statistics(
     )
 
 
+def calculate_period_comparison(
+    dataframe: pd.DataFrame,
+    period_column: str,
+    value_column: str,
+    period_size: int = 10,
+    require_consecutive: bool = False,
+) -> PeriodComparisonStatistics | None:
+    """Compare fixed-size, non-overlapping periods at both ends of a series."""
+    if period_size < 1:
+        raise ValueError("period_size must be at least 1.")
+
+    prepared = prepare_series(
+        dataframe=dataframe,
+        period_column=period_column,
+        value_column=value_column,
+    )
+
+    if prepared[period_column].duplicated().any():
+        raise ValueError(
+            "Period comparison requires one observation per period."
+        )
+
+    if len(prepared) < period_size * 2:
+        return None
+
+    if require_consecutive:
+        if not pd.api.types.is_numeric_dtype(prepared[period_column]):
+            raise ValueError(
+                "Consecutive comparison requires numeric period values."
+            )
+        windows = []
+        for start in range(0, len(prepared) - period_size + 1):
+            window = prepared.iloc[start:start + period_size]
+            periods = window[period_column].to_numpy(dtype=float)
+            if np.allclose(np.diff(periods), 1.0):
+                windows.append(window)
+        if not windows:
+            return None
+        baseline = windows[0]
+        recent = windows[-1]
+        if baseline.iloc[-1][period_column] >= recent.iloc[0][period_column]:
+            return None
+    else:
+        baseline = prepared.head(period_size)
+        recent = prepared.tail(period_size)
+    baseline_mean = float(baseline[value_column].mean())
+    recent_mean = float(recent[value_column].mean())
+    absolute_change = recent_mean - baseline_mean
+    percent_change = (
+        absolute_change / abs(baseline_mean) * 100.0
+        if not np.isclose(baseline_mean, 0.0)
+        else None
+    )
+
+    return PeriodComparisonStatistics(
+        baseline_mean=baseline_mean,
+        recent_mean=recent_mean,
+        absolute_change=float(absolute_change),
+        percent_change=(
+            float(percent_change)
+            if percent_change is not None
+            else None
+        ),
+        baseline_period=_format_period_range(
+            baseline.iloc[0][period_column],
+            baseline.iloc[-1][period_column],
+        ),
+        recent_period=_format_period_range(
+            recent.iloc[0][period_column],
+            recent.iloc[-1][period_column],
+        ),
+        period_size=period_size,
+    )
+
+
 def _clean_numeric_values(
     values: pd.Series | Sequence[float],
 ) -> np.ndarray:
@@ -388,8 +465,8 @@ def _format_period_range(
     first_period: Any,
     last_period: Any,
 ) -> str:
-    first = _to_python_scalar(first_period)
-    last = _to_python_scalar(last_period)
+    first = to_python_scalar(first_period)
+    last = to_python_scalar(last_period)
 
     if first == last:
         return str(first)
@@ -397,7 +474,7 @@ def _format_period_range(
     return f"{first}–{last}"
 
 
-def _to_python_scalar(value: Any) -> Any:
+def to_python_scalar(value: Any) -> Any:
     if isinstance(value, np.generic):
         value = value.item()
 

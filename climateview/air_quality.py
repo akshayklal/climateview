@@ -159,6 +159,7 @@ def _build_air_quality_figure(
     unhealthy_days: Optional[pd.DataFrame] = None,
 ) -> Tuple[go.Figure, Optional[float]]:
     config = POLLUTANTS[pollutant]
+    pollutant_name = config["label"]
     unit = config["unit"]
     y_title = config["axis_titles"][aggregation]
 
@@ -214,14 +215,14 @@ def _build_air_quality_figure(
                 else "lines+markers"
             ),
             name=(
-                "Daily value"
+                f"Daily {pollutant_name}"
                 if aggregation == "Day"
-                else "Average"
+                else f"Average {pollutant_name}"
             ),
             connectgaps=False,
             hovertemplate=(
                 "%{x}<br>"
-                f"Value: %{{y:.2f}} {unit}"
+                f"{pollutant_name}: %{{y:.2f}} {unit}"
                 "<extra></extra>"
             ),
         ),
@@ -234,7 +235,7 @@ def _build_air_quality_figure(
                 x=aggregated[x_column],
                 y=fitted,
                 mode="lines",
-                name="Trend",
+                name=f"{pollutant_name} trend",
                 line={"dash": "dash"},
                 hoverinfo="skip",
             ),
@@ -311,19 +312,27 @@ def _render_pollutant_section(
     station_name: str,
 ) -> None:
     control_columns = st.columns(
-        [1.4, 2.0, 5.6],
+        [2.5, 1.5, 5.0],
         vertical_alignment="bottom",
     )
 
     with control_columns[0]:
+        pollutant_options = {
+            config["label"]: pollutant
+            for pollutant, config in POLLUTANTS.items()
+        }
         pollutant_label = st.segmented_control(
             "Pollutant",
-            options=["PM2.5", "Ozone"],
-            default="PM2.5",
+            options=list(pollutant_options),
+            default=(
+                None
+                if "air_quality_pollutant" in st.session_state
+                else POLLUTANTS["pm25"]["label"]
+            ),
             key="air_quality_pollutant",
         )
 
-    pollutant = "ozone" if pollutant_label == "Ozone" else "pm25"
+    pollutant = pollutant_options.get(pollutant_label, "pm25")
     config = POLLUTANTS[pollutant]
 
     dataset = (
@@ -365,7 +374,7 @@ def _render_pollutant_section(
 
     with control_columns[2]:
         selected_years = st.slider(
-            "Period",
+            "Date Range",
             min_value=min_year,
             max_value=max_year,
             value=(min_year, max_year),
@@ -453,8 +462,21 @@ def _render_pollutant_section(
 
     pollutant_name = config["label"]
 
+    analysis_data = aggregated.copy()
+    ranked_value_columns = {}
+    if unhealthy_days is not None and not unhealthy_days.empty:
+        unhealthy_x_column = (
+            "date" if aggregation == "Month" else "year"
+        )
+        analysis_data = analysis_data.merge(
+            unhealthy_days,
+            on=unhealthy_x_column,
+            how="left",
+        )
+        ranked_value_columns["unhealthy AQI days"] = "unhealthy_days"
+
     analysis = analyze_series(
-        dataframe=aggregated,
+        dataframe=analysis_data,
         context=AnalysisContext(
             location=station_name,
             metric=pollutant_name,
@@ -466,12 +488,14 @@ def _render_pollutant_section(
         schema=DataSchema(
             period_column=x_column,
             value_column="display_value",
+            ranked_value_columns=ranked_value_columns,
         ),
     )
 
     insight_signature = (
         station_name,
         pollutant_key,
+        pollutant_name,
         aggregation,
         selected_years[0],
         selected_years[1],

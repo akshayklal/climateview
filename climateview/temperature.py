@@ -23,8 +23,41 @@ TEMPERATURE_TABLE_PERIODS = {
     "Decade": ("decade", "Decade"),
 }
 
+TEMPERATURE_SEASON_MONTHS = {
+    "Winter": {12, 1, 2},
+    "Spring": {3, 4, 5},
+    "Summer": {6, 7, 8},
+    "Fall": {9, 10, 11},
+}
 
-def build_temperature_aggregation(data, aggregation):
+
+def filter_temperature_season(
+    data: pd.DataFrame,
+    season: str,
+) -> pd.DataFrame:
+    if season == "All year":
+        return data.copy()
+
+    months = TEMPERATURE_SEASON_MONTHS[season]
+    filtered = data[data["date"].dt.month.isin(months)].copy()
+
+    # Treat December as part of the winter ending the following year.
+    if season == "Winter":
+        filtered["year"] = (
+            filtered["date"].dt.year
+            + (filtered["date"].dt.month == 12).astype(int)
+        )
+        filtered["decade"] = (filtered["year"] // 10) * 10
+
+    return filtered
+
+
+def build_temperature_aggregation(
+    data,
+    aggregation,
+    *,
+    minimum_days_per_year=300,
+):
     if aggregation == "Month":
         grouped = (
             data.groupby("month")
@@ -61,8 +94,8 @@ def build_temperature_aggregation(data, aggregation):
 
         # Exclude substantially incomplete years.
         grouped = grouped[
-            (grouped["days_with_tmax"] >= 300)
-            & (grouped["days_with_tmin"] >= 300)
+            (grouped["days_with_tmax"] >= minimum_days_per_year)
+            & (grouped["days_with_tmin"] >= minimum_days_per_year)
         ].copy()
 
         grouped["trend_year"] = grouped["year"]
@@ -244,6 +277,7 @@ def render_temperature_tab(data, station_name):
         return
 
     required_columns = {
+        "date",
         "year",
         "month",
         "decade",
@@ -282,8 +316,8 @@ def render_temperature_tab(data, station_name):
         min_year = int(complete_years.min())
         max_year = int(complete_years.max())
 
-    aggregation_col, range_col = st.columns(
-        [1, 3],
+    aggregation_col, season_col, range_col = st.columns(
+        [1.4, 2.6, 4.0],
         vertical_alignment="bottom",
     )
 
@@ -291,7 +325,11 @@ def render_temperature_tab(data, station_name):
         aggregation = st.segmented_control(
             "Aggregation",
             options=["Month", "Year", "Decade"],
-            default="Year",
+            default=(
+                None
+                if "temperature_aggregation" in st.session_state
+                else "Year"
+            ),
             key="temperature_aggregation",
         )
 
@@ -299,17 +337,33 @@ def render_temperature_tab(data, station_name):
     if aggregation is None:
         aggregation = "Year"
 
+    with season_col:
+        season = st.segmented_control(
+            "Season",
+            options=["All year", "Winter", "Spring", "Summer", "Fall"],
+            default=(
+                None
+                if "temperature_season" in st.session_state
+                else "All year"
+            ),
+            key="temperature_season",
+        )
+
+    if season is None:
+        season = "All year"
+
     with range_col:
         selected_years = st.slider(
-            "Period",
+            "Date Range",
             min_value=min_year,
             max_value=max_year,
             value=(min_year, max_year),
             key="temperature_period",
         )
 
-    filtered_data = data[
-        data["year"].between(
+    seasonal_data = filter_temperature_season(data, season)
+    filtered_data = seasonal_data[
+        seasonal_data["year"].between(
             selected_years[0],
             selected_years[1],
         )
@@ -319,6 +373,9 @@ def render_temperature_tab(data, station_name):
         build_temperature_aggregation(
             filtered_data,
             aggregation,
+            minimum_days_per_year=(
+                300 if season == "All year" else 60
+            ),
         )
     )
 
@@ -358,7 +415,7 @@ def render_temperature_tab(data, station_name):
     )
 
     metric3.metric(
-        "Selected period",
+        "Selected Date Range",
         f"{selected_years[0]}–{selected_years[1]}",
     )
 
@@ -377,7 +434,11 @@ def render_temperature_tab(data, station_name):
         dataframe=analysis_data,
         context=AnalysisContext(
             location=station_name,
-            metric="temperature",
+            metric=(
+                "temperature"
+                if season == "All year"
+                else f"{season.lower()} temperature"
+            ),
             unit="degrees Fahrenheit",
             aggregation=aggregation.lower(),
             start_period=selected_years[0],
@@ -396,6 +457,7 @@ def render_temperature_tab(data, station_name):
     insight_signature = (
         station_name,
         aggregation,
+        season,
         selected_years[0],
         selected_years[1],
     )

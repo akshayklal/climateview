@@ -369,7 +369,7 @@ def render_precipitation_tab(data, station_name):
 
     with range_col:
         selected_years = st.slider(
-            "Period",
+            "Date Range",
             min_value=min_year,
             max_value=max_year,
             value=(min_year, max_year),

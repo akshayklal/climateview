@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from .generic import (
@@ -13,6 +14,7 @@ from .generic import (
     calculate_trend_statistics,
     calculate_variability_statistics,
     prepare_series,
+    to_python_scalar,
 )
 from .models import (
     AnalysisContext,
@@ -121,6 +123,12 @@ def analyze_series(
         context=context,
         schema=schema,
     )
+    noteworthy_findings = _calculate_noteworthy_findings(
+        dataframe=dataframe,
+        context=context,
+        schema=schema,
+        primary_trend=trend,
+    )
 
     # ------------------------------------------------------------------
     # Final result
@@ -137,7 +145,97 @@ def analyze_series(
         recent_change=recent_change,
         rankings=rankings,
         metric_specific=metric_specific,
+        noteworthy_findings=noteworthy_findings,
     )
+
+
+def _calculate_noteworthy_findings(
+    dataframe: pd.DataFrame,
+    context: AnalysisContext,
+    schema: DataSchema,
+    primary_trend,
+) -> list[dict[str, Any]]:
+    """Identify verified observations within the currently displayed chart."""
+    series = {context.metric: schema.value_column, **schema.ranked_value_columns}
+    findings: list[dict[str, Any]] = []
+    slopes: dict[str, float] = {}
+
+    for label, value_column in series.items():
+        prepared = prepare_series(
+            dataframe,
+            schema.period_column,
+            value_column,
+        )
+        trend = primary_trend
+        if label != context.metric:
+            trend = calculate_trend_statistics(
+                prepared,
+                schema.period_column,
+                value_column,
+            )
+            if trend and trend.statistically_significant:
+                findings.append(
+                    {
+                        "type": "supporting_series_trend",
+                        "series": label,
+                        "direction": trend.direction,
+                        "slope_per_year": round(trend.slope, 4),
+                    }
+                )
+        if trend and trend.slope is not None:
+            slopes[label] = trend.slope
+
+        if len(prepared) < 8:
+            continue
+        recent_count = max(3, round(len(prepared) * 0.25))
+        recent = prepared.tail(recent_count)
+        recent_periods = set(recent[schema.period_column])
+        ranked_count = min(10, max(3, round(len(prepared) * 0.15)))
+        threshold = max(2, int(np.ceil(ranked_count * 0.6)))
+        for direction, ascending in (("highest", False), ("lowest", True)):
+            ranked_periods = prepared.sort_values(
+                value_column,
+                ascending=ascending,
+            ).head(ranked_count)[schema.period_column]
+            count = sum(period in recent_periods for period in ranked_periods)
+            if count >= threshold:
+                findings.append(
+                    {
+                        "type": "recent_extremes_cluster",
+                        "series": label,
+                        "direction": direction,
+                        "count": count,
+                        "ranked_count": ranked_count,
+                        "recent_start": to_python_scalar(
+                            recent.iloc[0][schema.period_column]
+                        ),
+                        "recent_end": to_python_scalar(
+                            recent.iloc[-1][schema.period_column]
+                        ),
+                    }
+                )
+
+    if "temperature" in context.metric.lower() and len(slopes) >= 3:
+        supporting = {
+            label: slope
+            for label, slope in slopes.items()
+            if label != context.metric
+        }
+        if len(supporting) >= 2:
+            fastest = max(supporting, key=supporting.get)
+            slowest = min(supporting, key=supporting.get)
+            if abs(supporting[fastest] - supporting[slowest]) >= 0.01:
+                findings.append(
+                    {
+                        "type": "series_trend_difference",
+                        "faster_series": fastest,
+                        "faster_slope_per_year": round(supporting[fastest], 4),
+                        "slower_series": slowest,
+                        "slower_slope_per_year": round(supporting[slowest], 4),
+                    }
+                )
+
+    return findings
 
 
 def _calculate_metric_statistics(

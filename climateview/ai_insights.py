@@ -9,6 +9,9 @@ from climateview.ai.summarizer import (
 )
 
 
+_AI_INSIGHTS_CONTENT_VERSION = 5
+
+
 _AI_INSIGHTS_CSS = """
 <style>
 .ai-insights-response {
@@ -83,8 +86,9 @@ def render_ai_insights(
     references_key = f"{state_prefix}_ai_referenced_periods"
     series_key = f"{state_prefix}_ai_referenced_series"
 
-    if st.session_state.get(signature_key) != signature:
-        st.session_state[signature_key] = signature
+    content_signature = (_AI_INSIGHTS_CONTENT_VERSION, signature)
+    if st.session_state.get(signature_key) != content_signature:
+        st.session_state[signature_key] = content_signature
         st.session_state[text_key] = None
         st.session_state[question_key] = ""
         st.session_state[references_key] = ()
@@ -177,12 +181,8 @@ def render_ai_insights(
                     )
 
             st.session_state[text_key] = response.text
-            st.session_state[references_key] = (
-                response.referenced_periods if submitted_question else ()
-            )
-            st.session_state[series_key] = (
-                response.referenced_series if submitted_question else ()
-            )
+            st.session_state[references_key] = response.referenced_periods
+            st.session_state[series_key] = response.referenced_series
             _render_response(insight_placeholder, response.text)
             st.rerun()
 
