@@ -288,5 +288,135 @@
     "aqs_site_id": "05-119-0007",
     "aqs_site_name": "PARR",
     "aqs_distance_km": 5.3
+  },
+  "eugene_airport": {
+    "name": "Eugene Airport, OR",
+    "latitude": 44.1331,
+    "longitude": -123.2156,
+    "noaa_station_id": "USW00024221",
+    "noaa_start_year": 1938,
+    "aqs_site_id": "41-039-0060",
+    "aqs_site_name": "Eugene - Amazon Park",
+    "aqs_distance_km": 15.9
+  },
+  "cheyenne": {
+    "name": "Cheyenne, WY",
+    "latitude": 41.1519,
+    "longitude": -104.8061,
+    "noaa_station_id": "USW00024018",
+    "noaa_start_year": 1915,
+    "aqs_site_id": "56-021-0100",
+    "aqs_site_name": "Cheyenne NCore",
+    "aqs_distance_km": 4.1
+  },
+  "missoula_international": {
+    "name": "Missoula International, MT",
+    "latitude": 46.9208,
+    "longitude": -114.0939,
+    "noaa_station_id": "USW00024153",
+    "noaa_start_year": 1948,
+    "aqs_site_id": "30-063-0024",
+    "aqs_site_name": "Missoula Boyd Park",
+    "aqs_distance_km": 10.3
+  },
+  "fargo_hector": {
+    "name": "Fargo Hector International, ND",
+    "latitude": 46.9242,
+    "longitude": -96.812,
+    "noaa_station_id": "USW00014914",
+    "noaa_start_year": 1891,
+    "aqs_site_id": "38-017-1004",
+    "aqs_site_name": "Fargo NW",
+    "aqs_distance_km": 3.5
+  },
+  "hot_springs": {
+    "name": "Hot Springs, SD",
+    "latitude": 43.4378,
+    "longitude": -103.4739,
+    "noaa_station_id": "USC00394007",
+    "noaa_start_year": 1894,
+    "aqs_site_id": "46-033-0132",
+    "aqs_site_name": "Wind Cave",
+    "aqs_distance_km": 13.3
+  },
+  "green_bay": {
+    "name": "Green Bay, WI",
+    "latitude": 44.4986,
+    "longitude": -88.1111,
+    "noaa_station_id": "USW00014898",
+    "noaa_start_year": 1886,
+    "aqs_site_id": "55-087-0009",
+    "aqs_site_name": "Appleton - AAL",
+    "aqs_distance_km": 31.0
+  },
+  "detroit_metro": {
+    "name": "Detroit Metro Airport, MI",
+    "latitude": 42.2311,
+    "longitude": -83.3311,
+    "noaa_station_id": "USW00094847",
+    "noaa_start_year": 1959,
+    "aqs_site_id": "26-125-0001",
+    "aqs_site_name": "Oak Park",
+    "aqs_distance_km": 28.5
+  },
+  "south_bend": {
+    "name": "South Bend International, IN",
+    "latitude": 41.7072,
+    "longitude": -86.3164,
+    "noaa_station_id": "USW00014848",
+    "noaa_start_year": 1893,
+    "aqs_site_id": "18-141-0015",
+    "aqs_site_name": "South Bend - Shields Drive",
+    "aqs_distance_km": 8.5
+  },
+  "bowling_green": {
+    "name": "Bowling Green, OH",
+    "latitude": 41.374,
+    "longitude": -83.651,
+    "noaa_station_id": "USC00330862",
+    "noaa_start_year": 1893,
+    "aqs_site_id": "39-095-0024",
+    "aqs_site_name": "Erie",
+    "aqs_distance_km": 31.3
+  },
+  "pittsburgh_allegheny": {
+    "name": "Pittsburgh International, PA",
+    "latitude": 40.4847,
+    "longitude": -80.2144,
+    "noaa_station_id": "USW00094823",
+    "noaa_start_year": 1948,
+    "aqs_site_id": "42-125-5001",
+    "aqs_site_name": "Florence",
+    "aqs_distance_km": 18.0
+  },
+  "lexington_bluegrass": {
+    "name": "Lexington Blue Grass Airport, KY",
+    "latitude": 38.0339,
+    "longitude": -84.6114,
+    "noaa_station_id": "USW00093820",
+    "noaa_start_year": 1872,
+    "aqs_site_id": "21-067-0012",
+    "aqs_site_name": "Lexington Primary",
+    "aqs_distance_km": 10.5
+  },
+  "morgantown": {
+    "name": "Morgantown, WV",
+    "latitude": 39.6203,
+    "longitude": -79.9697,
+    "noaa_station_id": "USC00466212",
+    "noaa_start_year": 1944,
+    "aqs_site_id": "54-061-0003",
+    "aqs_site_name": "Morgantown",
+    "aqs_distance_km": 5.0
+  },
+  "albany_international": {
+    "name": "Albany International Airport, NY",
+    "latitude": 42.7472,
+    "longitude": -73.7992,
+    "noaa_station_id": "USW00014735",
+    "noaa_start_year": 1938,
+    "aqs_site_id": "36-001-0012",
+    "aqs_site_name": "Loudonville",
+    "aqs_distance_km": 8.1
   }
 }

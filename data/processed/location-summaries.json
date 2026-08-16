@@ -365,5 +365,163 @@
         "change": -8.1
       }
     }
+  },
+  "eugene_airport": {
+    "summary": "1.5°F warmer than 1939–1948, led by warmer summer days.",
+    "map_metrics": {
+      "temperature": {
+        "change": 1.5
+      }
+    }
+  },
+  "cheyenne": {
+    "summary": "3.6°F warmer than 1916–1925, led by warmer fall days.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.6
+      }
+    }
+  },
+  "missoula_international": {
+    "summary": "2.5°F warmer than 1949–1958, led by warmer summer days; fine-particle pollution down 22% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 2.5
+      },
+      "pm25": {
+        "change": -22.2
+      }
+    }
+  },
+  "fargo_hector": {
+    "summary": "3.2°F warmer than 1942–1951, led by warmer winter nights; annual precipitation up 4%.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.2
+      },
+      "precipitation": {
+        "change": 4.2
+      }
+    }
+  },
+  "hot_springs": {
+    "summary": "1.6°F warmer than 1918–1927, led by warmer fall days.",
+    "map_metrics": {
+      "temperature": {
+        "change": 1.6
+      }
+    }
+  },
+  "green_bay": {
+    "summary": "3.5°F warmer than 1887–1896, led by warmer fall days; fine-particle pollution down 31% since 1999; ground-level ozone pollution down 6% since 1995.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.5
+      },
+      "pm25": {
+        "change": -31.3
+      },
+      "ozone": {
+        "change": -6.4
+      }
+    }
+  },
+  "detroit_metro": {
+    "summary": "3.9°F warmer than 1960–1969, led by warmer summer nights; annual precipitation up 12%; fine-particle pollution down 42% since 1999; ground-level ozone pollution up 9% since 1981.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.9
+      },
+      "precipitation": {
+        "change": 12.3
+      },
+      "pm25": {
+        "change": -41.6
+      },
+      "ozone": {
+        "change": 9.4
+      }
+    }
+  },
+  "south_bend": {
+    "summary": "1.1°F warmer than 1894–1903, led by warmer winter nights; annual precipitation up 16%.",
+    "map_metrics": {
+      "precipitation": {
+        "change": 15.6
+      }
+    }
+  },
+  "bowling_green": {
+    "summary": "2.7°F warmer than 1894–1903, led by warmer winter nights; annual precipitation up 8%; fine-particle pollution down 42% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 2.7
+      },
+      "precipitation": {
+        "change": 7.5
+      },
+      "pm25": {
+        "change": -42.4
+      }
+    }
+  },
+  "pittsburgh_allegheny": {
+    "summary": "1.6°F warmer than 1949–1958, led by warmer spring days; annual precipitation up 10%; fine-particle pollution down 41% since 1999; ground-level ozone pollution down 24% since 1995.",
+    "map_metrics": {
+      "temperature": {
+        "change": 1.6
+      },
+      "precipitation": {
+        "change": 10.3
+      },
+      "pm25": {
+        "change": -41.4
+      },
+      "ozone": {
+        "change": -24.3
+      }
+    }
+  },
+  "lexington_bluegrass": {
+    "summary": "1.4°F warmer than 1888–1897, led by warmer fall days; annual precipitation up 17%; fine-particle pollution down 45% since 1999.",
+    "map_metrics": {
+      "temperature": {
+        "change": 1.4
+      },
+      "precipitation": {
+        "change": 16.7
+      },
+      "pm25": {
+        "change": -45.3
+      }
+    }
+  },
+  "morgantown": {
+    "summary": "0.9°F cooler than 1945–1954, led by cooler winter days; annual precipitation up 7%; fine-particle pollution down 51% since 1999; ground-level ozone pollution down 8% since 2000.",
+    "map_metrics": {
+      "precipitation": {
+        "change": 6.8
+      },
+      "pm25": {
+        "change": -51.0
+      },
+      "ozone": {
+        "change": -8.4
+      }
+    }
+  },
+  "albany_international": {
+    "summary": "3.4°F warmer than 1939–1948, led by warmer winter nights; annual precipitation up 25%; ground-level ozone pollution up 5% since 1987.",
+    "map_metrics": {
+      "temperature": {
+        "change": 3.4
+      },
+      "precipitation": {
+        "change": 25.3
+      },
+      "ozone": {
+        "change": 4.8
+      }
+    }
   }
 }
