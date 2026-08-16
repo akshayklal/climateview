@@ -164,6 +164,36 @@ st.markdown(
         [class*="st-key-pattern_card_"][class*="_air_quality"] button {
             border-top: 4px solid #5b9279;
         }
+
+        @media (max-width: 1200px) {
+            div[data-testid="stHorizontalBlock"]:has(.map-legend) {
+                flex-wrap: wrap;
+            }
+
+            div[data-testid="stHorizontalBlock"]:has(.map-legend)
+            > div[data-testid="stColumn"] {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+
+            .map-legend {
+                text-align: left !important;
+                white-space: nowrap;
+            }
+
+            .st-key-show_more_patterns button,
+            [class*="st-key-pattern_card_"] button {
+                height: 220px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .st-key-show_more_patterns button,
+            [class*="st-key-pattern_card_"] button {
+                height: auto;
+                min-height: 150px;
+            }
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -366,7 +396,8 @@ else:
     with legend_column:
         metric_color = ",".join(map(str, metric_config["color"]))
         st.markdown(
-            "<div style='text-align:right; color:#666; font-size:0.9rem;'>"
+            "<div class='map-legend' style='text-align:right; color:#666; "
+            "font-size:0.9rem;'>"
             f"<span style='color:rgb({metric_color});'>●</span> "
             "Larger circles show greater change · "
             "<span style='font-size:1.25em; font-weight:600;'>↑↓</span> "
