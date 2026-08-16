@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -8,121 +9,41 @@ import pydeck as pdk
 import streamlit as st
 
 from climateview.aqs_config import AQS_POLLUTANTS
+from climateview.presentation import AIR_QUALITY, RAINFALL, TEMPERATURE, as_rgb
 from climateview.stations import STATIONS
 
 
 MAP_METRICS = {
-    "Temperature": {"key": "temperature", "color": (231, 111, 81)},
-    "Rainfall": {"key": "precipitation", "color": (74, 144, 184)},
-    "Fine particles": {"key": "pm25", "color": (91, 146, 121)},
-    "Ground-level ozone": {"key": "ozone", "color": (91, 146, 121)},
+    "Temperature": {
+        "key": "temperature",
+        "color": as_rgb(TEMPERATURE["primary"]),
+        "tab": "Temperature",
+    },
+    "Rainfall": {
+        "key": "precipitation",
+        "color": as_rgb(RAINFALL["primary"]),
+        "tab": "Rainfall",
+    },
+    "Fine particles": {
+        "key": "pm25",
+        "color": as_rgb(AIR_QUALITY["primary"]),
+        "tab": "Air Quality",
+        "pollutant": "pm25",
+    },
+    "Ground-level ozone": {
+        "key": "ozone",
+        "color": as_rgb(AIR_QUALITY["primary"]),
+        "tab": "Air Quality",
+        "pollutant": "ozone",
+    },
 }
 METRIC_KEYS = tuple(config["key"] for config in MAP_METRICS.values())
 
 
 def _render_styles() -> None:
+    stylesheet = Path(__file__).with_name("static") / "landing_page.css"
     st.markdown(
-        """
-        <style>
-            .hero-panel {
-                margin-bottom: 1rem;
-                padding: 1.5rem;
-                border: 1px solid rgba(49, 51, 63, 0.2);
-                border-top-width: 4px;
-                border-radius: 0.75rem;
-            }
-
-            .st-key-show_more_patterns button,
-            [class*="st-key-pattern_card_"] button {
-                height: 175px;
-            }
-
-            .st-key-show_more_patterns button {
-                border-top: 4px solid rgba(49, 51, 63, 0.2);
-            }
-
-            .st-key-show_more_patterns button p,
-            [class*="st-key-pattern_card_"] button p strong {
-                font-size: 1.5rem;
-                font-weight: 600;
-                line-height: 1.2;
-            }
-
-            [class*="st-key-pattern_card_"] button {
-                padding: 1.25rem;
-                align-items: flex-start;
-                justify-content: flex-start;
-            }
-
-            .st-key-show_more_patterns button,
-            [class*="st-key-pattern_card_"] button {
-                transition: border-color 150ms ease, box-shadow 150ms ease,
-                    transform 150ms ease;
-            }
-
-            .st-key-show_more_patterns button:hover,
-            [class*="st-key-pattern_card_"] button:hover {
-                border-color: rgba(49, 51, 63, 0.35);
-                box-shadow: 0 4px 12px rgba(49, 51, 63, 0.1);
-                transform: translateY(-2px);
-            }
-
-            [class*="st-key-pattern_card_"] button p {
-                font-size: 1rem;
-                font-weight: 400;
-                line-height: 1.5;
-                text-align: left;
-                white-space: normal;
-            }
-
-            [class*="st-key-pattern_card_"] button p strong {
-                display: block;
-                margin-bottom: 1.15rem;
-            }
-
-            [class*="st-key-pattern_card_"][class*="_temperature"] button {
-                border-top: 4px solid #e76f51;
-            }
-
-            [class*="st-key-pattern_card_"][class*="_precipitation"] button {
-                border-top: 4px solid #4a90b8;
-            }
-
-            [class*="st-key-pattern_card_"][class*="_air_quality"] button {
-                border-top: 4px solid #5b9279;
-            }
-
-            @media (max-width: 1200px) {
-                div[data-testid="stHorizontalBlock"]:has(.map-legend) {
-                    flex-wrap: wrap;
-                }
-
-                div[data-testid="stHorizontalBlock"]:has(.map-legend)
-                > div[data-testid="stColumn"] {
-                    flex: 1 1 100%;
-                    width: 100%;
-                }
-
-                .map-legend {
-                    text-align: left !important;
-                    white-space: nowrap;
-                }
-
-                .st-key-show_more_patterns button,
-                [class*="st-key-pattern_card_"] button {
-                    height: 220px;
-                }
-            }
-
-            @media (max-width: 800px) {
-                .st-key-show_more_patterns button,
-                [class*="st-key-pattern_card_"] button {
-                    height: auto;
-                    min-height: 150px;
-                }
-            }
-        </style>
-        """,
+        f"<style>{stylesheet.read_text(encoding='utf-8')}</style>",
         unsafe_allow_html=True,
     )
 
@@ -340,7 +261,11 @@ def _render_map(stations: pd.DataFrame) -> None:
         if map_deck else []
     )
     if selected:
-        _open_location(map_stations.iloc[selected[0]]["station_key"])
+        _open_location(
+            map_stations.iloc[selected[0]]["station_key"],
+            tab=metric["tab"],
+            pollutant=metric.get("pollutant"),
+        )
 
 
 def _render_patterns(patterns: list[dict[str, Any]]) -> None:

@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 import time
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -12,7 +12,7 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from climateview.aqs_config import AQS_POLLUTANTS
+from aqs_utils import AQS_API_BASE_URL, AQS_PARAMETERS, parse_aqs_date
 from station_utils import select_stations
 
 
@@ -25,7 +25,6 @@ from station_utils import select_stations
 #   the oldest active POC is retained until it closes, with per-day fallback
 #   to the next-oldest active POC when the preferred monitor has no data.
 
-AQS_API_BASE_URL = "https://aqs.epa.gov/data/api"
 DAILY_DATA_URL = f"{AQS_API_BASE_URL}/dailyData/bySite"
 MONITORS_URL = f"{AQS_API_BASE_URL}/monitors/bySite"
 
@@ -38,15 +37,8 @@ REQUEST_TIMEOUT_SECONDS = 120
 MONITOR_SEARCH_START_DATE = "19500101"
 
 PARAMETERS = {
-    "42101": ("carbon_monoxide", "Carbon monoxide"),
-    "14129": ("lead", "Lead"),
-    "42602": ("nitrogen_dioxide", "Nitrogen dioxide"),
-    "81102": ("pm10", "PM10"),
-    "42401": ("sulfur_dioxide", "Sulfur dioxide"),
-    **{
-        config["parameter_code"]: (name, config["label"])
-        for name, config in AQS_POLLUTANTS.items()
-    },
+    code: (name, display_name)
+    for name, (code, display_name) in AQS_PARAMETERS.items()
 }
 
 
@@ -67,21 +59,6 @@ def split_aqs_site_id(aqs_site_id: str) -> Tuple[str, str, str]:
         )
 
     return state, county, site
-
-
-def parse_aqs_date(value: object) -> date | None:
-    if not value:
-        return None
-
-    text = str(value)
-
-    for date_format in ("%Y-%m-%d", "%Y%m%d"):
-        try:
-            return datetime.strptime(text, date_format).date()
-        except ValueError:
-            continue
-
-    return None
 
 
 def raw_output_path(pollutant: str, aqs_site_id: str, year: int) -> Path:

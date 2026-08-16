@@ -10,6 +10,11 @@ from climateview.charts import (
     insert_gap_breaks,
     select_referenced_periods,
 )
+from climateview.presentation import (
+    TEMPERATURE,
+    format_decadal_trend,
+    render_location_summary,
+)
 from climateview.statistics import (
     AnalysisContext,
     DataSchema,
@@ -153,6 +158,8 @@ def build_temperature_figure(aggregated_data, x_col, x_title):
             y=plot_data["avg_tmax_f"],
             mode="lines+markers",
             name="Average maximum",
+            line={"color": TEMPERATURE["dark"]},
+            marker={"color": TEMPERATURE["dark"]},
             connectgaps=False,
             hovertemplate=(
                 "%{x}<br>"
@@ -168,6 +175,8 @@ def build_temperature_figure(aggregated_data, x_col, x_title):
             y=plot_data["avg_tmin_f"],
             mode="lines+markers",
             name="Average minimum",
+            line={"color": TEMPERATURE["light"]},
+            marker={"color": TEMPERATURE["light"]},
             connectgaps=False,
             hovertemplate=(
                 "%{x}<br>"
@@ -184,7 +193,7 @@ def build_temperature_figure(aggregated_data, x_col, x_title):
                 y=max_trend_values,
                 mode="lines",
                 name="Maximum trend",
-                line={"dash": "dash"},
+                line={"color": TEMPERATURE["dark"], "dash": "dash"},
                 hoverinfo="skip",
             )
         )
@@ -196,7 +205,7 @@ def build_temperature_figure(aggregated_data, x_col, x_title):
                 y=min_trend_values,
                 mode="lines",
                 name=f"Minimum trend",
-                line={"dash": "dash"},
+                line={"color": TEMPERATURE["light"], "dash": "dash"},
                 hoverinfo="skip",
             )
         )
@@ -372,13 +381,16 @@ def render_temperature_tab(data, station_name, summary_placeholder=None):
             nighttime_leads = abs(min_trend) >= abs(max_trend)
             trend = min_trend if nighttime_leads else max_trend
             period = "Nighttime" if nighttime_leads else "Daytime"
-            direction = "warming" if trend > 0 else "cooling"
-            summary = (
-                f"{period} temperatures are {direction} fastest, changing "
-                f"about {abs(trend) * 10:.1f}°F per decade since "
-                f"{selected_years[0]}."
+            summary = format_decadal_trend(
+                f"{period} temperatures",
+                trend,
+                selected_years[0],
+                "°F",
+                ("are warming", "are cooling"),
+                unchanged_subject="Temperatures",
+                qualifier=" fastest",
             )
-        summary_placeholder.markdown(summary)
+        render_location_summary(summary_placeholder, summary)
 
     metric1, metric2 = st.columns(2)
 

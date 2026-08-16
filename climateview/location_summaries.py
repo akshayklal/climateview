@@ -103,7 +103,7 @@ def build_explorable_patterns(
         destination_tab = (
             "Temperature"
             if category in {"temperature", "seasonal"}
-            else "Precipitation"
+            else "Rainfall"
             if category == "rainfall"
             else "Air Quality"
         )

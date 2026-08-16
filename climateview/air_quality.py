@@ -14,6 +14,11 @@ from climateview.charts import (
     insert_gap_breaks,
     select_referenced_periods,
 )
+from climateview.presentation import (
+    AIR_QUALITY,
+    format_decadal_trend,
+    render_location_summary,
+)
 from climateview.statistics import (
     AnalysisContext,
     DataSchema,
@@ -220,6 +225,8 @@ def _build_air_quality_figure(
                 else f"Average {pollutant_name}"
             ),
             connectgaps=False,
+            line={"color": AIR_QUALITY["primary"]},
+            marker={"color": AIR_QUALITY["primary"]},
             hovertemplate=(
                 "%{x}<br>"
                 f"{pollutant_name}: %{{y:.2f}} {unit}"
@@ -236,7 +243,7 @@ def _build_air_quality_figure(
                 y=fitted,
                 mode="lines",
                 name=f"{pollutant_name} trend",
-                line={"dash": "dash"},
+                line={"color": AIR_QUALITY["dark"], "dash": "dash"},
                 hoverinfo="skip",
             ),
             secondary_y=False if show_unhealthy_days else None,
@@ -261,7 +268,8 @@ def _build_air_quality_figure(
                 x=unhealthy[unhealthy_x_column],
                 y=unhealthy["unhealthy_days"],
                 name="Unhealthy AQI days",
-                opacity=0.32,
+                marker_color=AIR_QUALITY["light"],
+                opacity=0.55,
                 hovertemplate=(
                     f"{hover_period}: %{{x}}<br>"
                     "Unhealthy AQI days: %{y}"
@@ -405,15 +413,19 @@ def _render_pollutant_section(
 
     if summary_placeholder is not None:
         if trend is None:
-            summary = f"No clear long-term {config['label'].lower()} trend is available."
-        else:
-            direction = "improving" if trend < 0 else "worsening"
             summary = (
-                f"{config['label']} is {direction}, changing about "
-                f"{abs(trend) * 10:.1f} {config['unit']} per decade since "
-                f"{selected_years[0]}."
+                f"No clear long-term {config['label'].lower()} trend is "
+                "available."
             )
-        summary_placeholder.markdown(summary)
+        else:
+            summary = format_decadal_trend(
+                config["label"],
+                trend,
+                selected_years[0],
+                f" {config['unit']}",
+                ("is worsening", "is improving"),
+            )
+        render_location_summary(summary_placeholder, summary)
     uses_secondary_axis = "yaxis2" in figure.layout
 
     unit = config["unit"]

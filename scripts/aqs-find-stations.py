@@ -2,14 +2,20 @@ import argparse
 import math
 import sys
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from climateview.aqs_config import AQS_POLLUTANTS
+from aqs_utils import (
+    AQS_API_BASE_URL,
+    AQS_PARAMETERS,
+    AQS_PARAMETER_KEYS_BY_CODE,
+    parse_aqs_date,
+    poc_sort_value,
+)
 from station_utils import load_stations
 
 
@@ -23,39 +29,11 @@ from station_utils import load_stations
 STATIONS = load_stations()
 
 
-AQS_API_BASE_URL = "https://aqs.epa.gov/data/api"
 PARAMETERS = {
-    "carbon_monoxide": {
-        "code": "42101",
-        "display_name": "Carbon monoxide",
-    },
-    "lead": {
-        "code": "14129",
-        "display_name": "Lead",
-    },
-    "nitrogen_dioxide": {
-        "code": "42602",
-        "display_name": "Nitrogen dioxide",
-    },
-    "pm10": {
-        "code": "81102",
-        "display_name": "PM10",
-    },
-    "sulfur_dioxide": {
-        "code": "42401",
-        "display_name": "Sulfur dioxide",
-    },
-    **{
-        name: {
-            "code": config["parameter_code"],
-            "display_name": config["label"],
-        }
-        for name, config in AQS_POLLUTANTS.items()
-    },
+    name: {"code": code, "display_name": display_name}
+    for name, (code, display_name) in AQS_PARAMETERS.items()
 }
-PARAMETER_KEYS_BY_CODE = {
-    parameter["code"]: key for key, parameter in PARAMETERS.items()
-}
+PARAMETER_KEYS_BY_CODE = AQS_PARAMETER_KEYS_BY_CODE
 
 POC_PARAMETER_KEYS = ("ozone", "pm25")
 
@@ -113,20 +91,6 @@ def build_bounding_box(latitude, longitude, radius_km):
         "minlon": longitude - longitude_delta,
         "maxlon": longitude + longitude_delta,
     }
-
-
-def parse_date(value):
-    """Parse an AQS date value, returning None when unavailable."""
-    if not value:
-        return None
-
-    for date_format in ("%Y-%m-%d", "%Y%m%d"):
-        try:
-            return datetime.strptime(str(value), date_format).date()
-        except ValueError:
-            continue
-
-    return None
 
 
 def check_aqs_response(payload):
@@ -230,8 +194,8 @@ def normalize_monitor(
             longitude,
         ),
         "site_name": record.get("local_site_name") or "Unnamed AQS site",
-        "open_date": parse_date(record.get("open_date")),
-        "close_date": parse_date(record.get("close_date")),
+        "open_date": parse_aqs_date(record.get("open_date")),
+        "close_date": parse_aqs_date(record.get("close_date")),
     }
 
 
@@ -273,16 +237,6 @@ def site_sort_key(site, parameter_keys):
     ]
     common_start = max(coverage_starts, default=date.max)
     return (common_start, site["distance_km"])
-
-
-def poc_sort_value(poc):
-    """Return a deterministic sortable value for a POC."""
-    value = str(poc or "")
-
-    if value.isdigit():
-        return (0, int(value))
-
-    return (1, value)
 
 
 def sorted_monitors(monitors):

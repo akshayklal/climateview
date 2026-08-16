@@ -10,6 +10,7 @@ from climateview.data_loader import (
     load_temperature_data,
 )
 from climateview.landing_page import render_landing_page
+from climateview.presentation import AIR_QUALITY, RAINFALL, TEMPERATURE
 from climateview.precipitation import render_precipitation_tab
 from climateview.stations import STATIONS
 from climateview.temperature import render_temperature_tab
@@ -41,6 +42,19 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.markdown(
+    f"""
+    <style>
+        :root {{
+            --temperature-color: {TEMPERATURE['primary']};
+            --rainfall-color: {RAINFALL['primary']};
+            --air-quality-color: {AIR_QUALITY['primary']};
+        }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 if st.session_state.station_navigation_in_progress:
     st.markdown(
         """
@@ -64,10 +78,87 @@ else:
         del st.query_params["location"]
 
 
+def _render_location_accent(color: str, hue_rotation: int) -> None:
+    """Match active location-page controls to the selected data category."""
+    st.markdown(
+        f"""
+        <style>
+            [data-testid="stTab"][data-key="0"] {{
+                color: var(--temperature-color);
+            }}
+
+            [data-testid="stTab"][data-key="1"] {{
+                color: var(--rainfall-color);
+            }}
+
+            [data-testid="stTab"][data-key="2"] {{
+                color: var(--air-quality-color);
+            }}
+
+            [data-testid="stTab"],
+            [data-testid="stTab"] p {{
+                font-size: 1.125rem;
+                font-weight: 600;
+            }}
+
+            [data-testid="stTab"][aria-selected="true"] {{
+                color: {color};
+            }}
+
+            .location-context-summary {{
+                color: {color};
+                font-weight: 500;
+            }}
+
+            [data-testid="stTab"][aria-selected="true"]
+            .react-aria-SelectionIndicator {{
+                background-color: {color};
+            }}
+
+            div[data-testid="stButtonGroup"]
+            button[data-variant="segmented_control"][aria-checked="true"] {{
+                color: {color} !important;
+                border-color: {color} !important;
+                background-color: color-mix(
+                    in srgb, {color} 10%, white
+                ) !important;
+            }}
+
+            div[data-testid="stButtonGroup"]
+            button[data-variant="segmented_control"][aria-checked="true"] p {{
+                color: {color} !important;
+            }}
+
+            [data-testid="stSlider"] [role="group"] > div > div:first-child {{
+                filter: hue-rotate({hue_rotation}deg);
+            }}
+
+            [data-testid="stSlider"] [role="group"] > div > div[data-rac] {{
+                background-color: {color};
+            }}
+
+            [data-testid="stSliderThumbValue"],
+            [data-testid="stSliderThumbValue"] p {{
+                color: {color};
+            }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def render_station_page(station_key: str) -> None:
     st.session_state.station_navigation_in_progress = False
     station = STATIONS[station_key]
     station_name = station["name"]
+    active_tab = st.session_state.get("climate_data_tabs", "Temperature")
+    accent_by_tab = {
+        "Temperature": (TEMPERATURE["primary"], 10),
+        "Rainfall": (RAINFALL["primary"], 202),
+        "Air Quality": (AIR_QUALITY["primary"], 153),
+    }
+    accent = accent_by_tab.get(active_tab, accent_by_tab["Temperature"])
+    _render_location_accent(*accent)
 
     back_column, title_column = st.columns([1, 8], vertical_alignment="center")
     with back_column:
@@ -93,7 +184,7 @@ def render_station_page(station_key: str) -> None:
         ozone_data = {"metadata": {}, "data": pd.DataFrame()}
 
     temperature_tab, precipitation_tab, air_quality_tab = st.tabs(
-        ["Temperature", "Precipitation", "Air Quality"],
+        ["Temperature", "Rainfall", "Air Quality"],
         key="climate_data_tabs",
         on_change="rerun",
     )

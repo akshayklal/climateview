@@ -5,14 +5,15 @@ import csv
 import json
 import sys
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Tuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from climateview.aqs_config import AQS_POLLUTANTS as POLLUTANTS
 from climateview.aqs_config import AQS_POLLUTANTS_BY_CODE as POLLUTANTS_BY_CODE
+from aqs_utils import parse_aqs_date, poc_sort_value
 from station_utils import select_stations
 
 
@@ -28,30 +29,6 @@ from station_utils import select_stations
 
 RAW_DATA_DIR = Path("data/raw/aqs")
 PROCESSED_DATA_DIR = Path("data/processed/aqs")
-
-def parse_date(value: object) -> Optional[date]:
-    if value in (None, ""):
-        return None
-
-    text = str(value)
-
-    for date_format in ("%Y-%m-%d", "%Y%m%d"):
-        try:
-            return datetime.strptime(text, date_format).date()
-        except ValueError:
-            continue
-
-    return None
-
-
-def poc_sort_value(value: object) -> Tuple[int, object]:
-    text = str(value or "")
-
-    if text.isdigit():
-        return (0, int(text))
-
-    return (1, text)
-
 
 def active_monitors_ranked(
     monitors: Iterable[Dict],
@@ -144,8 +121,8 @@ def load_monitor_metadata(
         raise ValueError("Monitor metadata is empty: {}".format(path))
 
     for monitor in monitors:
-        monitor["_open_date"] = parse_date(monitor.get("open_date"))
-        monitor["_close_date"] = parse_date(monitor.get("close_date"))
+        monitor["_open_date"] = parse_aqs_date(monitor.get("open_date"))
+        monitor["_close_date"] = parse_aqs_date(monitor.get("close_date"))
 
     return monitors
 
@@ -291,7 +268,7 @@ def process_pollutant(
         if str(row.get("parameter_code", "")) != str(parameter_code):
             continue
 
-        observation_date = parse_date(row.get("date_local"))
+        observation_date = parse_aqs_date(row.get("date_local"))
 
         if observation_date is None:
             continue

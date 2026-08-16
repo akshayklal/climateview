@@ -9,6 +9,11 @@ from climateview.charts import (
     calculate_linear_trend,
     select_referenced_periods,
 )
+from climateview.presentation import (
+    RAINFALL,
+    format_decadal_trend,
+    render_location_summary,
+)
 from climateview.statistics import (
     AnalysisContext,
     DataSchema,
@@ -171,6 +176,7 @@ def build_precipitation_figure(aggregated_data, x_col, x_title):
             x=aggregated_data[x_col],
             y=aggregated_data["total_prcp_in"],
             name="Precipitation",
+            marker_color=RAINFALL["light"],
             hovertemplate=(
                 "%{x}<br>"
                 "Precipitation: %{y:.2f} in"
@@ -188,7 +194,7 @@ def build_precipitation_figure(aggregated_data, x_col, x_title):
                 name=(
                     "Trend"
                 ),
-                line={"dash": "dash"},
+                line={"color": RAINFALL["dark"], "dash": "dash"},
                 hoverinfo="skip",
             )
         )
@@ -381,13 +387,14 @@ def render_precipitation_tab(data, station_name, summary_placeholder=None):
         if precipitation_trend is None:
             summary = "No clear long-term rainfall trend is available."
         else:
-            direction = "increasing" if precipitation_trend > 0 else "decreasing"
-            summary = (
-                f"Rainfall is {direction} by about "
-                f"{abs(precipitation_trend) * 10:.1f} inches per decade since "
-                f"{selected_years[0]}."
+            summary = format_decadal_trend(
+                "Rainfall",
+                precipitation_trend,
+                selected_years[0],
+                " inches",
+                ("is increasing", "is decreasing"),
             )
-        summary_placeholder.markdown(summary)
+        render_location_summary(summary_placeholder, summary)
 
     (
         average_annual_precipitation,
@@ -476,7 +483,9 @@ def render_precipitation_tab(data, station_name, summary_placeholder=None):
         if not highlighted.empty:
             highlighted_indices = set(highlighted.index)
             figure.data[0].marker.color = [
-                HIGHLIGHT_COLOR if index in highlighted_indices else "#636efa"
+                HIGHLIGHT_COLOR
+                if index in highlighted_indices
+                else RAINFALL["light"]
                 for index in aggregated_data.index
             ]
         st.plotly_chart(
