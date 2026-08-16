@@ -15,15 +15,17 @@ Use only the supplied climate or environmental statistics.
 - Use plain language without headings, bullets, markdown, or technical notation.
 - Use chart_context.metric instead of a technical acronym. Avoid terms such as baseline, variability, descriptive statistics, and absolute change; say what changed and which years were compared.
 - For temperature, describe changes in degrees Fahrenheit and never as a percentage.
+- When period_comparison is supplied, use it for the concrete first-versus-latest comparison and clearly identify both periods.
 - Use at most one verified chart_findings observation when it adds useful context.
-- referenced_periods must contain only exact individual periods explicitly mentioned in the response, copied from the analysis; never include ranges. referenced_series must contain the corresponding exact ranked_periods series names.
+- referenced_periods must normally contain exact individual periods explicitly mentioned in the response, copied from the analysis; never include ranges. When the response describes a recent_extremes_cluster, include every verified period in that finding even if the years are not individually listed in the prose. referenced_series must contain the corresponding exact ranked_periods series names.
+- Never enumerate the individual periods in a recent_extremes_cluster in the prose. Describe the cluster naturally using its count and recent_start–recent_end range; keep the exact periods only in referenced_periods for chart highlighting.
 """.strip()
 
 SUMMARY_INSTRUCTIONS = COMMON_INSTRUCTIONS + """
 
 Write three or four short sentences totaling approximately 70 to 110 words for a general audience.
 Lead with the clearest long-term takeaway for the location. Then give one concrete comparison in familiar language. Mention an extreme, seasonal feature, or recent pattern only when it makes the takeaway more useful. Omit secondary statistics and generic caveats.
-Include no more than three referenced_periods.
+Include no more than ten referenced_periods.
 """
 
 QUESTION_INSTRUCTIONS = COMMON_INSTRUCTIONS + """
@@ -110,7 +112,22 @@ def build_summary_payload(result: AnalysisResult) -> dict[str, Any]:
             "statistically_significant": result.trend.statistically_significant,
         }
 
-    if result.recent_change:
+    comparison = result.period_comparison
+    if comparison:
+        period_comparison = {
+            "first_period": comparison.baseline_period,
+            "latest_period": comparison.recent_period,
+            "first_mean": _round(comparison.baseline_mean, 1),
+            "latest_mean": _round(comparison.recent_mean, 1),
+            "absolute_change": _round(comparison.absolute_change, 1),
+        }
+        if "temperature" not in context.metric.lower():
+            period_comparison["percent_change"] = _round(
+                comparison.percent_change,
+                1,
+            )
+        payload["period_comparison"] = period_comparison
+    elif result.recent_change:
         change = result.recent_change
         recent_change = {
             "baseline_period": period(change.baseline_period),

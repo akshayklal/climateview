@@ -49,12 +49,13 @@ def test_decade_payload_explains_period_semantics() -> None:
     assert instructions == SUMMARY_INSTRUCTIONS
     assert "not record endpoints" in instructions
     assert "70 to 110 words" in instructions
-    assert "no more than three referenced_periods" in instructions
+    assert "no more than ten referenced_periods" in instructions
     assert "never as a percentage" in instructions
     assert "2020s are decade buckets" in prompt
     assert "percent_change" not in payload["recent_change"]
     assert "chart_findings" in payload
     assert "Use at most one" in instructions
+    assert "Never enumerate" in instructions
 
     instructions, prompt = build_ai_request(
         analysis,
@@ -70,3 +71,36 @@ def test_decade_payload_explains_period_semantics() -> None:
         ["2020s"],
     )
     assert highlighted["decade"].tolist() == [2020]
+
+
+def test_annual_payload_prioritizes_first_and_latest_ten_years() -> None:
+    dataframe = pd.DataFrame(
+        {
+            "year": range(1980, 2010),
+            "rainfall": [10.0] * 10 + [15.0] * 10 + [12.0] * 10,
+        }
+    )
+    analysis = analyze_series(
+        dataframe=dataframe,
+        context=AnalysisContext(
+            location="Example, NV",
+            metric="precipitation",
+            unit="inches",
+            aggregation="year",
+            start_period=1980,
+            end_period=2009,
+        ),
+        schema=DataSchema(period_column="year", value_column="rainfall"),
+    )
+
+    payload = build_summary_payload(analysis)
+
+    assert payload["period_comparison"] == {
+        "first_period": "1980–1989",
+        "latest_period": "2000–2009",
+        "first_mean": 10.0,
+        "latest_mean": 12.0,
+        "absolute_change": 2.0,
+        "percent_change": 20.0,
+    }
+    assert "recent_change" not in payload

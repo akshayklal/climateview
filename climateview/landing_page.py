@@ -162,7 +162,7 @@ def _open_location(
 
 def _render_map(stations: pd.DataFrame) -> None:
     control_column, legend_column = st.columns(
-        [3, 2], vertical_alignment="center"
+        [2.6, 2.4], vertical_alignment="center"
     )
     with control_column:
         metric_label = st.segmented_control(
@@ -181,7 +181,7 @@ def _render_map(stations: pd.DataFrame) -> None:
         color = ",".join(map(str, metric["color"]))
         st.markdown(
             "<div class='map-legend' style='text-align:right; color:#666; "
-            "font-size:0.9rem;'>"
+            "font-size:1rem;'>"
             f"<span style='color:rgb({color});'>●</span> "
             "Larger circles show greater change · "
             "<span style='font-size:1.25em; font-weight:600;'>↑↓</span> "

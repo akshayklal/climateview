@@ -8,6 +8,7 @@ import pandas as pd
 from .generic import (
     calculate_data_quality,
     calculate_descriptive_statistics,
+    calculate_period_comparison,
     calculate_recent_change_statistics,
     calculate_ranked_extremes,
     calculate_trend_statistics,
@@ -71,6 +72,17 @@ def analyze_series(
         period_column=period_column,
         value_column=value_column,
     )
+    period_comparison = (
+        calculate_period_comparison(
+            prepared,
+            period_column=period_column,
+            value_column=value_column,
+            period_size=10,
+            require_consecutive=True,
+        )
+        if context.aggregation in {"year", "calendar_year", "rain_year"}
+        else None
+    )
 
     primary_ranking = calculate_ranked_extremes(
         prepared, period_column, value_column
@@ -112,6 +124,7 @@ def analyze_series(
         minimum=minimum,
         maximum=maximum,
         recent_change=recent_change,
+        period_comparison=period_comparison,
         rankings=rankings,
         metric_specific=metric_specific,
         noteworthy_findings=noteworthy_findings,
@@ -171,6 +184,10 @@ def _calculate_noteworthy_findings(
                         "direction": direction,
                         "count": count,
                         "ranked_count": ranked_count,
+                        "periods": [
+                            to_python_scalar(period)
+                            for period in ranked_periods
+                        ],
                         "recent_start": to_python_scalar(
                             recent.iloc[0][schema.period_column]
                         ),

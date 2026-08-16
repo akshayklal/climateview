@@ -9,7 +9,7 @@ from climateview.ai.summarizer import (
 )
 
 
-_AI_INSIGHTS_CONTENT_VERSION = 5
+_AI_INSIGHTS_CONTENT_VERSION = 8
 
 
 _AI_INSIGHTS_CSS = """

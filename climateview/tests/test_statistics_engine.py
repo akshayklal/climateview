@@ -119,6 +119,7 @@ def test_analyze_precipitation_series(
     assert any(
         finding["type"] == "recent_extremes_cluster"
         and finding["direction"] == "highest"
+        and finding["periods"] == [2019, 2018, 2017]
         for finding in result.noteworthy_findings
     )
 

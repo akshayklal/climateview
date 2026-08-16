@@ -111,6 +111,7 @@ class AnalysisResult:
     minimum: ExtremeValue
     maximum: ExtremeValue
     recent_change: RecentChangeStatistics | None
+    period_comparison: PeriodComparisonStatistics | None = None
     rankings: dict[str, dict[str, list[ExtremeValue]]] = field(
         default_factory=dict
     )

@@ -31,6 +31,10 @@
     --map-metric-color: var(--air-quality-color);
 }
 
+.map-legend {
+    white-space: nowrap;
+}
+
 .st-key-show_more_patterns button,
 [class*="st-key-pattern_card_"] button {
     height: 175px;

@@ -30,7 +30,10 @@ class AnalysisResponse:
 class _StructuredResponse(BaseModel):
     text: str = Field(description="The text shown to the user.")
     referenced_periods: list[str] = Field(
-        description="Exact individual chart periods mentioned in the text."
+        description=(
+            "Exact chart periods mentioned in the text or supporting a "
+            "described verified cluster."
+        )
     )
     referenced_series: list[str] = Field(
         description="Exact ranked_periods series names used in the text."
