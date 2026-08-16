@@ -21,7 +21,7 @@ from station_utils import select_stations
 # - POCs are not stored in stations.py because EPA may add, retire, or replace them.
 # - This script discovers all POCs dynamically and saves their monitor metadata.
 # - This script downloads all daily rows for all POCs without stitching them.
-# - build-processed-aqs-data.py will later stitch POCs chronologically:
+# - aqs-build-processed-data.py will later stitch POCs chronologically:
 #   the oldest active POC is retained until it closes, with per-day fallback
 #   to the next-oldest active POC when the preferred monitor has no data.
 

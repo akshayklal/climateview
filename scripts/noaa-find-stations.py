@@ -12,13 +12,13 @@ import requests
 # -----------------------------------------------------------------------------
 
 # Refresh the cached NOAA station and inventory metadata files.
-# python3 scripts/find-noaa-stations.py --refresh
+# python3 scripts/noaa-find-stations.py --refresh
 
 # Find Illinois stations using only TMAX and TMIN records.
-# python3 scripts/find-noaa-stations.py --state IL --require-elements TMAX,TMIN
+# python3 scripts/noaa-find-stations.py --state IL --require-elements TMAX,TMIN
 
 # Find currently operating U.S. stations, oldest first.
-# python3 scripts/find-noaa-stations.py --country US --limit 30
+# python3 scripts/noaa-find-stations.py --country US --limit 30
 
 # -----------------------------------------------------------------------------
 

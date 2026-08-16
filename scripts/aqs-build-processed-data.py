@@ -18,7 +18,7 @@ from station_utils import select_stations
 
 # AQS processing architecture:
 # - stations.py stores the selected physical AQS site.
-# - download-aqs.py saves all POCs and all daily summary rows without stitching.
+# - aqs-download.py saves all POCs and all daily summary rows without stitching.
 # - This script ranks active POCs for each date using monitor open/close dates.
 # - The oldest active POC is preferred until it closes.
 # - If the preferred POC has no data on a particular date, the script falls
@@ -133,7 +133,7 @@ def load_monitor_metadata(
 
     if not path.exists():
         raise FileNotFoundError(
-            "Monitor metadata not found: {}. Run download-aqs.py first.".format(
+            "Monitor metadata not found: {}. Run aqs-download.py first.".format(
                 path
             )
         )

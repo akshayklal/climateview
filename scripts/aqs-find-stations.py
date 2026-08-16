@@ -16,8 +16,8 @@ from station_utils import load_stations
 # AQS architecture:
 # - stations.py stores the selected physical AQS site.
 # - POCs are not stored in stations.py because EPA may add, retire, or replace them.
-# - download-aqs.py will discover and download all POCs dynamically.
-# - build-processed-aqs-data.py will later stitch POCs chronologically.
+# - aqs-download.py will discover and download all POCs dynamically.
+# - aqs-build-processed-data.py will later stitch POCs chronologically.
 # - On each date, the oldest POC that is still active is used.
 # - Processing switches to the next-oldest POC when the older monitor closes.
 STATIONS = load_stations()
