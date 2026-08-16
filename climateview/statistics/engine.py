@@ -8,7 +8,6 @@ import pandas as pd
 from .generic import (
     calculate_data_quality,
     calculate_descriptive_statistics,
-    calculate_extremes,
     calculate_recent_change_statistics,
     calculate_ranked_extremes,
     calculate_trend_statistics,
@@ -59,12 +58,6 @@ def analyze_series(
 
     descriptive = calculate_descriptive_statistics(prepared[value_column])
 
-    minimum, maximum = calculate_extremes(
-        dataframe=prepared,
-        period_column=period_column,
-        value_column=value_column,
-    )
-
     variability = calculate_variability_statistics(prepared[value_column])
 
     trend = calculate_trend_statistics(
@@ -79,13 +72,10 @@ def analyze_series(
         value_column=value_column,
     )
 
-    rankings = {
-        context.metric: calculate_ranked_extremes(
-            dataframe=prepared,
-            period_column=period_column,
-            value_column=value_column,
-        )
-    }
+    primary_ranking = calculate_ranked_extremes(
+        prepared, period_column, value_column
+    )
+    rankings = {context.metric: primary_ranking}
     for label, ranking_value_column in schema.ranked_value_columns.items():
         ranking_series = prepare_series(
             dataframe=dataframe,
@@ -97,6 +87,9 @@ def analyze_series(
             period_column=period_column,
             value_column=ranking_value_column,
         )
+
+    minimum = primary_ranking["lowest"][0]
+    maximum = primary_ranking["highest"][0]
 
     metric_specific = _calculate_metric_statistics(
         dataframe=prepared,

@@ -123,8 +123,7 @@ def test_air_quality_requires_two_complete_ten_year_periods(
 
     result = analyze_air_quality(path, "pm25")
 
-    assert result["available"] is False
-    assert result["qualifying_years"] == 19
+    assert result == {"available": False}
 
 
 def test_summary_sentence_omits_unchanged_precipitation() -> None:

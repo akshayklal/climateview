@@ -38,27 +38,20 @@ def test_decade_payload_explains_period_semantics() -> None:
     )
 
     payload = build_summary_payload(analysis)
-    semantics = payload["chart_context"]["period_semantics"]
-
-    assert semantics["period_type"] == "decade_bucket"
-    assert semantics["within_bucket_completeness_known"] is False
-    assert "not the final source-data year" in semantics["label_meaning"]
-    assert "not establish" in payload["data_quality"]["observation_count_scope"]
-    assert "completeness_percent" not in payload["data_quality"]
-    assert payload["data_quality"]["first_period"] == "1940s"
-    assert payload["data_quality"]["last_period"] == "2020s"
+    assert "decade buckets" in payload["chart_context"]["period_note"]
+    assert payload["chart_context"]["data_period"] == ["1940s", "2020s"]
+    assert "data_quality" not in payload
     assert payload["descriptive_statistics"]["minimum"]["period"] == "1980s"
     assert payload["descriptive_statistics"]["maximum"]["period"] == "2020s"
     assert payload["recent_change"]["baseline_period"] == "1940s–1990s"
     assert payload["recent_change"]["recent_period"] == "2000s–2020s"
     instructions, prompt = build_ai_request(analysis)
     assert instructions == SUMMARY_INSTRUCTIONS
-    assert "Do not mention observation counts" in instructions
     assert "not record endpoints" in instructions
     assert "70 to 110 words" in instructions
-    assert "up to three exact individual chart periods" in instructions
+    assert "no more than three referenced_periods" in instructions
     assert "never as a percentage" in instructions
-    assert '"last_period": "2020s"' in prompt
+    assert "2020s are decade buckets" in prompt
     assert "percent_change" not in payload["recent_change"]
     assert "chart_findings" in payload
     assert "Use at most one" in instructions

@@ -34,7 +34,6 @@ class DataSchema:
 class DataQualityStatistics:
     """Describes the valid periods in the selected chart data."""
 
-    observation_count: int
     first_period: PeriodValue
     last_period: PeriodValue
 
@@ -96,7 +95,6 @@ class PeriodComparisonStatistics:
     percent_change: float | None
     baseline_period: str
     recent_period: str
-    period_size: int
 
 
 @dataclass(frozen=True)

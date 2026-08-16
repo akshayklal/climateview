@@ -46,7 +46,6 @@ def _without_derived_changes(result: dict[str, Any]) -> dict[str, Any]:
         if key not in {
             "absolute_change",
             "percent_change",
-            "period_size",
         }
     }
 

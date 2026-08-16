@@ -79,7 +79,6 @@ def calculate_data_quality(
     """Describe the valid, sorted periods in a prepared dataframe."""
 
     return DataQualityStatistics(
-        observation_count=len(dataframe),
         first_period=to_python_scalar(dataframe.iloc[0][period_column]),
         last_period=to_python_scalar(dataframe.iloc[-1][period_column]),
     )
@@ -98,37 +97,6 @@ def calculate_descriptive_statistics(
         raise ValueError("At least one valid numeric value is required.")
 
     return DescriptiveStatistics(mean=float(np.mean(numeric)))
-
-
-def calculate_extremes(
-    dataframe: pd.DataFrame,
-    period_column: str,
-    value_column: str,
-) -> tuple[ExtremeValue, ExtremeValue]:
-    """
-    Return the minimum and maximum observations.
-
-    If multiple periods share the same extreme value, the earliest period is
-    returned because the dataframe is sorted by period first.
-    """
-
-    minimum_index = dataframe[value_column].idxmin()
-    maximum_index = dataframe[value_column].idxmax()
-
-    minimum_row = dataframe.loc[minimum_index]
-    maximum_row = dataframe.loc[maximum_index]
-
-    minimum = ExtremeValue(
-        period=to_python_scalar(minimum_row[period_column]),
-        value=float(minimum_row[value_column]),
-    )
-
-    maximum = ExtremeValue(
-        period=to_python_scalar(maximum_row[period_column]),
-        value=float(maximum_row[value_column]),
-    )
-
-    return minimum, maximum
 
 
 def calculate_ranked_extremes(
@@ -416,7 +384,6 @@ def calculate_period_comparison(
             recent.iloc[0][period_column],
             recent.iloc[-1][period_column],
         ),
-        period_size=period_size,
     )
 
 

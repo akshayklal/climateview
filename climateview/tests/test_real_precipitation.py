@@ -77,7 +77,6 @@ def test_real_los_angeles_precipitation() -> None:
         schema=schema,
     )
 
-    assert result.data_quality.observation_count == 80
     assert result.data_quality.first_period == 1946
     assert result.data_quality.last_period == 2025
 
@@ -95,11 +94,6 @@ def test_real_los_angeles_precipitation() -> None:
     assert result.trend is not None
     assert result.trend.statistically_significant is False
     assert result.trend.direction == "stable"
-
-    assert (
-        result.metric_specific["directionality"]
-        == "context_dependent"
-    )
 
     decadal = result.metric_specific["decadal_analysis"]
 

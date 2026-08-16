@@ -87,7 +87,6 @@ def test_analyze_precipitation_series(
 
     assert result.context == analysis_context
 
-    assert result.data_quality.observation_count == 20
     assert result.data_quality.first_period == 2000
     assert result.data_quality.last_period == 2019
 
@@ -117,7 +116,6 @@ def test_analyze_precipitation_series(
         result.recent_change.baseline_mean
     )
 
-    assert result.metric_specific["directionality"] == "context_dependent"
     assert any(
         finding["type"] == "recent_extremes_cluster"
         and finding["direction"] == "highest"
@@ -191,7 +189,6 @@ def test_rows_with_missing_values_are_removed(
         schema=data_schema,
     )
 
-    assert result.data_quality.observation_count == 3
     assert result.minimum.period == 2000
     assert result.maximum.period == 2003
 

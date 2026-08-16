@@ -36,7 +36,7 @@ def calculate_air_quality_period_statistics(
         period_size=period_size,
     )
     if comparison is None:
-        return {"available": False, "qualifying_years": int(len(annual))}
+        return {"available": False}
 
     return {
         "available": True,

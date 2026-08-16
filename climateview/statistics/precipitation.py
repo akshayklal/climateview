@@ -66,7 +66,6 @@ def calculate_precipitation_statistics(
     mean_value = float(np.mean(values))
 
     result: dict[str, Any] = {
-        "directionality": "context_dependent",
         "consecutive_runs": calculate_precipitation_runs(
             dataframe=dataframe,
             value_column=value_column,
@@ -172,7 +171,6 @@ def calculate_decadal_statistics(
 
         decades.append(
             {
-                "decade_start": decade_start,
                 "label": f"{decade_start}s",
                 "mean": float(row["mean_value"]),
                 "complete": observation_count == expected_count,
@@ -220,12 +218,6 @@ def calculate_monthly_seasonality(
 
     total_monthly_mean = float(monthly["mean_value"].sum())
 
-    if np.isclose(total_monthly_mean, 0.0):
-        concentration_index = None
-    else:
-        shares = monthly["mean_value"] / total_monthly_mean
-        concentration_index = float(np.sum(np.square(shares)))
-
     wettest_row = monthly.loc[monthly["mean_value"].idxmax()]
     driest_row = monthly.loc[monthly["mean_value"].idxmin()]
 
@@ -241,13 +233,6 @@ def calculate_monthly_seasonality(
 
     return {
         "available": True,
-        "monthly_means": [
-            {
-                "month": int(row["_month"]),
-                "mean": float(row["mean_value"]),
-            }
-            for _, row in monthly.iterrows()
-        ],
         "wettest_month": {
             "month": int(wettest_row["_month"]),
             "mean": float(wettest_row["mean_value"]),
@@ -261,7 +246,6 @@ def calculate_monthly_seasonality(
             if top_three_share is not None
             else None
         ),
-        "concentration_index": concentration_index,
         "seasonality_level": _classify_seasonality(top_three_share),
     }
 
