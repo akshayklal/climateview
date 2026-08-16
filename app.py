@@ -347,7 +347,7 @@ else:
     magnitudes = map_stations[metric_column].abs().dropna()
     magnitude_ranks = magnitudes.rank(method="average", pct=True)
     map_stations["marker_radius"] = magnitude_ranks.apply(
-        lambda rank: 6 if rank <= 1 / 3 else 9 if rank <= 2 / 3 else 12
+        lambda rank: 6 if rank <= 1 / 3 else 8 if rank <= 2 / 3 else 10
     ).reindex(map_stations.index, fill_value=6)
     map_stations["marker_color"] = [
         [*metric_config["color"], 220]
@@ -385,7 +385,7 @@ else:
         get_radius="marker_radius",
         radius_units="'pixels'",
         radius_min_pixels=6,
-        radius_max_pixels=13,
+        radius_max_pixels=11,
         line_width_min_pixels=2,
         stroked=True,
         filled=True,
@@ -415,7 +415,7 @@ else:
     view_state = pdk.ViewState(
         latitude=39.8283,
         longitude=-98.5795,
-        zoom=3.65,
+        zoom=3.0,
         pitch=0,
     )
 
@@ -447,7 +447,7 @@ else:
         on_select="rerun",
         selection_mode="single-object",
         width="stretch",
-        height=630,
+        height=425,
     )
 
     # Handle map selection
