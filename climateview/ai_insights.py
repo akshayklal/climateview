@@ -15,13 +15,11 @@ _AI_INSIGHTS_CONTENT_VERSION = 5
 _AI_INSIGHTS_CSS = """
 <style>
 .ai-insights-response {
-    box-sizing: border-box;
     height: 5.4rem;
     line-height: 1.35rem;
     overflow-y: scroll;
     overflow-x: hidden;
     padding: 0 0.35rem 0 0;
-    margin: 0;
     scrollbar-gutter: stable;
     scrollbar-width: thin;
     scrollbar-color:
@@ -31,7 +29,6 @@ _AI_INSIGHTS_CSS = """
 
 .ai-insights-response::-webkit-scrollbar {
     width: 8px;
-    display: block;
 }
 
 .ai-insights-response::-webkit-scrollbar-track {

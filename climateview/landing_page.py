@@ -25,7 +25,6 @@ def _render_styles() -> None:
         """
         <style>
             .hero-panel {
-                box-sizing: border-box;
                 margin-bottom: 1rem;
                 padding: 1.5rem;
                 border: 1px solid rgba(49, 51, 63, 0.2);
@@ -33,23 +32,26 @@ def _render_styles() -> None:
                 border-radius: 0.75rem;
             }
 
-            .st-key-show_more_patterns button {
+            .st-key-show_more_patterns button,
+            [class*="st-key-pattern_card_"] button {
                 height: 175px;
+            }
+
+            .st-key-show_more_patterns button {
                 border-top: 4px solid rgba(49, 51, 63, 0.2);
             }
 
-            .st-key-show_more_patterns button p {
+            .st-key-show_more_patterns button p,
+            [class*="st-key-pattern_card_"] button p strong {
                 font-size: 1.5rem;
                 font-weight: 600;
                 line-height: 1.2;
             }
 
             [class*="st-key-pattern_card_"] button {
-                height: 175px;
                 padding: 1.25rem;
                 align-items: flex-start;
                 justify-content: flex-start;
-                text-align: left;
             }
 
             .st-key-show_more_patterns button,
@@ -76,9 +78,6 @@ def _render_styles() -> None:
             [class*="st-key-pattern_card_"] button p strong {
                 display: block;
                 margin-bottom: 1.15rem;
-                font-size: 1.5rem;
-                font-weight: 600;
-                line-height: 1.2;
             }
 
             [class*="st-key-pattern_card_"][class*="_temperature"] button {
