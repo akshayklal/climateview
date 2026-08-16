@@ -257,7 +257,7 @@ def render_temperature_table(aggregated_data, aggregation):
     st.dataframe(display_data, width="stretch", hide_index=True)
 
 
-def render_temperature_tab(data, station_name):
+def render_temperature_tab(data, station_name, summary_placeholder=None):
     if data is None or data.empty:
         st.warning("No temperature data is available for this station.")
         return
@@ -365,9 +365,22 @@ def render_temperature_tab(data, station_name):
         aggregated_data, x_col, x_title
     )
 
-    years_included = filtered_data["year"].nunique()
+    if summary_placeholder is not None:
+        if max_trend is None or min_trend is None:
+            summary = "No clear long-term temperature trend is available."
+        else:
+            nighttime_leads = abs(min_trend) >= abs(max_trend)
+            trend = min_trend if nighttime_leads else max_trend
+            period = "Nighttime" if nighttime_leads else "Daytime"
+            direction = "warming" if trend > 0 else "cooling"
+            summary = (
+                f"{period} temperatures are {direction} fastest, changing "
+                f"about {abs(trend) * 10:.1f}°F per decade since "
+                f"{selected_years[0]}."
+            )
+        summary_placeholder.markdown(summary)
 
-    metric1, metric2, metric3, metric4 = st.columns(4)
+    metric1, metric2 = st.columns(2)
 
     metric1.metric(
         "Maximum-temperature trend",
@@ -386,9 +399,6 @@ def render_temperature_tab(data, station_name):
             else "Insufficient data"
         ),
     )
-
-    metric3.metric("Selected Date Range", f"{selected_years[0]}–{selected_years[1]}")
-    metric4.metric("Years included", f"{years_included}")
 
     analysis_data = aggregated_data.copy()
     analysis_data["avg_temperature_f"] = (

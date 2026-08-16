@@ -310,6 +310,7 @@ def _render_pollutant_section(
     pm25_data: dict,
     ozone_data: dict,
     station_name: str,
+    summary_placeholder=None,
 ) -> None:
     control_columns = st.columns(
         [2.5, 1.5, 5.0], vertical_alignment="bottom"
@@ -401,6 +402,18 @@ def _render_pollutant_section(
         x_title=x_title,
         unhealthy_days=unhealthy_days,
     )
+
+    if summary_placeholder is not None:
+        if trend is None:
+            summary = f"No clear long-term {config['label'].lower()} trend is available."
+        else:
+            direction = "improving" if trend < 0 else "worsening"
+            summary = (
+                f"{config['label']} is {direction}, changing about "
+                f"{abs(trend) * 10:.1f} {config['unit']} per decade since "
+                f"{selected_years[0]}."
+            )
+        summary_placeholder.markdown(summary)
     uses_secondary_axis = "yaxis2" in figure.layout
 
     unit = config["unit"]
@@ -530,7 +543,12 @@ def _render_pollutant_section(
 
 
 def render_air_quality_tab(
-    pm25_data: dict, ozone_data: dict, station_name: str
+    pm25_data: dict,
+    ozone_data: dict,
+    station_name: str,
+    summary_placeholder=None,
 ) -> None:
     """Render the Air Quality tab for one ClimateView station."""
-    _render_pollutant_section(pm25_data, ozone_data, station_name)
+    _render_pollutant_section(
+        pm25_data, ozone_data, station_name, summary_placeholder
+    )

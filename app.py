@@ -79,6 +79,7 @@ def render_station_page(station_key: str) -> None:
             st.rerun()
     with title_column:
         st.markdown(f"## {station_name}")
+        summary_placeholder = st.empty()
 
     noaa_station_id = station["noaa_station_id"]
     temperature_data = load_temperature_data(noaa_station_id)
@@ -98,13 +99,19 @@ def render_station_page(station_key: str) -> None:
     )
     if temperature_tab.open:
         with temperature_tab:
-            render_temperature_tab(temperature_data, station_name)
+            render_temperature_tab(
+                temperature_data, station_name, summary_placeholder
+            )
     elif precipitation_tab.open:
         with precipitation_tab:
-            render_precipitation_tab(precipitation_data, station_name)
+            render_precipitation_tab(
+                precipitation_data, station_name, summary_placeholder
+            )
     elif air_quality_tab.open:
         with air_quality_tab:
-            render_air_quality_tab(pm25_data, ozone_data, station_name)
+            render_air_quality_tab(
+                pm25_data, ozone_data, station_name, summary_placeholder
+            )
 
 
 selected_station = st.session_state.selected_station

@@ -291,7 +291,7 @@ def render_precipitation_table(
     st.dataframe(display_data, width="stretch", hide_index=True)
 
 
-def render_precipitation_tab(data, station_name):
+def render_precipitation_tab(data, station_name, summary_placeholder=None):
     if data is None or data.empty:
         st.warning("No precipitation data is available for this station.")
         return
@@ -376,6 +376,18 @@ def render_precipitation_tab(data, station_name):
     figure, precipitation_trend = build_precipitation_figure(
         aggregated_data, x_col, x_title
     )
+
+    if summary_placeholder is not None:
+        if precipitation_trend is None:
+            summary = "No clear long-term rainfall trend is available."
+        else:
+            direction = "increasing" if precipitation_trend > 0 else "decreasing"
+            summary = (
+                f"Rainfall is {direction} by about "
+                f"{abs(precipitation_trend) * 10:.1f} inches per decade since "
+                f"{selected_years[0]}."
+            )
+        summary_placeholder.markdown(summary)
 
     (
         average_annual_precipitation,
