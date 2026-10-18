@@ -6,6 +6,7 @@ from typing import Any
 import pandas as pd
 
 from climateview.aqs_config import AQS_POLLUTANTS
+from climateview.seasons import get_station_seasons
 from climateview.statistics.air_quality import (
     calculate_air_quality_period_statistics,
 )
@@ -23,8 +24,10 @@ def _read_csv(path: Path) -> pd.DataFrame:
     return pd.read_csv(path, parse_dates=["date"])
 
 
-def analyze_temperature(path: Path) -> dict[str, Any]:
-    return calculate_temperature_period_statistics(_read_csv(path))
+def analyze_temperature(path: Path, *, season_months=None) -> dict[str, Any]:
+    return calculate_temperature_period_statistics(
+        _read_csv(path), season_months=season_months
+    )
 
 
 def analyze_precipitation(path: Path) -> dict[str, Any]:
@@ -278,7 +281,8 @@ def build_location_summary(
     temperature = analyze_temperature(
         processed_dir
         / "noaa-temperature"
-        / f"{noaa_id}_daily_temperature.csv"
+        / f"{noaa_id}_daily_temperature.csv",
+        season_months=get_station_seasons(station),
     )
     precipitation = analyze_precipitation(
         processed_dir

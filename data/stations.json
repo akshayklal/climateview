@@ -7,7 +7,8 @@
     "noaa_start_year": 1945,
     "aqs_site_id": "06-075-0005",
     "aqs_site_name": "San Francisco",
-    "aqs_distance_km": 16.5
+    "aqs_distance_km": 16.5,
+    "season_profile": "northern"
   },
   "new_york_central_park": {
     "name": "New York Central Park, NY",
@@ -17,7 +18,8 @@
     "noaa_start_year": 1869,
     "aqs_site_id": "36-005-0110",
     "aqs_site_name": "IS 52",
-    "aqs_distance_km": 6.5
+    "aqs_distance_km": 6.5,
+    "season_profile": "northern"
   },
   "chicago_midway": {
     "name": "Chicago Midway AP 3SW, IL",
@@ -27,7 +29,8 @@
     "noaa_start_year": 1927,
     "aqs_site_id": "17-031-4201",
     "aqs_site_name": "NORTHBROOK WATER PLANT",
-    "aqs_distance_km": 44.8
+    "aqs_distance_km": 44.8,
+    "season_profile": "northern"
   },
   "seattle_tacoma": {
     "name": "Seattle-Tacoma, WA",
@@ -37,7 +40,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "53-033-0080",
     "aqs_site_name": "SEATTLE - BEACON HILL",
-    "aqs_distance_km": 13.8
+    "aqs_distance_km": 13.8,
+    "season_profile": "northern"
   },
   "los_angeles_usc": {
     "name": "Los Angeles Downtown / USC, CA",
@@ -47,7 +51,8 @@
     "noaa_start_year": 1944,
     "aqs_site_id": "06-037-1103",
     "aqs_site_name": "Los Angeles-North Main Street",
-    "aqs_distance_km": 7.2
+    "aqs_distance_km": 7.2,
+    "season_profile": "northern"
   },
   "phoenix_sky_harbor": {
     "name": "Phoenix Sky Harbor, AZ",
@@ -57,7 +62,8 @@
     "noaa_start_year": 1933,
     "aqs_site_id": "04-013-9997",
     "aqs_site_name": "JLG SUPERSITE",
-    "aqs_distance_km": 12.4
+    "aqs_distance_km": 12.4,
+    "season_profile": "northern"
   },
   "denver": {
     "name": "Denver, CO",
@@ -67,7 +73,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "08-031-0002",
     "aqs_site_name": "DENVER - CAMP",
-    "aqs_distance_km": 29.6
+    "aqs_distance_km": 29.6,
+    "season_profile": "northern"
   },
   "houston_intercontinental": {
     "name": "Houston Intercontinental, TX",
@@ -77,7 +84,8 @@
     "noaa_start_year": 1969,
     "aqs_site_id": "48-201-0024",
     "aqs_site_name": "Houston Aldine",
-    "aqs_distance_km": 8.9
+    "aqs_distance_km": 8.9,
+    "season_profile": "northern"
   },
   "st_louis_st_charles": {
     "name": "St. Louis / St. Charles, MO",
@@ -87,7 +95,8 @@
     "noaa_start_year": 1893,
     "aqs_site_id": "17-119-3007",
     "aqs_site_name": "WATER PLANT",
-    "aqs_distance_km": 35.7
+    "aqs_distance_km": 35.7,
+    "season_profile": "northern"
   },
   "washington_reagan": {
     "name": "Washington Reagan National, DC",
@@ -97,7 +106,8 @@
     "noaa_start_year": 1941,
     "aqs_site_id": "51-013-0020",
     "aqs_site_name": "Aurora Hills Visitors Center",
-    "aqs_distance_km": 2.4
+    "aqs_distance_km": 2.4,
+    "season_profile": "northern"
   },
   "atlanta_hartsfield": {
     "name": "Atlanta Hartsfield-Jackson, GA",
@@ -107,7 +117,8 @@
     "noaa_start_year": 1930,
     "aqs_site_id": "13-089-0002",
     "aqs_site_name": "South DeKalb",
-    "aqs_distance_km": 15.5
+    "aqs_distance_km": 15.5,
+    "season_profile": "northern"
   },
   "miami_international": {
     "name": "Miami International, FL",
@@ -117,7 +128,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "12-011-0034",
     "aqs_site_name": "Daniela Banu NCORE",
-    "aqs_distance_km": 30.2
+    "aqs_distance_km": 30.2,
+    "season_profile": "northern"
   },
   "new_orleans_audubon": {
     "name": "New Orleans Audubon, LA",
@@ -127,7 +139,8 @@
     "noaa_start_year": 1893,
     "aqs_site_id": "22-051-1001",
     "aqs_site_name": "Kenner",
-    "aqs_distance_km": 19.5
+    "aqs_distance_km": 19.5,
+    "season_profile": "northern"
   },
   "minneapolis_st_paul": {
     "name": "Minneapolis-St. Paul International, MN",
@@ -137,7 +150,8 @@
     "noaa_start_year": 1938,
     "aqs_site_id": "27-139-0505",
     "aqs_site_name": "B.F. Pearson School",
-    "aqs_distance_km": 24.5
+    "aqs_distance_km": 24.5,
+    "season_profile": "northern"
   },
   "boise_air_terminal": {
     "name": "Boise Air Terminal, ID",
@@ -147,7 +161,8 @@
     "noaa_start_year": 1940,
     "aqs_site_id": "16-001-0010",
     "aqs_site_name": "Meridian - St. Luke's",
-    "aqs_distance_km": 9.4
+    "aqs_distance_km": 9.4,
+    "season_profile": "northern"
   },
   "albuquerque_international": {
     "name": "Albuquerque International, NM",
@@ -157,7 +172,8 @@
     "noaa_start_year": 1931,
     "aqs_site_id": "35-001-0023",
     "aqs_site_name": "DEL NORTE HIGH SCHOOL",
-    "aqs_distance_km": 10.6
+    "aqs_distance_km": 10.6,
+    "season_profile": "northern"
   },
   "dallas_faa": {
     "name": "Dallas FAA Airport, TX",
@@ -167,7 +183,8 @@
     "noaa_start_year": 1939,
     "aqs_site_id": "48-113-0069",
     "aqs_site_name": "Dallas Hinton",
-    "aqs_distance_km": 3.0
+    "aqs_distance_km": 3.0,
+    "season_profile": "northern"
   },
   "nashville_international": {
     "name": "Nashville International, TN",
@@ -177,7 +194,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "47-165-0007",
     "aqs_site_name": "Hendersonville",
-    "aqs_distance_km": 21.0
+    "aqs_distance_km": 21.0,
+    "season_profile": "northern"
   },
   "charlotte_douglas": {
     "name": "Charlotte Douglas International, NC",
@@ -187,7 +205,8 @@
     "noaa_start_year": 1939,
     "aqs_site_id": "37-119-0041",
     "aqs_site_name": "Garinger High School",
-    "aqs_distance_km": 15.4
+    "aqs_distance_km": 15.4,
+    "season_profile": "northern"
   },
   "boston_logan": {
     "name": "Boston Logan International, MA",
@@ -197,7 +216,8 @@
     "noaa_start_year": 1936,
     "aqs_site_id": "25-025-0042",
     "aqs_site_name": "DUDLEY SQUARE ROXBURY",
-    "aqs_distance_km": 6.9
+    "aqs_distance_km": 6.9,
+    "season_profile": "northern"
   },
   "oklahoma_city_will_rogers": {
     "name": "Oklahoma City Will Rogers, OK",
@@ -207,7 +227,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "40-109-1037",
     "aqs_site_name": "OKC NORTH",
-    "aqs_distance_km": 27.6
+    "aqs_distance_km": 27.6,
+    "season_profile": "northern"
   },
   "wichita_eisenhower": {
     "name": "Wichita Eisenhower Airport, KS",
@@ -217,7 +238,8 @@
     "noaa_start_year": 1953,
     "aqs_site_id": "20-173-0010",
     "aqs_site_name": "WICHITA HD",
-    "aqs_distance_km": 12.5
+    "aqs_distance_km": 12.5,
+    "season_profile": "northern"
   },
   "reno_airport": {
     "name": "Reno Airport, NV",
@@ -227,7 +249,8 @@
     "noaa_start_year": 1937,
     "aqs_site_id": "32-031-1005",
     "aqs_site_name": "Sparks",
-    "aqs_distance_km": 4.1
+    "aqs_distance_km": 4.1,
+    "season_profile": "northern"
   },
   "salt_lake_city": {
     "name": "Salt Lake City International, UT",
@@ -237,7 +260,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "49-035-3006",
     "aqs_site_name": "Hawthorne",
-    "aqs_distance_km": 8.7
+    "aqs_distance_km": 8.7,
+    "season_profile": "northern"
   },
   "omaha_eppley": {
     "name": "Omaha Eppley Airfield, NE",
@@ -247,7 +271,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "31-055-0019",
     "aqs_site_name": "4102 Woolworth Ave.",
-    "aqs_distance_km": 9.3
+    "aqs_distance_km": 9.3,
+    "season_profile": "northern"
   },
   "las_vegas_mccarran": {
     "name": "Las Vegas / Harry Reid International, NV",
@@ -257,7 +282,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "32-003-1019",
     "aqs_site_name": "Jean",
-    "aqs_distance_km": 36.3
+    "aqs_distance_km": 36.3,
+    "season_profile": "northern"
   },
   "midland_odessa": {
     "name": "Midland / Odessa, TX",
@@ -267,7 +293,8 @@
     "noaa_start_year": 1930,
     "aqs_site_id": "35-025-0008",
     "aqs_site_name": "5ZS Hobbs Jefferson",
-    "aqs_distance_km": 123.6
+    "aqs_distance_km": 123.6,
+    "season_profile": "northern"
   },
   "jackson_international": {
     "name": "Jackson International, MS",
@@ -277,7 +304,8 @@
     "noaa_start_year": 1963,
     "aqs_site_id": "28-049-0020",
     "aqs_site_name": "Jackson NCORE",
-    "aqs_distance_km": 9.9
+    "aqs_distance_km": 9.9,
+    "season_profile": "northern"
   },
   "little_rock_adams": {
     "name": "Little Rock Adams Field, AR",
@@ -287,7 +315,8 @@
     "noaa_start_year": 1938,
     "aqs_site_id": "05-119-0007",
     "aqs_site_name": "PARR",
-    "aqs_distance_km": 5.3
+    "aqs_distance_km": 5.3,
+    "season_profile": "northern"
   },
   "eugene_airport": {
     "name": "Eugene Airport, OR",
@@ -297,7 +326,8 @@
     "noaa_start_year": 1938,
     "aqs_site_id": "41-039-0060",
     "aqs_site_name": "Eugene - Amazon Park",
-    "aqs_distance_km": 15.9
+    "aqs_distance_km": 15.9,
+    "season_profile": "northern"
   },
   "cheyenne": {
     "name": "Cheyenne, WY",
@@ -307,7 +337,8 @@
     "noaa_start_year": 1915,
     "aqs_site_id": "56-021-0100",
     "aqs_site_name": "Cheyenne NCore",
-    "aqs_distance_km": 4.1
+    "aqs_distance_km": 4.1,
+    "season_profile": "northern"
   },
   "missoula_international": {
     "name": "Missoula International, MT",
@@ -317,7 +348,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "30-063-0024",
     "aqs_site_name": "Missoula Boyd Park",
-    "aqs_distance_km": 10.3
+    "aqs_distance_km": 10.3,
+    "season_profile": "northern"
   },
   "fargo_hector": {
     "name": "Fargo Hector International, ND",
@@ -327,7 +359,8 @@
     "noaa_start_year": 1891,
     "aqs_site_id": "38-017-1004",
     "aqs_site_name": "Fargo NW",
-    "aqs_distance_km": 3.5
+    "aqs_distance_km": 3.5,
+    "season_profile": "northern"
   },
   "hot_springs": {
     "name": "Hot Springs, SD",
@@ -337,7 +370,8 @@
     "noaa_start_year": 1894,
     "aqs_site_id": "46-033-0132",
     "aqs_site_name": "Wind Cave",
-    "aqs_distance_km": 13.3
+    "aqs_distance_km": 13.3,
+    "season_profile": "northern"
   },
   "green_bay": {
     "name": "Green Bay, WI",
@@ -347,7 +381,8 @@
     "noaa_start_year": 1886,
     "aqs_site_id": "55-087-0009",
     "aqs_site_name": "Appleton - AAL",
-    "aqs_distance_km": 31.0
+    "aqs_distance_km": 31.0,
+    "season_profile": "northern"
   },
   "detroit_metro": {
     "name": "Detroit Metro Airport, MI",
@@ -357,7 +392,8 @@
     "noaa_start_year": 1959,
     "aqs_site_id": "26-125-0001",
     "aqs_site_name": "Oak Park",
-    "aqs_distance_km": 28.5
+    "aqs_distance_km": 28.5,
+    "season_profile": "northern"
   },
   "south_bend": {
     "name": "South Bend International, IN",
@@ -367,7 +403,8 @@
     "noaa_start_year": 1893,
     "aqs_site_id": "18-141-0015",
     "aqs_site_name": "South Bend - Shields Drive",
-    "aqs_distance_km": 8.5
+    "aqs_distance_km": 8.5,
+    "season_profile": "northern"
   },
   "bowling_green": {
     "name": "Bowling Green, OH",
@@ -377,7 +414,8 @@
     "noaa_start_year": 1893,
     "aqs_site_id": "39-095-0024",
     "aqs_site_name": "Erie",
-    "aqs_distance_km": 31.3
+    "aqs_distance_km": 31.3,
+    "season_profile": "northern"
   },
   "pittsburgh_allegheny": {
     "name": "Pittsburgh International, PA",
@@ -387,7 +425,8 @@
     "noaa_start_year": 1948,
     "aqs_site_id": "42-125-5001",
     "aqs_site_name": "Florence",
-    "aqs_distance_km": 18.0
+    "aqs_distance_km": 18.0,
+    "season_profile": "northern"
   },
   "lexington_bluegrass": {
     "name": "Lexington Blue Grass Airport, KY",
@@ -397,7 +436,8 @@
     "noaa_start_year": 1872,
     "aqs_site_id": "21-067-0012",
     "aqs_site_name": "Lexington Primary",
-    "aqs_distance_km": 10.5
+    "aqs_distance_km": 10.5,
+    "season_profile": "northern"
   },
   "morgantown": {
     "name": "Morgantown, WV",
@@ -407,7 +447,8 @@
     "noaa_start_year": 1944,
     "aqs_site_id": "54-061-0003",
     "aqs_site_name": "Morgantown",
-    "aqs_distance_km": 5.0
+    "aqs_distance_km": 5.0,
+    "season_profile": "northern"
   },
   "albany_international": {
     "name": "Albany International Airport, NY",
@@ -417,6 +458,7 @@
     "noaa_start_year": 1938,
     "aqs_site_id": "36-001-0012",
     "aqs_site_name": "Loudonville",
-    "aqs_distance_km": 8.1
+    "aqs_distance_km": 8.1,
+    "season_profile": "northern"
   }
 }

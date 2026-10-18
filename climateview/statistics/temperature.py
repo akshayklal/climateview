@@ -4,6 +4,8 @@ from typing import Any
 
 import pandas as pd
 
+from climateview.seasons import NORTHERN_SEASONS, minimum_season_days
+
 from .generic import calculate_period_comparison
 from .preprocessing import (
     aggregate_complete_years,
@@ -12,27 +14,12 @@ from .preprocessing import (
 )
 
 
-SEASONS = {
-    12: "winter",
-    1: "winter",
-    2: "winter",
-    3: "spring",
-    4: "spring",
-    5: "spring",
-    6: "summer",
-    7: "summer",
-    8: "summer",
-    9: "fall",
-    10: "fall",
-    11: "fall",
-}
-
-
 def calculate_temperature_period_statistics(
     data: pd.DataFrame,
     *,
     period_size: int = 10,
     minimum_days_per_year: int = 300,
+    season_months=None,
 ) -> dict[str, Any]:
     """Compare annual and seasonal temperature in the first/latest periods."""
     working = prepare_daily_data(data, ["tmax_f", "tmin_f"])
@@ -60,6 +47,7 @@ def calculate_temperature_period_statistics(
         baseline_years=set(range(baseline_start, baseline_start + period_size)),
         recent_years=set(range(recent_start, recent_start + period_size)),
         overall_change=comparison.absolute_change,
+        season_months=season_months,
     )
     result = {
         "available": True,
@@ -79,10 +67,19 @@ def calculate_strongest_seasonal_temperature_change(
     baseline_years: set[int],
     recent_years: set[int],
     overall_change: float,
+    season_months=None,
 ) -> dict[str, Any] | None:
     """Find the seasonal daytime/nighttime change leading the overall move."""
+    seasons = NORTHERN_SEASONS if season_months is None else season_months
+    if not seasons:
+        return None
+    month_labels = {
+        month: label.lower() for label, months in seasons.items() for month in months
+    }
     seasonal = data.copy()
-    seasonal["season"] = seasonal["date"].dt.month.map(SEASONS)
+    seasonal["season"] = seasonal["date"].dt.month.map(month_labels)
+    # Preserve calendar-year grouping for first/latest-period comparisons.
+    # Interactive charts separately group cross-year seasons by their ending year.
     yearly = (
         seasonal.groupby(["year", "season"], as_index=False)
         .agg(
@@ -91,11 +88,13 @@ def calculate_strongest_seasonal_temperature_change(
             days=("date", "count"),
         )
     )
-    yearly = yearly[yearly["days"] >= 60]
-
     candidates = []
-    for season in ("winter", "spring", "summer", "fall"):
-        rows = yearly[yearly["season"] == season]
+    for label, months in seasons.items():
+        season = label.lower()
+        rows = yearly[
+            (yearly["season"] == season)
+            & (yearly["days"] >= minimum_season_days(months))
+        ]
         baseline = rows[rows["year"].isin(baseline_years)]
         recent = rows[rows["year"].isin(recent_years)]
         if len(baseline) < 8 or len(recent) < 8:

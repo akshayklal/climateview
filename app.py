@@ -13,6 +13,7 @@ from climateview.landing_page import render_landing_page
 from climateview.presentation import AIR_QUALITY, RAINFALL, TEMPERATURE
 from climateview.precipitation import render_precipitation_tab
 from climateview.stations import STATIONS
+from climateview.seasons import get_station_seasons
 from climateview.temperature import render_temperature_tab
 
 
@@ -191,7 +192,8 @@ def render_station_page(station_key: str) -> None:
     if temperature_tab.open:
         with temperature_tab:
             render_temperature_tab(
-                temperature_data, station_name, summary_placeholder
+                temperature_data, station_name, summary_placeholder,
+                season_months=get_station_seasons(station),
             )
     elif precipitation_tab.open:
         with precipitation_tab:

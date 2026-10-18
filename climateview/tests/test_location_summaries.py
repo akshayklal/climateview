@@ -16,6 +16,7 @@ from climateview.location_summaries import (
     build_map_metrics,
 )
 from climateview.statistics.models import TrendStatistics
+from climateview.seasons import get_station_seasons
 
 
 def _write_temperature(path: Path) -> None:
@@ -90,6 +91,21 @@ def test_temperature_support_requires_matching_trend_direction(
     assert (
         result["strongest_seasonal_change"]["trend_supported"] is False
     )
+
+
+def test_location_seasons_relabel_summary_and_patterns(tmp_path: Path) -> None:
+    path = tmp_path / "temperature.csv"
+    _write_temperature(path)
+    southern = analyze_temperature(
+        path, season_months=get_station_seasons({"season_profile": "southern"})
+    )
+    assert southern["strongest_seasonal_change"]["season"] == "winter"
+    assert "winter nights" in _temperature_sentence(southern)
+
+    no_seasons = analyze_temperature(path, season_months={})
+    assert no_seasons["available"] is True
+    assert no_seasons["absolute_change"] == southern["absolute_change"]
+    assert "strongest_seasonal_change" not in no_seasons
 
 
 def test_precipitation_summary_marks_clear_change_as_significant(

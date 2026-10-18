@@ -11,6 +11,7 @@ import streamlit as st
 from climateview.aqs_config import AQS_POLLUTANTS
 from climateview.presentation import AIR_QUALITY, RAINFALL, TEMPERATURE, as_rgb
 from climateview.stations import STATIONS
+from climateview.seasons import get_station_seasons, normalize_season
 
 
 MAP_METRICS = {
@@ -152,7 +153,7 @@ def _open_location(
         ]
     if tab == "Temperature":
         st.session_state.temperature_season = (
-            season.title() if season else "All year"
+            normalize_season(season, get_station_seasons(STATIONS[station_key]))
         )
         st.session_state.temperature_aggregation = "Year"
     st.session_state.station_navigation_in_progress = True

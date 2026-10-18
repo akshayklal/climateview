@@ -3,6 +3,12 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from climateview.ai_insights import render_ai_insights
+from climateview.seasons import (
+    NORTHERN_SEASONS,
+    minimum_season_days,
+    normalize_season,
+    rollover_months,
+)
 from climateview.charts import (
     HIGHLIGHT_COLOR,
     apply_standard_layout,
@@ -28,25 +34,21 @@ TEMPERATURE_TABLE_PERIODS = {
     "Decade": ("decade", "Decade"),
 }
 
-TEMPERATURE_SEASON_MONTHS = {
-    "Winter": {12, 1, 2},
-    "Spring": {3, 4, 5},
-    "Summer": {6, 7, 8},
-    "Fall": {9, 10, 11},
-}
-
-
-def filter_temperature_season(data: pd.DataFrame, season: str) -> pd.DataFrame:
+def filter_temperature_season(
+    data: pd.DataFrame, season: str, *, season_months=None,
+) -> pd.DataFrame:
     if season == "All year":
         return data.copy()
 
-    months = TEMPERATURE_SEASON_MONTHS[season]
+    seasons = NORTHERN_SEASONS if season_months is None else season_months
+    months = seasons[season]
     filtered = data[data["date"].dt.month.isin(months)].copy()
 
-    # Treat December as part of the winter ending the following year.
-    if season == "Winter":
+    # E.g. December belongs to the following northern winter/southern summer.
+    previous_year_months = rollover_months(months)
+    if previous_year_months:
         filtered["year"] = filtered["date"].dt.year + (
-            filtered["date"].dt.month == 12
+            filtered["date"].dt.month.isin(previous_year_months)
         ).astype(int)
         filtered["decade"] = (filtered["year"] // 10) * 10
 
@@ -266,7 +268,10 @@ def render_temperature_table(aggregated_data, aggregation):
     st.dataframe(display_data, width="stretch", hide_index=True)
 
 
-def render_temperature_tab(data, station_name, summary_placeholder=None):
+def render_temperature_tab(
+    data, station_name, summary_placeholder=None, *, season_months=None,
+):
+    seasons = NORTHERN_SEASONS if season_months is None else season_months
     if data is None or data.empty:
         st.warning("No temperature data is available for this station.")
         return
@@ -311,9 +316,20 @@ def render_temperature_tab(data, station_name, summary_placeholder=None):
         min_year = int(complete_years.min())
         max_year = int(complete_years.max())
 
-    aggregation_col, season_col, range_col = st.columns(
-        [1.4, 2.6, 4.0], vertical_alignment="bottom"
-    )
+    if seasons:
+        aggregation_col, season_col, range_col = st.columns(
+            [1.4, 2.6, 4.0], vertical_alignment="bottom"
+        )
+    else:
+        aggregation_col, range_col = st.columns(
+            [1.4, 6.6], vertical_alignment="bottom"
+        )
+
+    if "temperature_season" in st.session_state:
+        current = st.session_state.temperature_season
+        valid = normalize_season(current, seasons)
+        if current != valid:
+            st.session_state.temperature_season = valid
 
     with aggregation_col:
         aggregation = st.segmented_control(
@@ -331,17 +347,19 @@ def render_temperature_tab(data, station_name, summary_placeholder=None):
     if aggregation is None:
         aggregation = "Year"
 
-    with season_col:
-        season = st.segmented_control(
-            "Season",
-            options=["All year", "Winter", "Spring", "Summer", "Fall"],
-            default=(
-                None
-                if "temperature_season" in st.session_state
-                else "All year"
-            ),
-            key="temperature_season",
-        )
+    season = "All year"
+    if seasons:
+        with season_col:
+            season = st.segmented_control(
+                "Season",
+                options=["All year", *seasons],
+                default=(
+                    None
+                    if "temperature_season" in st.session_state
+                    else "All year"
+                ),
+                key="temperature_season",
+            )
 
     if season is None:
         season = "All year"
@@ -352,7 +370,7 @@ def render_temperature_tab(data, station_name, summary_placeholder=None):
             key="temperature_period",
         )
 
-    seasonal_data = filter_temperature_season(data, season)
+    seasonal_data = filter_temperature_season(data, season, season_months=seasons)
     filtered_data = seasonal_data[
         seasonal_data["year"].between(*selected_years)
     ].copy()
@@ -360,7 +378,9 @@ def render_temperature_tab(data, station_name, summary_placeholder=None):
     aggregated_data, x_col, x_title = build_temperature_aggregation(
         filtered_data,
         aggregation,
-        minimum_days_per_year=300 if season == "All year" else 60,
+        minimum_days_per_year=(
+            300 if season == "All year" else minimum_season_days(seasons[season])
+        ),
     )
 
     if aggregated_data.empty:
