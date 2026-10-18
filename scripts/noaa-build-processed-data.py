@@ -45,6 +45,26 @@ def _records_to_dataframe(
     )
 
 
+def apply_data_exclusions(data: pd.DataFrame, station_id: str) -> pd.DataFrame:
+    """Mark known invalid observations as missing without changing raw files."""
+    data = data.copy()
+
+    # Known invalid observations: add future exclusions here, documenting the
+    # station, inclusive date range, affected measurements, and reason. Keep
+    # dates and unrelated measurements intact; never replace missing data with 0.
+    # St. Louis / St. Charles: both temperature measurements contain invalid
+    # zeros for 212 consecutive days, January 1 through July 31, 1947.
+    if station_id == "USC00237397":
+        columns = [column for column in ("tmax_f", "tmin_f") if column in data]
+        if columns:
+            excluded = pd.to_datetime(data["date"]).between(
+                "1947-01-01", "1947-07-31"
+            )
+            data.loc[excluded, columns] = float("nan")
+
+    return data
+
+
 def build_processed_data(
     station_code: str,
     start_year: int,
@@ -80,11 +100,12 @@ def build_processed_data(
     if not all_rows:
         return pd.DataFrame(columns=output_columns)
 
-    return (
+    processed = (
         pd.concat(all_rows, ignore_index=True)[output_columns]
         .sort_values("date")
         .drop_duplicates(subset=["station_id", "date"])
     )
+    return apply_data_exclusions(processed, clean_station_id)
 
 
 def run(metric: str) -> None:
