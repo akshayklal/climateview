@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Customize Streamlit's initial HTML metadata and generate the public sitemap.
+"""Customize Streamlit's HTML metadata and generate sitemap.xml and robots.txt.
 
 Streamlit's st.set_page_config changes the title after the frontend loads;
 its installed HTML template initially contains <title>Streamlit</title>.
@@ -11,6 +11,10 @@ for https://climatepatterns.app/sitemap.xml. It lists the homepage and each
 configured station's ?location= URL. Submit that URL in Bing Webmaster Tools
 and Google Search Console after deployment. No separate script or additional
 Render command is needed; the sitemap is regenerated as stations change.
+
+The build also writes robots.txt beside index.html for the public /robots.txt
+URL. It allows crawling and advertises the sitemap for search engine discovery.
+Both files are regenerated on every build, even if HTML metadata is unchanged.
 
 Render setup (configure this manually in the Render dashboard):
   Web service -> Settings -> Build & Deploy -> Build Command
@@ -139,6 +143,14 @@ def main() -> None:
     sitemap = template.with_name("sitemap.xml")
     sitemap.write_text(generate_sitemap(), encoding="utf-8")
     print(f"Generated {sitemap} with {len(STATIONS) + 1} URLs")
+
+    # Advertise the sitemap without blocking the app or its frontend assets.
+    robots = template.with_name("robots.txt")
+    robots.write_text(
+        f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n",
+        encoding="utf-8",
+    )
+    print(f"Generated {robots}")
 
 
 if __name__ == "__main__":
