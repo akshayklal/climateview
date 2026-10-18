@@ -16,7 +16,7 @@ from climateview.stations import STATIONS
 from climateview.temperature import render_temperature_tab
 
 
-st.set_page_config(page_title="Climate Patterns", page_icon="🌎", layout="wide")
+st.set_page_config(page_title="Climate Patterns | Explore long term climate and air quality trends in your local area.", page_icon="🌎", layout="wide")
 
 if "station_navigation_in_progress" not in st.session_state:
     st.session_state.station_navigation_in_progress = False
