@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Customize the initial HTML title and description served by Streamlit.
+"""Customize Streamlit's initial HTML title, description, and Bing verification.
 
 Streamlit's st.set_page_config changes the title after the frontend loads;
 its installed HTML template initially contains <title>Streamlit</title>.
@@ -34,6 +34,10 @@ import re
 
 PAGE_TITLE = "Climate Patterns | Explore long term climate and air quality trends in your local area."
 PAGE_DESCRIPTION = ("Explore long term climate and air quality trends in your local area.")
+# Bing Webmaster Tools checks this tag in the HTML head to verify ownership.
+# Render injects it during the same build step as the title and description.
+# Keep the tag deployed after verification so ownership can be rechecked.
+BING_VERIFICATION = "1221DC0CE7576F3B71F911A5621ADC28"
 
 
 def customize_html(html: str) -> str:
@@ -69,6 +73,20 @@ def customize_html(html: str) -> str:
     else:
         content = content.rstrip() + f"\n    {description}\n  "
 
+    bing_tag = (
+        f'<meta name="msvalidate.01" content="{escape(BING_VERIFICATION, quote=True)}" />'
+    )
+    bing_pattern = r"<meta\b(?=[^>]*\sname\s*=\s*(['\"])msvalidate\.01\1)[^>]*>"
+    matches = list(re.finditer(bing_pattern, content, re.IGNORECASE))
+    if len(matches) > 1:
+        raise ValueError("Multiple Bing verification tags found; refusing an ambiguous update.")
+    if matches:
+        content = re.sub(
+            bing_pattern, lambda _: bing_tag, content, flags=re.IGNORECASE
+        )
+    else:
+        content = content.rstrip() + f"\n    {bing_tag}\n  "
+
     return html[:head.start(1)] + content + html[head.end(1):]
 
 
@@ -83,7 +101,7 @@ def main() -> None:
         print("Streamlit HTML metadata is already up to date.")
         return
     template.write_text(updated, encoding="utf-8")
-    print(f"Updated Streamlit title and description in {template}")
+    print(f"Updated Streamlit title, description, and Bing verification in {template}")
 
 
 if __name__ == "__main__":
