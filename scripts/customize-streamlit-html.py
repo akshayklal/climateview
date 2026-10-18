@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
-"""Customize Streamlit's initial HTML title, description, and Bing verification.
+"""Customize Streamlit's initial HTML metadata and generate the public sitemap.
 
 Streamlit's st.set_page_config changes the title after the frontend loads;
 its installed HTML template initially contains <title>Streamlit</title>.
 This build-time workaround gives View Page Source and clients that do not
 run JavaScript meaningful metadata. It does not prerender the app content.
+
+Each build also generates sitemap.xml beside Streamlit's installed index.html
+for https://climatepatterns.app/sitemap.xml. It lists the homepage and each
+configured station's ?location= URL. Submit that URL in Bing Webmaster Tools
+and Google Search Console after deployment. No separate script or additional
+Render command is needed; the sitemap is regenerated as stations change.
 
 Render setup (configure this manually in the Render dashboard):
   Web service -> Settings -> Build & Deploy -> Build Command
@@ -30,6 +36,15 @@ from html import escape
 from importlib.util import find_spec
 from pathlib import Path
 import re
+import sys
+from urllib.parse import urlencode
+from xml.etree import ElementTree as ET
+
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from climateview.stations import STATIONS
 
 
 PAGE_TITLE = "Climate Patterns | Explore long term climate and air quality trends in your local area."
@@ -38,6 +53,23 @@ PAGE_DESCRIPTION = ("Explore long term climate and air quality trends in your lo
 # Render injects it during the same build step as the title and description.
 # Keep the tag deployed after verification so ownership can be rechecked.
 BING_VERIFICATION = "1221DC0CE7576F3B71F911A5621ADC28"
+SITE_URL = "https://climatepatterns.app"
+
+
+def generate_sitemap() -> str:
+    """List stable location URLs; omit session-only tab and filter states."""
+    root = ET.Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+    urls = [f"{SITE_URL}/"]
+    urls.extend(
+        f"{SITE_URL}/?{urlencode({'location': station_key})}"
+        for station_key in sorted(STATIONS)
+    )
+    for url in urls:
+        entry = ET.SubElement(root, "url")
+        ET.SubElement(entry, "loc").text = url
+    # Do not invent lastmod dates from build time; deployment is not a data update.
+    ET.indent(root, space="  ")
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True).decode("utf-8") + "\n"
 
 
 def customize_html(html: str) -> str:
@@ -99,9 +131,14 @@ def main() -> None:
     updated = customize_html(original)
     if updated == original:
         print("Streamlit HTML metadata is already up to date.")
-        return
-    template.write_text(updated, encoding="utf-8")
-    print(f"Updated Streamlit title, description, and Bing verification in {template}")
+    else:
+        template.write_text(updated, encoding="utf-8")
+        print(f"Updated Streamlit title, description, and Bing verification in {template}")
+
+    # Always generate the sitemap, even when HTML metadata is unchanged.
+    sitemap = template.with_name("sitemap.xml")
+    sitemap.write_text(generate_sitemap(), encoding="utf-8")
+    print(f"Generated {sitemap} with {len(STATIONS) + 1} URLs")
 
 
 if __name__ == "__main__":
