@@ -9,9 +9,17 @@ import pydeck as pdk
 import streamlit as st
 
 from climateview.aqs_config import AQS_POLLUTANTS
+from climateview.contact import render_contact_form
 from climateview.presentation import AIR_QUALITY, RAINFALL, TEMPERATURE, as_rgb
 from climateview.stations import STATIONS
 from climateview.seasons import get_station_seasons, normalize_season
+
+
+# Enable the poster grid, larger text, compact padding, and equal card heights.
+# False restores the original three-card layout and Show more button.
+POSTER_MODE = False
+POSTER_INSIGHT_ROWS = 10
+POSTER_INSIGHT_COLUMNS = 2
 
 
 MAP_METRICS = {
@@ -272,6 +280,25 @@ def _render_map(stations: pd.DataFrame) -> None:
 def _render_patterns(patterns: list[dict[str, Any]]) -> None:
     if not patterns:
         return
+    if POSTER_MODE and POSTER_INSIGHT_ROWS > 0:
+        # Keep selection stable for screenshots, prioritizing featured patterns.
+        # Include other patterns because the featured pool has fewer than 20.
+        poster_patterns = sorted(patterns, key=lambda p: not p.get("featured"))
+        poster_patterns = poster_patterns[:POSTER_INSIGHT_ROWS * POSTER_INSIGHT_COLUMNS]
+        with st.container(key="poster_insights"):
+            for start in range(0, len(poster_patterns), POSTER_INSIGHT_COLUMNS):
+                columns = st.columns(POSTER_INSIGHT_COLUMNS)
+                for offset, (column, pattern) in enumerate(
+                    zip(columns, poster_patterns[start:start + POSTER_INSIGHT_COLUMNS])
+                ):
+                    with column:
+                        _render_pattern_card(pattern, start + offset)
+        st.html(
+            Path(__file__).with_name("static") / "poster_card_heights.html",
+            unsafe_allow_javascript=True,
+        )
+        return
+
     featured_pool = [p for p in patterns if p.get("featured")]
     featured_pool = featured_pool or patterns
     patterns_by_id = {p["id"]: p for p in featured_pool if p.get("id")}
@@ -289,19 +316,7 @@ def _render_patterns(patterns: list[dict[str, Any]]) -> None:
     columns = st.columns(len(featured) + 1)
     for index, (column, pattern) in enumerate(zip(columns, featured)):
         with column:
-            tab = pattern.get("tab", "Temperature")
-            color_key = tab.lower().replace(" ", "_")
-            if st.button(
-                f"**{pattern['title']}**\n\n{pattern['summary']}",
-                key=f"pattern_card_{index}_{color_key}",
-                width="stretch",
-            ):
-                _open_location(
-                    pattern["station_key"],
-                    tab=tab,
-                    pollutant=pattern.get("pollutant"),
-                    season=pattern.get("season"),
-                )
+            _render_pattern_card(pattern, index)
 
     with columns[-1]:
         if st.button(
@@ -318,6 +333,42 @@ def _render_patterns(patterns: list[dict[str, Any]]) -> None:
             st.rerun()
 
 
+def _render_pattern_card(pattern: dict[str, Any], index: int) -> None:
+    tab = pattern.get("tab", "Temperature")
+    color_key = tab.lower().replace(" ", "_")
+    if st.button(
+        f"**{pattern['title']}**\n\n{pattern['summary']}",
+        key=f"pattern_card_{index}_{color_key}",
+        width="stretch",
+    ):
+        _open_location(
+            pattern["station_key"],
+            tab=tab,
+            pollutant=pattern.get("pollutant"),
+            season=pattern.get("season"),
+        )
+
+
+@st.dialog("About ClimatePatterns", width="large", dismissible=True)
+def _render_about_dialog() -> None:
+    st.markdown("""
+ClimatePatterns.app is an interactive climate-data visualization application for exploring long-term changes in temperature, precipitation, air quality, and related environmental conditions across the United States.
+
+## Community Engagement and Recognition
+
+- ClimatePatterns.app presentation to the [Foster City Citizens Sustainability Advisory Committee](https://pub-fostercity.escribemeetings.com/Players/ISIStandAlonePlayer.aspx?Id=eaf78daf-b2e3-4156-a3af-37d9bd254d67)
+- First Place ($250), Youth Showcase, [2026 San Mateo Climate Summit](https://www.climatesummitsmc.org/).
+- ClimatePatterns.app hosting and website fee paid from San Mateo County Youth Climate Ambassadors stipend.
+
+## Videos
+
+- [ClimatePatterns.app Congressional App Challenge Demonstration](https://youtu.be/_qMBIMnYTkQ)
+- [Foster City Citizens Sustainability Advisory Committee Presentation](https://pub-fostercity.escribemeetings.com/Players/ISIStandAlonePlayer.aspx?Id=eaf78daf-b2e3-4156-a3af-37d9bd254d67)
+""")
+    st.markdown("## Contact Me")
+    render_contact_form()
+
+
 def render_landing_page(
     location_summaries: dict[str, dict[str, Any]],
     explorable_patterns: list[dict[str, Any]],
@@ -325,15 +376,17 @@ def render_landing_page(
     _render_styles()
     stations = _build_station_dataframe(location_summaries)
     st.markdown('<div style="height: 1.5rem;"></div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="hero-panel">'
-        '<h1>How has your climate changed?</h1>'
-        '<p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0;">'
-        "See how temperatures, rainfall, and air quality have changed across "
-        f"decades in {len(stations)} U.S. locations.</p>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    with st.container(key="hero_panel"):
+        st.markdown(
+            '<h1>How has your climate changed?</h1>'
+            '<p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0;">'
+            "See how temperatures, rainfall, and air quality have changed across "
+            f"decades in {len(stations)} U.S. locations.</p>",
+            unsafe_allow_html=True,
+        )
+        with st.container(horizontal=True, horizontal_alignment="right"):
+            if st.button("About ClimatePatterns.app", type="tertiary", key="about_climatepatterns"):
+                _render_about_dialog()
     _render_map(stations)
     _render_patterns(explorable_patterns)
     st.caption("Data Sources: NOAA and U.S. EPA")

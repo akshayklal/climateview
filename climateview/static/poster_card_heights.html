@@ -1,0 +1,55 @@
+<script>
+(() => {
+    // Temporary poster layout: measure ALL cards before setting a shared height.
+    // Dispose observers from a previous Streamlit render.
+    window.cleanupPosterCardHeights?.();
+    let frame;
+    let stopped = false;
+    const widths = new WeakMap();
+    const selector = '.st-key-poster_insights [class*="st-key-pattern_card_"] button';
+    const resizeObserver = new ResizeObserver(entries => {
+        // Ignore height changes caused by our own second pass.
+        if (entries.some(entry => {
+            const width = entry.contentRect.width;
+            const previous = widths.get(entry.target);
+            widths.set(entry.target, width);
+            return previous !== width;
+        })) schedule();
+    });
+    const observed = new WeakSet();
+
+    function equalize() {
+        if (stopped) return;
+        const cards = [...document.querySelectorAll(selector)];
+        if (!cards.length) return;
+        // Pass 1: remove previous sizing so wrapping determines natural height.
+        cards.forEach(card => {
+            card.style.height = 'auto';
+            card.style.minHeight = '0';
+            if (!observed.has(card)) {
+                observed.add(card);
+                resizeObserver.observe(card);
+            }
+        });
+        const tallest = Math.ceil(Math.max(...cards.map(card => card.getBoundingClientRect().height)));
+        // Pass 2: apply one height across every row, not just neighboring cards.
+        cards.forEach(card => { card.style.height = `${tallest}px`; });
+    }
+    function schedule() {
+        if (stopped) return;
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(equalize);
+    }
+    // Streamlit may mount cards after this script or replace them on a rerun.
+    const mutations = new MutationObserver(schedule);
+    mutations.observe(document.body, { childList: true, subtree: true, characterData: true });
+    document.fonts.ready.then(schedule);
+    window.cleanupPosterCardHeights = () => {
+        stopped = true;
+        cancelAnimationFrame(frame);
+        resizeObserver.disconnect();
+        mutations.disconnect();
+    };
+    schedule();
+})();
+</script>

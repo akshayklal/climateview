@@ -1,9 +1,25 @@
-.hero-panel {
+.st-key-hero_panel {
     margin-bottom: 1rem;
     padding: 1.5rem;
     border: 1px solid rgba(49, 51, 63, 0.2);
     border-top-width: 4px;
     border-radius: 0.75rem;
+}
+
+.st-key-about_climatepatterns button {
+    color: #0068c9;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+}
+
+.st-key-about_climatepatterns button:hover {
+    color: #004b91;
+}
+
+.st-key-about_climatepatterns button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
 }
 
 .st-key-map_metric button[aria-checked="true"] {
@@ -123,4 +139,19 @@
         height: auto;
         min-height: 150px;
     }
+}
+
+/* Only the POSTER_MODE container receives screenshot styling. */
+.st-key-poster_insights [class*="st-key-pattern_card_"] button {
+    height: auto;
+    min-height: 0;
+    padding: 1.25rem 1.25rem 0.5rem;
+}
+
+.st-key-poster_insights [class*="st-key-pattern_card_"] button p {
+    font-size: 1.5rem;
+}
+
+.st-key-poster_insights [class*="st-key-pattern_card_"] button p:last-child {
+    margin-bottom: 0;
 }
