@@ -353,7 +353,7 @@ def _render_pattern_card(pattern: dict[str, Any], index: int) -> None:
 @st.dialog("About ClimatePatterns", width="large", dismissible=True)
 def _render_about_dialog() -> None:
     st.markdown("""
-ClimatePatterns.app is an interactive climate-data visualization application for exploring long-term changes in temperature, precipitation, air quality, and related environmental conditions across the United States.
+ClimatePatterns.app is an interactive climate-data visualization application for exploring long-term changes in temperature, precipitation, air quality, and related environmental conditions across the United States. Data is from [NOAA Climate Data Online](https://www.ncei.noaa.gov/cdo-web/) and [U.S. EPA Air Quality System (AQS)](https://aqs.epa.gov/aqsweb/documents/data_api.html).
 
 ## Community Engagement and Recognition
 
@@ -378,17 +378,16 @@ def render_landing_page(
     st.session_state.station_navigation_in_progress = False
     stations = _build_station_dataframe(location_summaries)
     st.markdown('<div style="height: 1.5rem;"></div>', unsafe_allow_html=True)
-    with st.container(key="hero_panel"):
-        st.markdown(
-            '<h1>How has your climate changed?</h1>'
-            '<p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0;">'
-            "See how temperatures, rainfall, and air quality have changed across "
-            f"decades in {len(stations)} U.S. locations.</p>",
-            unsafe_allow_html=True,
-        )
-        with st.container(horizontal=True, horizontal_alignment="right"):
-            if st.button("About ClimatePatterns.app", type="tertiary", key="about_climatepatterns"):
-                _render_about_dialog()
+    st.markdown(
+        '<div class="hero-panel">'
+        '<h1>How has your climate changed?</h1>'
+        '<p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0;">'
+        "See how temperatures, rainfall, and air quality have changed across "
+        f"decades in {len(stations)} U.S. locations.</p>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
     _render_map(stations)
     _render_patterns(explorable_patterns)
-    st.caption("Data Sources: NOAA and U.S. EPA")
+    if st.button("About ClimatePatterns.app", type="tertiary", key="about_climatepatterns"):
+        _render_about_dialog()

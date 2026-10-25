@@ -1,9 +1,14 @@
-.st-key-hero_panel {
+.hero-panel {
     margin-bottom: 1rem;
-    padding: 1.5rem 1.5rem 0.25rem;
+    padding: 1.5rem;
     border: 1px solid rgba(49, 51, 63, 0.2);
     border-top-width: 4px;
     border-radius: 0.75rem;
+}
+
+.st-key-about_climatepatterns {
+    /* Halve Streamlit's default 1rem gap above the footer link. */
+    margin-top: -0.5rem;
 }
 
 .st-key-about_climatepatterns button {
