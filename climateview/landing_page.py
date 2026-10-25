@@ -350,7 +350,7 @@ def _render_pattern_card(pattern: dict[str, Any], index: int) -> None:
         )
 
 
-@st.dialog("About ClimatePatterns", width="large", dismissible=True)
+@st.dialog("About ClimatePatterns", width="medium", dismissible=True)
 def _render_about_dialog() -> None:
     st.markdown("""
 ClimatePatterns.app is an interactive climate-data visualization application for exploring long-term changes in temperature, precipitation, air quality, and related environmental conditions across the United States. Data is from [NOAA Climate Data Online](https://www.ncei.noaa.gov/cdo-web/) and [U.S. EPA Air Quality System (AQS)](https://aqs.epa.gov/aqsweb/documents/data_api.html).
@@ -358,7 +358,7 @@ ClimatePatterns.app is an interactive climate-data visualization application for
 ## Community Engagement and Recognition
 
 - ClimatePatterns.app presentation to the [Foster City Citizens Sustainability Advisory Committee](https://pub-fostercity.escribemeetings.com/Players/ISIStandAlonePlayer.aspx?Id=eaf78daf-b2e3-4156-a3af-37d9bd254d67)
-- First Place ($250), Youth Showcase, [2026 San Mateo Climate Summit](https://www.climatesummitsmc.org/).
+- First Place, Youth Showcase, [2026 San Mateo Climate Summit](https://www.climatesummitsmc.org/).
 - ClimatePatterns.app hosting and AI usage fee paid from [San Mateo County Youth Climate Ambassadors](https://www.smcsustainability.org/education/students/youth-climate-ambassadors/) stipend.
 
 ## Videos
