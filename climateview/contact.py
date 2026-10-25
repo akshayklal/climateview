@@ -66,7 +66,7 @@ def render_contact_form() -> None:
     with st.form('contact_form'):
         email = st.text_input('Your email address', max_chars=254)
         message = st.text_area('Message', height=180, max_chars=1200)
-        submitted = st.form_submit_button('Submit', disabled=not configured)
+        submitted = st.form_submit_button('Send', disabled=not configured)
     if not submitted:
         return
     email, message = email.strip(), message.strip()
