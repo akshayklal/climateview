@@ -359,7 +359,7 @@ ClimatePatterns.app is an interactive climate-data visualization application for
 
 - ClimatePatterns.app presentation to the [Foster City Citizens Sustainability Advisory Committee](https://pub-fostercity.escribemeetings.com/Players/ISIStandAlonePlayer.aspx?Id=eaf78daf-b2e3-4156-a3af-37d9bd254d67)
 - First Place ($250), Youth Showcase, [2026 San Mateo Climate Summit](https://www.climatesummitsmc.org/).
-- ClimatePatterns.app hosting and website fee paid from San Mateo County Youth Climate Ambassadors stipend.
+- ClimatePatterns.app hosting and AI usage fee paid from [San Mateo County Youth Climate Ambassadors](https://www.smcsustainability.org/education/students/youth-climate-ambassadors/) stipend.
 
 ## Videos
 
