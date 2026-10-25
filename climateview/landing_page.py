@@ -261,6 +261,7 @@ def _render_map(stations: pd.DataFrame) -> None:
             },
         ),
         on_select="rerun",
+        key=f"station_map_{st.session_state.get('map_generation', 0)}",
         selection_mode="single-object",
         width="stretch",
         height=425,
@@ -374,6 +375,7 @@ def render_landing_page(
     explorable_patterns: list[dict[str, Any]],
 ) -> None:
     _render_styles()
+    st.session_state.station_navigation_in_progress = False
     stations = _build_station_dataframe(location_summaries)
     st.markdown('<div style="height: 1.5rem;"></div>', unsafe_allow_html=True)
     with st.container(key="hero_panel"):

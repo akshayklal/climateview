@@ -165,6 +165,8 @@ def render_station_page(station_key: str) -> None:
     with back_column:
         if st.button("← All locations"):
             st.session_state.selected_station = None
+            # A new chart identity discards the previous clicked map marker.
+            st.session_state.map_generation = st.session_state.get("map_generation", 0) + 1
             st.session_state.station_navigation_in_progress = True
             if "location" in st.query_params:
                 del st.query_params["location"]
